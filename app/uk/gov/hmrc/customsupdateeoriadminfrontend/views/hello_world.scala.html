@@ -1,0 +1,47 @@
+@*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ *@
+
+@this(layout: Layout)
+
+@()(implicit request: Request[_], messages: Messages)
+
+@layout(pageTitle = Some("EORI number management service")) {
+<!--<h1 class="govuk-heading-xl">customs-update-eori-admin-frontend</h1>
+
+<p class="govuk-body">@{messages("service.text")}</p>
+-->
+
+<div class="govuk-form-group">
+  <fieldset class="govuk-fieldset" aria-describedby="want-to-register-hint">
+
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+      <h1 class="govuk-fieldset__heading">
+        Do you want to replace an existing EORI number or cancel subscriptions to HMRC services?
+      </h1>
+    </legend>
+
+    <div class="govuk-radios__item">
+      <input class="govuk-radios__input" id="want-to-register" name="want-to-register" type="radio" value="yes">
+      <label class="govuk-label govuk-radios__label" for="want-to-register">
+        Replace an existing EORI number
+      </label>
+    </div>
+    <div class="govuk-radios__item">
+      <input class="govuk-radios__input" id="want-to-register-2" name="want-to-register" type="radio" value="no">
+      <label class="govuk-label govuk-radios__label" for="want-to-register-2">
+        Cancel subscriptions to HMRC services
+      </label>
+    </div>
+  </fieldset>
+</div>
+<button class="govuk-button" data-module="govuk-button">
+  Continue
+</button>
+}
+
+@{
+//$COVERAGE-OFF$
+}
+

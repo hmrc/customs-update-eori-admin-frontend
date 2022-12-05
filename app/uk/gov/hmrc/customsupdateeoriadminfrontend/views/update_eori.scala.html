@@ -1,0 +1,64 @@
+@*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ *@
+
+@import uk.gov.hmrc.customsupdateeoriadminfrontend.model.EoriUpdate
+@import views.html.helper._
+@import views.html.helper.inputDate
+
+@this(inputDate_di: inputDate)
+@(eoriUpdateForm: Form[EoriUpdate])(implicit request: Request[_], messages: Messages, flash: Flash)
+
+@inputText(field: String, classes: String, label: String, args: (Symbol, Any)*) = {
+@defining(Seq(
+    '_label -> Html(Messages(label)),
+    '_labelClass -> "form-label-bold",
+    '_divClass -> "form-group ",
+    '_inputClass -> classes) ++ args) { args =>
+
+    @helper.input(
+        eoriUpdateForm(field),
+        args: _*
+    )
+}
+}
+
+<html doctype="!DOCTYPE">
+    <head>
+        <title>Update EORI</title>
+        <link href="@routes.Assets.versioned("css/custom.css")" rel="stylesheet" type="text/css">
+    </head>
+
+    <body>
+        <main id="content">
+            <div class="grid-row">
+                <div class="column-two-thirds">
+
+                            @helper.form(controller.routes.UpdateEoriController.submit(), 'id -> "eoriUpdateForm") {
+
+                                @CSRF.formField
+
+                                <h1 class="heading-large">@Html(Messages("cds.update.eori.heading"))</h1>
+
+                                <div id="update-status">Status: @flash.get("resultStatus").getOrElse("")</div><br>
+
+                                @inputText("existing-eori", "suggestions-input form-control form-control--block", Messages("cds.existing-eori.label"))
+
+                                <div class="form-group">
+                                    @inputDate_di(formItem = eoriUpdateForm, fieldName = "date-of-establishment",
+                                    '_label -> Messages("cds.date-of-establishment.label"),
+                                    '_labelClass -> "form-label",
+                                    '_hintText ->(Messages("cds.date-of-establishment.hint")))
+                                </div>
+
+                                @inputText("new-eori", "suggestions-input form-control form-control--block", Messages("cds.new-eori.label"))
+
+                                <p><input class="button" type="submit" value='@Messages("cds.update-button.label")'></p>
+                            }
+                        </div>
+            </div>
+        </main>
+
+    </body>
+</html>

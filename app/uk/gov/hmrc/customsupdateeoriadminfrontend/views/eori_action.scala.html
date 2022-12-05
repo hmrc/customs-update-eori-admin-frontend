@@ -4,6 +4,7 @@
  *@
 
 @import views.html.helper._
+@import uk.gov.hmrc.customsupdateeoriadminfrontend.model.EoriAction
 
 @this(
 layout: Layout)
@@ -11,13 +12,11 @@ layout: Layout)
 @()(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = Some("EORI number management service")) {
-<!--<h1 class="govuk-heading-xl">customs-update-eori-admin-frontend</h1>
 
-<p class="govuk-body">@{messages("service.text")}</p>
--->
 
 <div class="govuk-form-group">
-
+   @helper.form(uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.EoriActionController.continueAction(), 'id -> "eoriActionForm")
+    {
     @CSRF.formField
     <fieldset class="govuk-fieldset">
 
@@ -39,15 +38,12 @@ layout: Layout)
                 Cancel subscriptions to HMRC services
             </label>
         </div>
-    </fieldset>}
+    </fieldset>
+
+    <button class="govuk-button" data-module="govuk-button">
+        Continue
+    </button>
+}
 </div>
 
-<button class="govuk-button" data-module="govuk-button">
-    Continue
-</button>
-
-
-@{
-//$COVERAGE-OFF$
 }
-

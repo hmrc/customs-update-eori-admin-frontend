@@ -1,3 +1,8 @@
+/*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ */
+
 package uk.gov.hmrc.customsupdateeoriadminfrontend.controllers
 
 import uk.gov.hmrc.customsupdateeoriadminfrontend.views.html.HelloWorldPage
