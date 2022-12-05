@@ -3,47 +3,45 @@
  *
  *@
 
-@import views.html.helper._
-@import uk.gov.hmrc.customsupdateeoriadminfrontend.model.EoriAction
+@import uk.gov.hmrc.customsupdateeoriadminfrontend.views.html.Layout
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF, GovukRadios}
 
 @this(
-layout: Layout)
+        layout: Layout,
+        govukRadios: GovukRadios,
+        formHelper: FormWithCSRF
+)
+@(form: Form[_])(implicit request: Request[_], messages: Messages)
 
-@()(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = Some("EORI number management service")) {
+    @formHelper(action = uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.routes.EoriActionController.continueAction()) {
+        <div class="govuk-form-group">
+            <fieldset class="govuk-fieldset">
 
+                <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                    <h1 class="govuk-fieldset__heading">
+                        Do you want to replace an existing EORI number or cancel subscriptions to HMRC services?
+                    </h1>
+                </legend>
 
-<div class="govuk-form-group">
-   @helper.form(uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.EoriActionController.continueAction(), 'id -> "eoriActionForm")
-    {
-    @CSRF.formField
-    <fieldset class="govuk-fieldset">
-
-        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-            <h1 class="govuk-fieldset__heading">
-                Do you want to replace an existing EORI number or cancel subscriptions to HMRC services?
-            </h1>
-        </legend>
-
-        <div class="govuk-radios__item">
-            <input class="govuk-radios__input" id="update-eori" name="update-or-cancel-eori" type="radio" value="updateori">
-            <label class="govuk-label govuk-radios__label" for="update-eori">
-                Replace an existing EORI number
-            </label>
+                <div class="govuk-radios__item">
+                    <input class="govuk-radios__input" id="update-eori" name="update-or-cancel-eori" type="radio" value="updateori">
+                    <label class="govuk-label govuk-radios__label" for="update-eori">
+                        Replace an existing EORI number
+                    </label>
+                </div>
+                <div class="govuk-radios__item">
+                    <input class="govuk-radios__input" id="cancel-eori" name="update-or-cancel-eori" type="radio" value="canceleori">
+                    <label class="govuk-label govuk-radios__label" for="cancel-eori">
+                        Cancel subscriptions to HMRC services
+                    </label>
+                </div>
+            </fieldset>
         </div>
-        <div class="govuk-radios__item">
-            <input class="govuk-radios__input" id="cancel-eori" name="update-or-cancel-eori" type="radio" value="canceleori">
-            <label class="govuk-label govuk-radios__label" for="cancel-eori">
-                Cancel subscriptions to HMRC services
-            </label>
-        </div>
-    </fieldset>
-
-    <button class="govuk-button" data-module="govuk-button">
-        Continue
-    </button>
-}
-</div>
+        <button class="govuk-button" data-module="govuk-button">
+            Continue
+        </button>
+    }
 
 }

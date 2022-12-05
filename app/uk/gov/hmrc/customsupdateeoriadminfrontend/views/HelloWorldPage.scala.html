@@ -3,51 +3,15 @@
  *
  *@
 
-@import views.html.helper._
-
-@this(
-layout: Layout)
+@this(layout: Layout)
 
 @()(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = Some("EORI number management service")) {
-<!--<h1 class="govuk-heading-xl">customs-update-eori-admin-frontend</h1>
-
-<p class="govuk-body">@{messages("service.text")}</p>
--->
-
-<div class="govuk-form-group">
-
-    @CSRF.formField
-    <fieldset class="govuk-fieldset">
-
-        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-            <h1 class="govuk-fieldset__heading">
-                Do you want to replace an existing EORI number or cancel subscriptions to HMRC services?
-            </h1>
-        </legend>
-
-        <div class="govuk-radios__item">
-            <input class="govuk-radios__input" id="update-eori" name="update-or-cancel-eori" type="radio" value="updateori">
-            <label class="govuk-label govuk-radios__label" for="update-eori">
-                Replace an existing EORI number
-            </label>
-        </div>
-        <div class="govuk-radios__item">
-            <input class="govuk-radios__input" id="cancel-eori" name="update-or-cancel-eori" type="radio" value="canceleori">
-            <label class="govuk-label govuk-radios__label" for="cancel-eori">
-                Cancel subscriptions to HMRC services
-            </label>
-        </div>
-    </fieldset>}
-</div>
-
-<button class="govuk-button" data-module="govuk-button">
-    Continue
-</button>
-
-
-@{
-//$COVERAGE-OFF$
+@layout(pageTitle = Some("customs-update-eori-admin-frontend")) {
+    <h1 class="govuk-heading-xl">customs-update-eori-admin-frontend</h1>
+    <p class="govuk-body">@{messages("service.text")}</p>
 }
 
+@{
+    //$COVERAGE-OFF$
+}
