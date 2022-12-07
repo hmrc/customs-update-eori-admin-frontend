@@ -5,7 +5,7 @@
 
 @import uk.gov.hmrc.customsupdateeoriadminfrontend.views.html.Layout
 @import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF, GovukDateInput, GovukInput, GovukButton}
-@import uk.gov.hmrc.customsupdateeoriadminfrontend.model.CancelSubscription
+@import uk.gov.hmrc.customsupdateeoriadminfrontend.models.CancelSubscription
 
 @this(
 layout: Layout,
@@ -89,9 +89,6 @@ govukButton: GovukButton
     </button>
 </div>
 
-@govukButton(
-ButtonViewModel(messages("site.saveAndContinue")).withAttribute("id","continue")
-)
 
 }
 }

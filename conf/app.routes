@@ -4,10 +4,10 @@
 
 GET        /                        uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.EoriActionController.showPage()
 POST       /                        uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.EoriActionController.continueAction()
-GET        /hello                   uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.HelloWorldController.helloWorld()
+# GET      /hello                   uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.HelloWorldController.helloWorld()
 
 # Update EORI
-#GET       /update/                uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.UpdateEoriController.showPage
+#GET       /update/                uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.UpdateEoriController.showPage()
 
 # Cancel Subscriptions
 GET        /cancel                 uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.CancelSubscriptionController.showPage()

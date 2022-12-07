@@ -5,13 +5,11 @@
 
 package uk.gov.hmrc.customsupdateeoriadminfrontend.controllers
 
-import com.sun.xml.internal.bind.v2.TODO
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.i18n.I18nSupport
-import play.api.mvc.ControllerHelpers.TODO
 import play.api.mvc.MessagesControllerComponents
-import uk.gov.hmrc.customsupdateeoriadminfrontend.model.EoriAction
+import uk.gov.hmrc.customsupdateeoriadminfrontend.models.EoriAction
 import uk.gov.hmrc.customsupdateeoriadminfrontend.views.html.eori_action
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -27,11 +25,11 @@ case class EoriActionController @Inject()(mcc: MessagesControllerComponents,
     "update-or-cancel-eori" -> text()
   )(EoriAction.apply)(EoriAction.unapply))
 
-  def showPage(): Action[AnyContent] = Action.async { implicit request =>
+  def showPage() = Action.async { implicit request =>
     Future.successful(Ok(viewEoriAction(form)))
   }
 
-  def continueAction(): Action[AnyContent] = Action { implicit request =>
+  def continueAction() = Action { implicit request =>
     val formContent = request.body.asFormUrlEncoded
     println(s"###### action is: $formContent")
     formContent.map { args =>

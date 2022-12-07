@@ -3,6 +3,6 @@
  *
  */
 
-package uk.gov.hmrc.customsupdateeoriadminfrontend.model
+package uk.gov.hmrc.customsupdateeoriadminfrontend.models
 
 case class EoriAction(cancelOrUpdate: String)

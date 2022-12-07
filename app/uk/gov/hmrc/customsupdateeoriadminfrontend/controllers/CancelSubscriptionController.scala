@@ -9,7 +9,7 @@ import play.api.data.Form
 import play.api.data.Forms.{mapping, text}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.customsupdateeoriadminfrontend.model.CancelSubscription
+import uk.gov.hmrc.customsupdateeoriadminfrontend.models.CancelSubscription
 import uk.gov.hmrc.customsupdateeoriadminfrontend.views.html.cancel_subscriptions
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 

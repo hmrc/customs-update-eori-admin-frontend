@@ -3,7 +3,7 @@
  *
  */
 
-package uk.gov.hmrc.customsupdateeoriadminfrontend.model
+package uk.gov.hmrc.customsupdateeoriadminfrontend.models
 
 import java.time.LocalDate
 
