@@ -32,7 +32,7 @@ case class CancelSubscriptionController @Inject()(mcc: MessagesControllerCompone
 
   def cancelSubscr(): Action[AnyContent] = Action.async { implicit request =>
      val formContent = request.body.asFormUrlEncoded
-      Future.successful(Ok("####In cancel subsscription"))
+      Future.successful(Ok("####In cancel subscription"))
       //Redirect(uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.routes.EoriActionController.showPage())
 
   }
