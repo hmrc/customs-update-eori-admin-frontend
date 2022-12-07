@@ -1,2 +1,2 @@
-service.name = customs-update-eori-admin-frontend
+service.name = EORI number management service
 service.text = This is your new service
