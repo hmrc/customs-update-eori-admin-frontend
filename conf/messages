@@ -1,2 +1,4 @@
 service.name = EORI number management service
 service.text = This is your new service
+
+Do_you_want_to_replace_an_existing_EORI_number_or_cancel_subscriptions_to_HMRC_services=Do you want to replace an existing EORI number or cancel subscriptions to HMRC services?

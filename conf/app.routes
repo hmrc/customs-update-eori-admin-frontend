@@ -9,8 +9,14 @@ POST       /                        uk.gov.hmrc.customsupdateeoriadminfrontend.c
 # Update EORI
 #GET       /update/                uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.UpdateEoriController.showPage()
 
+# Cancel Enrolments
+GET        /cancel                 uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.CancelEnrolmentsController.showPage()
+POST       /           uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.CancelEnrolmentsController.continueCancelEnrolments()
+
 # Cancel Subscriptions
-GET        /cancel                 uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.CancelSubscriptionController.showPage()
-POST       /cancelSubscr           uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.CancelSubscriptionController.cancelSubscr()
+GET        /cancelsubscriptions       uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.CancelSubscriptionsController.showPage()
+POST       /cancelsubscriptions       uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.CancelSubscriptionsController.continueCancelSubscription()
+
+
 
 GET        /assets/*file            controllers.Assets.versioned(path = "/public", file: Asset)

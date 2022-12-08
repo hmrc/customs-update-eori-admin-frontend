@@ -15,12 +15,13 @@
 
 @layout(pageTitle = Some("EORI number management service")) {
     @formHelper(action = uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.routes.EoriActionController.continueAction()) {
-        <div class="govuk-form-group">
+
+<div class="govuk-form-group">
             <fieldset class="govuk-fieldset">
 
                 <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-                    <h1 class="govuk-fieldset__heading">
-                        Do you want to replace an existing EORI number or cancel subscriptions to HMRC services?
+                    <h1 class="govuk-fieldset__heading" >
+                        @Html(Messages("Do_you_want_to_replace_an_existing_EORI_number_or_cancel_subscriptions_to_HMRC_services"))
                     </h1>
                 </legend>
 

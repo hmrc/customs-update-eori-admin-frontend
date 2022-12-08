@@ -1,1 +1,4 @@
-@import "lib/govuk-frontend/govuk/base";
+$govuk-assets-path: "/ddcn-live-admin/assets/lib/govuk-frontend/govuk/assets/";
+$hmrc-assets-path: "/ddcn-live-admin/assets/lib/hmrc-frontend/hmrc/assets/";
+@import "lib/govuk-frontend/govuk/all";
+@import "lib/hmrc-frontend/hmrc/all";

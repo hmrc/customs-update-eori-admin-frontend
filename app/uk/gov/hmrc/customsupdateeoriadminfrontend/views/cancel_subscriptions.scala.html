@@ -18,77 +18,52 @@ govukButton: GovukButton
 @(form: Form[_])(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = Some("EORI number management service")) {
-@formHelper(action = uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.routes.CancelSubscriptionController.cancelSubscr()) {
+@formHelper(action = uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.routes.CancelSubscriptionsController.continueCancelSubscription()) {
 
-<a class="govuk-back-link" href="javascript:window.history.back()">Back</a>
+<div class="govuk-width-container ">
 
-<h1 class="govuk-heading-l">
-    Cancel a company’s subscriptions to HMRC services
-</h1>
+    <a class="govuk-back-link" href='@uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.routes.CancelEnrolmentsController.showPage()'>Back</a>
+    <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
 
-<div class="govuk-form-group">
-    <label class="govuk-label govuk-label--m" for="current-eori-number">
-        What is the company’s current EORI number?
-    </label>
-    <div id="account-number-hint" class="govuk-hint">
-        The first two letters are GB, followed by 12 digits. For example, GB123456123456.
+    <h1 class="govuk-heading-l">
+        Cancel subscriptions for:
+    </h1>
+
+    <div class="govuk-form-group">
+
+        <p class="govuk-body">You can cancel GB205672212000’s subscriptions for:</p>
+
+        <p class="govuk-body">You will not be able to cancel GB205672212000’s subscriptions for:</p>
+
+        <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                <h3 class="govuk-fieldset__heading">
+                    Are you sure you want to cancel GB205672212000’s subscriptions?
+                </h3>
+            </legend>
+            <div class="govuk-radios govuk-radios--inline" data-module="govuk-radios">
+                <div class="govuk-radios__item">
+                    <input class="govuk-radios__input" id="cancel-subscription-yes" name="cancel-subscription" type="radio" value="yes">
+                        <label class="govuk-label govuk-radios__label" for="cancel-subscription-yes">
+                        Yes
+                    </label>
+                </div>
+                <div class="govuk-radios__item">
+                    <input class="govuk-radios__input" id="cancel-subscription-no" name="cancel-subscription" type="radio" value="no">
+                    <label class="govuk-label govuk-radios__label" for="cancel-subscription-no">
+                        No
+                    </label>
+                </div>
+        </fieldset>
     </div>
-    <input class="govuk-input govuk-input--width-20" id="current-eori-number" name="current-eori-number" type="text">
+
+    <div class="govuk-button-group">
+        <button class="govuk-button" data-module="govuk-button">
+            Confirm
+        </button>
+    </div>
+    </main>
 </div>
-
-<div class="govuk-form-group">
-    <fieldset class="govuk-fieldset" role="group">
-
-        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-            What date was the company established?
-        </legend>
-
-        <div class="govuk-date-input" id="date-of-establishment">
-            <div class="govuk-date-input__item">
-                <div class="govuk-form-group">
-                    <label class="govuk-label govuk-date-input__label" for="date-of-establishment-day">
-                        Day
-                    </label>
-                    <input class="govuk-input govuk-date-input__input govuk-input--width-2"
-                           id="date-of-establishment-day" name="date-of-establishment-day" type="text"
-                           inputmode="numeric">
-
-                </div>
-            </div>
-
-            <div class="govuk-date-input__item">
-                <div class="govuk-form-group">
-                    <label class="govuk-label govuk-date-input__label" for="date-of-establishment-month">
-                        Month
-                    </label>
-                    <input class="govuk-input govuk-date-input__input govuk-input--width-2"
-                           id="date-of-establishment-month" name="date-of-establishment-month" type="text"
-                           inputmode="numeric">
-
-                </div>
-            </div>
-
-            <div class="govuk-date-input__item">
-                <div class="govuk-form-group">
-                    <label class="govuk-label govuk-date-input__label" for="date-of-establishment-year">
-                        Year
-                    </label>
-                    <input class="govuk-input govuk-date-input__input govuk-input--width-4"
-                           id="date-of-establishment-year" name="date-of-establishment-year" type="text"
-                           inputmode="numeric">
-                </div>
-            </div>
-        </div>
-    </fieldset>
-
-</div>
-
-<div class="govuk-button-group">
-    <button class="govuk-button" data-module="govuk-button">
-        Continue
-    </button>
-</div>
-
 
 }
 }

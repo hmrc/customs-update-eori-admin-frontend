@@ -34,7 +34,7 @@ case class EoriActionController @Inject()(mcc: MessagesControllerComponents,
     formContent.map { args =>
       val actionSelected = args("update-or-cancel-eori").head
       if (actionSelected == "updateeori") Redirect(uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.routes.EoriActionController.showPage())
-      else if (actionSelected == "canceleori") Redirect(uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.routes.CancelSubscriptionController.showPage())
+      else if (actionSelected == "canceleori") Redirect(uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.routes.CancelEnrolmentsController.showPage())
       else Redirect(uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.routes.EoriActionController.showPage())
     }.getOrElse(
       Redirect(uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.routes.EoriActionController.showPage()))
