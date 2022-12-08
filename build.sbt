@@ -13,7 +13,8 @@ lazy val microservice = Project("customs-update-eori-admin-frontend", file("."))
     scalacOptions += "-Wconf:cat=unused-imports&src=html/.*:s",
     pipelineStages := Seq(gzip),
     TwirlKeys.templateImports ++= Seq(
-      "uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.routes._"
+      "uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.routes._",
+      "uk.gov.hmrc.customsupdateeoriadminfrontend.views.ViewUtils._"
     ),
   )
   .settings(publishingSettings: _*)
