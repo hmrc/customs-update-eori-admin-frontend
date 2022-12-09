@@ -1,4 +1,22 @@
 service.name = EORI number management service
 service.text = This is your new service
 
-Do_you_want_to_replace_an_existing_EORI_number_or_cancel_subscriptions_to_HMRC_services=Do you want to replace an existing EORI number or cancel subscriptions to HMRC services?
+Do_you_want_to_replace_an_existing_EORI_number_or_cancel_subscriptions_to_HMRC_services=Do you want to replace an existing EORI number or cancel subscriptions \n to HMRC services?
+
+cds.update.eori.heading=Update EORI
+cds.existing-eori.label=Existing EORI
+cds.date-of-establishment.label=Date of Establishment or Date of Birth
+cds.date-of-establishment.hint=For example, 31 3 1980
+date.fields.day=Day
+date.fields.month=Month
+date.fields.year=Year
+cds.error.mandatory.field=This field is required
+cds.error.invalid.date.format=Please enter a valid date, for example ''31 3 1980''
+cds.error.future-date=You must specify a date that is not in the future
+cds.error.invalid.eori=Please enter a valid EORI, for example GB123456789000
+cds.new-eori.label=New EORI
+cds.update-button.label=Update
+cds.update.failed=Update failed - {0}
+
+# Eori Action Form
+eori.action.button.label=Continue

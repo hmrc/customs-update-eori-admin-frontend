@@ -26,18 +26,26 @@ case class EoriActionController @Inject()(mcc: MessagesControllerComponents,
   )(EoriAction.apply)(EoriAction.unapply))
 
   def showPage() = Action.async { implicit request =>
+    println("Inside eoriacctioncontrol shwopage")
     Future.successful(Ok(viewEoriAction(form)))
   }
 
   def continueAction() = Action { implicit request =>
     val formContent = request.body.asFormUrlEncoded
+    println("Inside eoriacctioncontrol continueAction")
+
     formContent.map { args =>
       val actionSelected = args("update-or-cancel-eori").head
-      if (actionSelected == "updateeori") Redirect(uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.routes.EoriActionController.showPage())
-      else if (actionSelected == "canceleori") Redirect(uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.routes.CancelEnrolmentsController.showPage())
+      println(s"####In Eoriaction:  selected action is: $actionSelected")
+      if (actionSelected != null && actionSelected == "updateeori")  {
+        Redirect(uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.routes.UpdateEoriController.showPage())
+      }
+      else if (actionSelected != null && actionSelected == "canceleori"){
+        Redirect(uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.routes.CancelEnrolmentsController.showPage())
+      }
       else Redirect(uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.routes.EoriActionController.showPage())
     }.getOrElse(
-      Redirect(uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.routes.EoriActionController.showPage()))
+      Redirect(uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.routes.UpdateEoriController.showPage()))
   }
 }
 
