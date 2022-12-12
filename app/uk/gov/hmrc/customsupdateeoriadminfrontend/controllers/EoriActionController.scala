@@ -32,12 +32,10 @@ case class EoriActionController @Inject()(mcc: MessagesControllerComponents,
 
   def continueAction() = Action { implicit request =>
     val formContent = request.body.asFormUrlEncoded
-    println("Inside eoriacctioncontrol continueAction")
 
     formContent.map { args =>
       val actionSelected = args("update-or-cancel-eori").head
-      println(s"####In Eoriaction:  selected action is: $actionSelected")
-      if (actionSelected != null && actionSelected == "updateeori")  {
+       if (actionSelected != null && actionSelected == "updateeori")  {
         Redirect(uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.routes.UpdateEoriController.showPage())
       }
       else if (actionSelected != null && actionSelected == "canceleori"){

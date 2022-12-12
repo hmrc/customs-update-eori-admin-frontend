@@ -32,7 +32,7 @@ case class CancelEnrolmentsController @Inject()(mcc: MessagesControllerComponent
 
   def continueCancelEnrolments(): Action[AnyContent] = Action.async { implicit request =>
     val formContent = request.body.asFormUrlEncoded
-    Future.successful(Ok("####In cancel enrolment"))
+    Future.successful(Ok("In cancel enrolment"))
     //Redirect(uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.routes.EoriActionController.showPage())
 
   }

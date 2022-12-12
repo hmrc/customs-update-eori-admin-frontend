@@ -15,7 +15,7 @@ POST       /                       uk.gov.hmrc.customsupdateeoriadminfrontend.co
 
 # Cancel Subscriptions
 GET        /cancelsubscriptions    uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.CancelSubscriptionsController.showPage()
-POST       /                       uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.CancelSubscriptionsController.confirmCancelSubscription()
+POST       /confirmcancel                       uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.CancelSubscriptionsController.confirmCancelSubscription()
 
 
 GET        /assets/*file            controllers.Assets.versioned(path = "/public", file: Asset)

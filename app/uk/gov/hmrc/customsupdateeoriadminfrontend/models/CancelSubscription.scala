@@ -5,4 +5,4 @@
 
 package uk.gov.hmrc.customsupdateeoriadminfrontend.models
 
-case class CancelSubscription(existingEori: String, date: String)
+case class CancelSubscription(yesOrNo: String)
