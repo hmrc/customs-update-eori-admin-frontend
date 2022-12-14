@@ -1,4 +1,9 @@
-package uk.gov.hmrc.customsupdateeoriadminfrontend.config
+/*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ */
+
+package config
 
 import javax.inject.{Inject, Singleton}
 import play.api.Configuration

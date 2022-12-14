@@ -1,4 +1,9 @@
-package uk.gov.hmrc.customsupdateeoriadminfrontend.config
+/*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ */
+
+package config
 
 import javax.inject.{Inject, Singleton}
 
@@ -6,7 +11,7 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.Request
 import play.twirl.api.Html
 import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
-import uk.gov.hmrc.customsupdateeoriadminfrontend.views.html.ErrorTemplate
+import views.html.ErrorTemplate
 
 @Singleton
 class ErrorHandler @Inject()(errorTemplate: ErrorTemplate, val messagesApi: MessagesApi)

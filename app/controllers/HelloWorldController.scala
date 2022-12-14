@@ -1,8 +1,14 @@
-package uk.gov.hmrc.customsupdateeoriadminfrontend.controllers
+/*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ */
 
-import uk.gov.hmrc.customsupdateeoriadminfrontend.views.html.HelloWorldPage
+package controllers
+
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import views.html.HelloWorldPage
+
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
 
