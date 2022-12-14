@@ -1,4 +1,9 @@
-package uk.gov.hmrc.customsupdateeoriadminfrontend.controllers
+/*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ */
+
+package controllers
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
