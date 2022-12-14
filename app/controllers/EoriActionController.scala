@@ -25,7 +25,7 @@ case class EoriActionController @Inject()(mcc: MessagesControllerComponents,
     "update-or-cancel-eori" -> text()
   )(EoriAction.apply)(EoriAction.unapply))
 
-  def showPage() = Action.async { implicit request =>
+  def showPage = Action.async { implicit request =>
     Future.successful(Ok(viewEoriAction(form)))
   }
 

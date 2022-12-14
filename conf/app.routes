@@ -2,7 +2,7 @@
 
 ->         /hmrc-frontend           hmrcfrontend.Routes
 
-GET        /                            controllers.EoriActionController.showPage()
+GET        /                            controllers.EoriActionController.showPage
 
 
 GET        /hello                       controllers.HelloWorldController.helloWorld

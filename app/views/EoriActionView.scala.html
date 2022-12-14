@@ -15,7 +15,7 @@ formHelper: FormWithCSRF
 @(form: Form[_])(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = Some("EORI number management service")) {
-@formHelper(action = controllers.routes.EoriActionController.showPage()) {
+@formHelper(action = controllers.routes.EoriActionController.showPage) {
 
 
 <!--<div class="govuk-notification-banner govuk-notification-banner--success" role="alert"
