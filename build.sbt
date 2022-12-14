@@ -1,4 +1,5 @@
 import uk.gov.hmrc.DefaultBuildSettings.integrationTestSettings
+import scoverage.ScoverageKeys
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 
 lazy val microservice = Project("customs-update-eori-admin-frontend", file("."))
@@ -22,6 +23,13 @@ lazy val microservice = Project("customs-update-eori-admin-frontend", file("."))
       "controllers.routes._",
       "views.ViewUtils._"
     ),
+    ScoverageKeys.coverageExcludedFiles := "<empty>;Reverse.*;.*handlers.*;" +
+      ".*BuildInfo.*;.*javascript.*;.*Routes.*;.*GuiceInjector;" +
+      ".*ControllerConfiguration;.*TestController;.*LanguageSwitchController;.*viewmodels.govuk.*;.*components.*;" +
+      "models.Mode.*;models.Enumerable.*;pages.*",
+    ScoverageKeys.coverageMinimumStmtTotal := 70,
+    ScoverageKeys.coverageFailOnMinimum := true,
+    ScoverageKeys.coverageHighlighting := true,
   )
   .settings(publishingSettings: _*)
   .configs(IntegrationTest)
