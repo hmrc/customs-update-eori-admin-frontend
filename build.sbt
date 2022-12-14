@@ -12,6 +12,10 @@ lazy val microservice = Project("customs-update-eori-admin-frontend", file("."))
     scalacOptions += "-Wconf:src=routes/.*:s",
     scalacOptions += "-Wconf:cat=unused-imports&src=html/.*:s",
     pipelineStages := Seq(gzip),
+    TwirlKeys.templateImports ++= Seq(
+      "controllers.routes._",
+      "views.ViewUtils._"
+    ),
   )
   .settings(publishingSettings: _*)
   .configs(IntegrationTest)

@@ -4,19 +4,37 @@
  *@
 
 @import config.AppConfig
-@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcLayout
-@import views.html.helper.CSPNonce
+@import uk.gov.hmrc.govukfrontend.views.html.components.GovukLayout
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.HmrcInternalHeader
+@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.internalheader.InternalHeader
+@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.language.En
 
 @this(
         appConfig: AppConfig,
-        hmrcLayout: HmrcLayout
+        govUkLayout: GovukLayout,
+        hmrcInternalHeader: HmrcInternalHeader
 )
 @(pageTitle: Option[String] = None)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
 
-@hmrcLayout(
+@header = {
+@hmrcInternalHeader(
+    InternalHeader(
+        homepageUrl = "/",
+        serviceName = pageTitle,
+        serviceUrl = "",
+        language = En
+    )
+)
+}
+
+@head = {
+    <link rel="stylesheet" media="all" type="text/css" href='@routes.Assets.versioned("stylesheets/application.css")' />
+}
+
+@govUkLayout(
     pageTitle = pageTitle,
-    nonce = CSPNonce.get,
-    isWelshTranslationAvailable = appConfig.welshLanguageSupportEnabled
+    headBlock = Some(head),
+    headerBlock = Some(header),
 )(contentBlock)
 
 @{
