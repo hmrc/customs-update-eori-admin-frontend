@@ -5,6 +5,7 @@
 
 @import uk.gov.hmrc.customsupdateeoriadminfrontend.views.html.Layout
 @import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF, GovukRadios}
+@import uk.gov.hmrc.govukfrontend.views.html.components.Text
 
 @this(
         layout: Layout,
@@ -15,6 +16,23 @@
 
 @layout(pageTitle = Some("EORI number management service")) {
     @formHelper(action = uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.routes.EoriActionController.continueAction()) {
+
+
+<!--<div class="govuk-notification-banner govuk-notification-banner--success" role="alert"
+     aria-labelledby="govuk-notification-banner-title"
+     data-module="govuk-notification-banner"  style='visibility:hidden'>
+    <div class="govuk-notification-banner__header">
+        <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title" >
+            Success
+        </h2>
+    </div>
+    <div class="govuk-notification-banner__content">
+        <h3 class="govuk-notification-banner__heading">
+            EORI number GB205672212000 has been replaced with GB612599232321.
+        </h3>
+        <p class="govuk-body">The company will get an email confirming that their EORI number has been replaced.</p>
+    </div>
+</div> -->
 
 <div class="govuk-form-group">
             <fieldset class="govuk-fieldset">

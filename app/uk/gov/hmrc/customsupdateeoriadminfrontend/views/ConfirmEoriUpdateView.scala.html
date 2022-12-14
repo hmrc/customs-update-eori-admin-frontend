@@ -1,0 +1,80 @@
+@*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ *@
+
+@import uk.gov.hmrc.customsupdateeoriadminfrontend.views.html.Layout
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF, GovukRadios}
+@import uk.gov.hmrc.govukfrontend.views.html.components.Text
+
+@this(
+layout: Layout,
+govukRadios: GovukRadios,
+formHelper: FormWithCSRF
+)
+@(form: Form[_])(implicit request: Request[_], messages: Messages)
+
+@layout(pageTitle = Some("EORI number management service")) {
+@formHelper(action = uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.routes.EoriActionController.continueAction()) {
+
+
+<div class="govuk-width-container ">
+
+    <a class="govuk-back-link" href="javascript:window.history.back()">Back</a>
+
+    <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
+
+
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+
+                    <h1 class="govuk-heading-l">
+                        Replacing EORI number GB612599232321
+                    </h1>
+
+                    <p class="govuk-body">EORI number GB612599232321 is currently subscribed to:</p>
+
+                    <ul class="govuk-list govuk-list--bullet">
+                        <li>Advanced Tariff Rulings (ATAR)</li>
+                        <li>GB Safety and Security (GB S&S)</li>
+                        <li>Goods Vehicle Movement Service (GVMS)</li>
+                    </ul>
+
+                    <div class="govuk-form-group">
+                        <fieldset class="govuk-fieldset">
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                                <h3 class="govuk-fieldset__heading">
+                                    Are you sure you want to replace the current EORI number with GB612599232321?
+                                </h3>
+                            </legend>
+                            <div class="govuk-radios govuk-radios--inline" data-module="govuk-radios">
+                                <div class="govuk-radios__item">
+                                    <input class="govuk-radios__input" id="replace-eori-1" name="replace-eori"
+                                           type="radio" value="yes">
+                                    <label class="govuk-label govuk-radios__label" for="replace-eori-1">
+                                        Yes
+                                    </label>
+                                </div>
+                                <div class="govuk-radios__item">
+                                    <input class="govuk-radios__input" id="replace-eori-2" name="replace-eori"
+                                           type="radio" value="no">
+                                    <label class="govuk-label govuk-radios__label" for="replace-eori-2">
+                                        No
+                                    </label>
+                                </div>
+                            </div>
+
+                        </fieldset>
+                    </div>
+
+                    <button class="govuk-button" data-module="govuk-button">
+                        Confirm
+                    </button>
+            </div>
+        </div>
+
+
+    </main>
+</div>
+
+}}

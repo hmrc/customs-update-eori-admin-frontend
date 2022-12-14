@@ -40,5 +40,8 @@ class UpdateEoriController @Inject()(
     Ok(viewUpdateEori(form))
   }
 
+  /*def continueUpdateEori() = Action { implicit request =>
+    Ok(uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.routes.html.ConfirmEoriUpdateView)
+  }*/
 
 }

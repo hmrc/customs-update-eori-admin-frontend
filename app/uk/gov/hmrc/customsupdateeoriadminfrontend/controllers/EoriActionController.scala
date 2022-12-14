@@ -43,7 +43,7 @@ case class EoriActionController @Inject()(mcc: MessagesControllerComponents,
       }
       else Redirect(uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.routes.EoriActionController.showPage())
     }.getOrElse(
-      Redirect(uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.routes.UpdateEoriController.showPage()))
+      Redirect(uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.routes.EoriActionController.showPage()))
   }
 }
 

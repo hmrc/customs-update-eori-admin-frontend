@@ -17,7 +17,7 @@ govukButton: GovukButton
 @(form: Form[_])(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = Some("EORI number management service")) {
-@formHelper(action = uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.routes.CancelSubscriptionsController.showPage()) {
+@formHelper(action = uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.routes.UpdateEoriController.showPage()) {
 
 <div class="govuk-width-container ">
     <a class="govuk-back-link"
@@ -29,92 +29,91 @@ govukButton: GovukButton
         </h1>
 
         <div class="govuk-form-group">
-            <label class="govuk-label govuk-label--m" for="update-current-eori-number">
+            <label class="govuk-label govuk-label--m" for="txtCurrentEoriNumber">
                 What is the company’s current EORI number?
             </label>
             <div id="account-number-hint-current-eori" class="govuk-hint">
                 The first two letters are GB, followed by 12 digits. For example, GB123456123456.
             </div>
-            <input class="govuk-input govuk-input--width-20" id="update-current-eori-number"
-                   name="update-current-eori-number" type="text">
+            <input class="govuk-input govuk-input--width-20" id="txtCurrentEoriNumber"
+                   name="update-current-eori-number" type="text" onkeyup="EnableDisable(this)" >
         </div>
 
 
         <div class="govuk-form-group">
             <fieldset class="govuk-fieldset" role="group">
-
                 <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-
                     What date was the company established?
-
                 </legend>
-
 
                 <div class="govuk-date-input" id="date-of-establishment">
 
                     <div class="govuk-date-input__item">
                         <div class="govuk-form-group">
-                            <label class="govuk-label govuk-date-input__label" for="date-of-establishment-day">
+                            <label class="govuk-label govuk-date-input__label" for="txtDateOfEstablishmentDay">
                                 Day
                             </label>
-
                             <input class="govuk-input govuk-date-input__input govuk-input--width-2"
-                                   id="date-of-establishment-day" name="date-of-establishment-day" type="text"
-                                   inputmode="numeric">
-
+                                   id="txtDateOfEstablishmentDay" name="date-of-establishment-day" type="text"
+                                   inputmode="numeric" onkeyup="EnableDisable(this)">
                         </div>
                     </div>
 
                     <div class="govuk-date-input__item">
                         <div class="govuk-form-group">
-                            <label class="govuk-label govuk-date-input__label" for="date-of-establishment-month">
+                            <label class="govuk-label govuk-date-input__label" for="txtDateOfEstablishmentMonth">
                                 Month
                             </label>
 
                             <input class="govuk-input govuk-date-input__input govuk-input--width-2"
-                                   id="date-of-establishment-month" name="date-of-establishment-month" type="text"
-                                   inputmode="numeric">
-
+                                   id="txtDateOfEstablishmentMonth" name="date-of-establishment-month" type="text"
+                                   inputmode="numeric" onkeyup="EnableDisable(this)">
                         </div>
                     </div>
 
                     <div class="govuk-date-input__item">
                         <div class="govuk-form-group">
-                            <label class="govuk-label govuk-date-input__label" for="date-of-establishment-year">
+                            <label class="govuk-label govuk-date-input__label" for="txtDateOfEstablishmentYear">
                                 Year
                             </label>
-
                             <input class="govuk-input govuk-date-input__input govuk-input--width-4"
-                                   id="date-of-establishment-year" name="date-of-establishment-year" type="text"
-                                   inputmode="numeric">
-
+                                   id="txtDateOfEstablishmentYear" name="date-of-establishment-year" type="text"
+                                   inputmode="numeric" onkeyup="EnableDisable(this)">
                         </div>
                     </div>
-
                 </div>
-
-
             </fieldset>
-
-
         </div>
-
-
         <div class="govuk-form-group">
-            <label class="govuk-label govuk-label--m" for="new-eori-number">
+            <label class="govuk-label govuk-label--m" for="txtNewEoriNumber">
                 What is the company’s new EORI number?
             </label>
             <div id="account-number-hint" class="govuk-hint">
                 The first two letters are GB, followed by 12 digits. For example, GB123456123456.
             </div>
-            <input class="govuk-input govuk-input--width-20" id="new-eori-number" name="new-eori-number" type="text">
+            <input class="govuk-input govuk-input--width-20" id="txtNewEoriNumber" name="new-eori-number" type="text" onkeyup="EnableDisable(this)">
         </div>
-
-
-        <button class="govuk-button" data-module="govuk-button">
+        <button class="govuk-button" data-module="govuk-button" id="btnContinue" disabled="disabled">
             Continue
         </button>
 
     </main>
 </div>
+
+<script type="text/javascript">
+    function EnableDisable(txtCurrentEoriNumber) {
+        var btnSubmit = document.getElementById("btnContinue");
+
+        if (txtCurrentEoriNumber.value.trim() != ""
+            && txtNewEoriNumber.value.trim() != ""
+            && txtDateOfEstablishmentDay.value.trim() != ""
+            && txtDateOfEstablishmentMonth.value.trim() != ""
+            && txtDateOfEstablishmentYear.value.trim() != "") {
+            btnSubmit.disabled = false;
+        } else {
+            //Disable the button when InputText is empty.
+            btnSubmit.disabled = true;
+        }
+    };
+</script>
 }}

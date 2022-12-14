@@ -1,0 +1,54 @@
+@*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ *@
+
+@import uk.gov.hmrc.customsupdateeoriadminfrontend.views.html.Layout
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF, GovukRadios}
+@import uk.gov.hmrc.govukfrontend.views.html.components.Text
+
+@this(
+layout: Layout,
+govukRadios: GovukRadios,
+formHelper: FormWithCSRF
+)
+@(form: Form[_])(implicit request: Request[_], messages: Messages)
+
+@layout(pageTitle = Some("EORI number management service")) {
+@formHelper(action = uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.routes.EoriActionController.continueAction()) {
+
+
+<div class="govuk-width-container ">
+
+    <a class="govuk-back-link" href="javascript:window.history.back()">Back</a>
+
+    <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
+
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+
+                    <h1 class="govuk-heading-l">
+                        Customer Compliance Group (CCG) confirmation required
+                    </h1>
+
+                    <p class="govuk-body">The EORI number is enrolled with CTC.</p>
+
+                    <p class="govuk-body">Before continuing, you must confirm with CCG that NCTS and GMS have been
+                        updated.</p>
+
+                    <p class="govuk-body">CCG work with the Customs Support Group (CSG) to complete compliance
+                        checks.</p>
+
+                    <h3 class="govuk-heading-m">Do you confirm that NCTS and GMS have been updated by CCG?</h3>
+
+                    <button class="govuk-button" data-module="govuk-button">
+                        Confirm
+                    </button>
+
+            </div>
+        </div>
+
+    </main>
+</div>
+
+}}

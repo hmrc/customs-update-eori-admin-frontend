@@ -8,6 +8,7 @@ POST       /                        uk.gov.hmrc.customsupdateeoriadminfrontend.c
 
 # Update EORI
 GET       /update/                uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.UpdateEoriController.showPage()
+#POST      /update/                uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.UpdateEoriController.continueUpdateEori()
 
 # Cancel Enrolments
 GET        /cancel                 uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.CancelEnrolmentsController.showPage()
