@@ -1,7 +1,7 @@
 service.name = customs-update-eori-admin-frontend
 service.text = This is your new service
 
-
+# EoriAction page
 eoriAction.replaceExistingEori=Replace an existing EORI number
 eoriAction.cancelSubscriptions=Cancel subscriptions to HMRC services
 eoriAction.questionForReplaceOrCancel=Do you want to replace an existing EORI number or cancel subscriptions to HMRC services?
