@@ -39,7 +39,7 @@ formHelper: FormWithCSRF
 
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
             <h1 class="govuk-fieldset__heading">
-                @Html(Messages("Do_you_want_to_replace_an_existing_EORI_number_or_cancel_subscriptions_to_HMRC_services"))
+                @Messages("eoriAction.questionForReplaceOrCancel")
             </h1>
         </legend>
 
@@ -47,14 +47,14 @@ formHelper: FormWithCSRF
             <input class="govuk-radios__input" id="update-eori" name="update-or-cancel-eori" type="radio"
                    value="updateeori">
             <label class="govuk-label govuk-radios__label" for="update-eori">
-                Replace an existing EORI number
+                @Messages("eoriAction.replaceExistingEori")
             </label>
         </div>
         <div class="govuk-radios__item">
             <input class="govuk-radios__input" id="cancel-eori" name="update-or-cancel-eori" type="radio"
                    value="canceleori">
-            <label class="govuk-label govuk-radios__label" for="cancel-eori">
-                Cancel subscriptions to HMRC services
+            <label class="govuk-label govuk-radios__label" for="cancel-eori" >
+                @Messages("eoriAction.cancelSubscriptions")
             </label>
         </div>
     </fieldset>
