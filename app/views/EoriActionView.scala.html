@@ -26,7 +26,7 @@ formHelper: FormWithCSRF
 @(form: Form[_])(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = Some("EORI number management service")) {
-@formHelper(action = controllers.routes.EoriActionController.showPage) {
+@formHelper(action = controllers.routes.EoriActionController.continueAction) {
 
 
 <!--<div class="govuk-notification-banner govuk-notification-banner--success" role="alert"
@@ -58,7 +58,7 @@ formHelper: FormWithCSRF
             <input class="govuk-radios__input" id="update-eori" name="update-or-cancel-eori" type="radio"
                    value="updateeori">
             <label class="govuk-label govuk-radios__label" for="update-eori">
-                @Messages("eoriAction.replaceExistingEori")
+                @Messages("eori.replaceExistingEori")
             </label>
         </div>
         <div class="govuk-radios__item">

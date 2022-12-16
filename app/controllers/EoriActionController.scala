@@ -40,24 +40,22 @@ case class EoriActionController @Inject()(mcc: MessagesControllerComponents,
     Future.successful(Ok(viewEoriAction(form)))
   }
 
-  /*
+
   def continueAction() = Action { implicit request =>
     val formContent = request.body.asFormUrlEncoded
-    Future.successful(Ok(viewEoriAction(form)))
 
     formContent.map { args =>
       val actionSelected = args("update-or-cancel-eori").head
-       if (actionSelected != null && actionSelected == "updateeori")  {
-        Redirect(controllers.routes.UpdateEoriController.showPage())
+      if (actionSelected != null && actionSelected == "updateeori")  {
+        Redirect(controllers.routes.UpdateEoriController.showPage)
       }
       else if (actionSelected != null && actionSelected == "canceleori"){
-        Redirect(uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.routes.CancelEnrolmentsController.showPage())
+        Redirect(controllers.routes.EoriActionController.showPage)
       }
-      else Redirect(uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.routes.EoriActionController.showPage())
+      else Redirect(controllers.routes.EoriActionController.showPage)
     }.getOrElse(
-      Redirect(uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.routes.EoriActionController.showPage()))
-
-  } */
+      Redirect(controllers.routes.EoriActionController.showPage))
+  }
 }
 
 

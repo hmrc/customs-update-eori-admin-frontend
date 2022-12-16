@@ -1,6 +1,21 @@
 service.name = customs-update-eori-admin-frontend
 service.text = This is your new service
 
-eoriAction.replaceExistingEori=Replace an existing EORI number
+
+# Common messages
+eori.replaceExistingEori=Replace an existing EORI number
+eori.companyEstablishedDay=Day
+eori.companyEstablishedMonth=Month
+eori.companyEstablishedYear=Year
+eori.continueButton=Continue
+eori.companyEstablishedDateQuestion=What date was the company established?
+eori.currentEoriNumberQuestion=What is the company’s current EORI number?
+eori.newEoriNumberQuestion=What is the company’s new EORI number?
+eori.accountNumberHint=The first two letters are GB, followed by 12 digits. For example, GB123456123456.
+
+# Eori Action
 eoriAction.cancelSubscriptions=Cancel subscriptions to HMRC services
 eoriAction.questionForReplaceOrCancel=Do you want to replace an existing EORI number or cancel subscriptions to HMRC services?
+
+
+# Update Eori
