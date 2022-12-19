@@ -112,14 +112,10 @@ govukButton: GovukButton
 </div>
 
 <script type="text/javascript">
-    function EnableDisable(txtCurrentEoriNumber) {
+    function EnableDisable(txtEntered) {
         var btnSubmit = document.getElementById("btnContinue");
 
-        if (txtCurrentEoriNumber.value.trim() != ""
-            && txtNewEoriNumber.value.trim() != ""
-            && txtDateOfEstablishmentDay.value.trim() != ""
-            && txtDateOfEstablishmentMonth.value.trim() != ""
-            && txtDateOfEstablishmentYear.value.trim() != "") {
+       if (txtEntered != "") {
             btnSubmit.disabled = false;
         } else {
             //Disable the button when InputText is empty.
