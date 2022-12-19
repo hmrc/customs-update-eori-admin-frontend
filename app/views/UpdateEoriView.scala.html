@@ -16,113 +16,127 @@
 
 @import views.html.Layout
 @import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF, GovukDateInput, GovukInput, GovukButton}
+@import views.html.helper.CSPNonce
 
 @this(
-layout: Layout,
-formHelper: FormWithCSRF,
-govukDateInput: GovukDateInput,
-govukInput: GovukInput,
-govukButton: GovukButton
+        layout: Layout,
+        formHelper: FormWithCSRF,
+        govukDateInput: GovukDateInput,
+        govukInput: GovukInput,
+        govukButton: GovukButton
 )
 
 @(form: Form[_])(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = Some("EORI number management service")) {
-@formHelper(action = controllers.routes.UpdateEoriController.showPage) {
+    @formHelper(action = controllers.routes.UpdateEoriController.showPage) {
 
-<div class="govuk-width-container ">
-    <a class="govuk-back-link"
-       href='@controllers.routes.EoriActionController.showPage'>Back</a>
+        <div class="govuk-width-container ">
+            <a class="govuk-back-link" href='@controllers.routes.EoriActionController.showPage'>
+                Back
+            </a>
 
-    <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
-        <h1 class="govuk-heading-l">
-            @Messages("eori.replaceExistingEori")
-        </h1>
+            <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
+                <h1 class="govuk-heading-l">
+                    @Messages("eori.replaceExistingEori")
+                </h1>
 
-        <div class="govuk-form-group">
-            <label class="govuk-label govuk-label--m" for="txtCurrentEoriNumber">
-                @Messages("eori.currentEoriNumberQuestion")
-            </label>
-            <div id="account-number-hint-current-eori" class="govuk-hint">
-                @Messages("eori.accountNumberHint")
-            </div>
-            <input class="govuk-input govuk-input--width-20" id="txtCurrentEoriNumber"
-                   name="update-current-eori-number" type="text" onkeyup="EnableDisable(this)">
-        </div>
-
-        <div class="govuk-form-group">
-            <fieldset class="govuk-fieldset" role="group">
-                <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-                    @Messages("eori.companyEstablishedDateQuestion")
-                </legend>
-
-                <div class="govuk-date-input" id="date-of-establishment">
-
-                    <div class="govuk-date-input__item">
-                        <div class="govuk-form-group">
-                            <label class="govuk-label govuk-date-input__label" for="txtDateOfEstablishmentDay">
-                                @Messages("eori.companyEstablishedDay")
-                            </label>
-                            <input class="govuk-input govuk-date-input__input govuk-input--width-2"
-                                   id="txtDateOfEstablishmentDay" name="date-of-establishment-day" type="text"
-                                   inputmode="numeric" onkeyup="EnableDisable(this)">
-                        </div>
+                <div class="govuk-form-group">
+                    <label class="govuk-label govuk-label--m" for="txtCurrentEoriNumber">
+                        @Messages("eori.currentEoriNumberQuestion")
+                    </label>
+                    <div id="account-number-hint-current-eori" class="govuk-hint">
+                        @Messages("eori.accountNumberHint")
                     </div>
-
-                    <div class="govuk-date-input__item">
-                        <div class="govuk-form-group">
-                            <label class="govuk-label govuk-date-input__label" for="txtDateOfEstablishmentMonth">
-                                @Messages("eori.companyEstablishedMonth")
-                            </label>
-
-                            <input class="govuk-input govuk-date-input__input govuk-input--width-2"
-                                   id="txtDateOfEstablishmentMonth" name="date-of-establishment-month" type="text"
-                                   inputmode="numeric" onkeyup="EnableDisable(this)">
-                        </div>
-                    </div>
-
-                    <div class="govuk-date-input__item">
-                        <div class="govuk-form-group">
-                            <label class="govuk-label govuk-date-input__label" for="txtDateOfEstablishmentYear">
-                                @Messages("eori.companyEstablishedYear")
-                            </label>
-                            <input class="govuk-input govuk-date-input__input govuk-input--width-4"
-                                   id="txtDateOfEstablishmentYear" name="date-of-establishment-year" type="text"
-                                   inputmode="numeric" onkeyup="EnableDisable(this)">
-                        </div>
-                    </div>
+                    <input class="govuk-input govuk-input--width-20" id="txtCurrentEoriNumber" name="update-current-eori-number" type="text" required>
                 </div>
-            </fieldset>
+
+                <div class="govuk-form-group">
+                    <fieldset class="govuk-fieldset" role="group">
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                            @Messages("eori.companyEstablishedDateQuestion")
+                        </legend>
+
+                        <div class="govuk-date-input" id="date-of-establishment">
+
+                            <div class="govuk-date-input__item">
+                                <div class="govuk-form-group">
+                                    <label class="govuk-label govuk-date-input__label" for="txtDateOfEstablishmentDay">
+                                        @Messages("eori.companyEstablishedDay")
+                                    </label>
+                                    <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="txtDateOfEstablishmentDay" name="date-of-establishment-day" type="text" inputmode="numeric" required>
+                                </div>
+                            </div>
+
+                            <div class="govuk-date-input__item">
+                                <div class="govuk-form-group">
+                                    <label class="govuk-label govuk-date-input__label" for="txtDateOfEstablishmentMonth">
+                                        @Messages("eori.companyEstablishedMonth")
+                                    </label>
+
+                                    <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="txtDateOfEstablishmentMonth" name="date-of-establishment-month" type="text" inputmode="numeric" required>
+                                </div>
+                            </div>
+
+                            <div class="govuk-date-input__item">
+                                <div class="govuk-form-group">
+                                    <label class="govuk-label govuk-date-input__label" for="txtDateOfEstablishmentYear">
+                                        @Messages("eori.companyEstablishedYear")
+                                    </label>
+                                    <input class="govuk-input govuk-date-input__input govuk-input--width-4" id="txtDateOfEstablishmentYear" name="date-of-establishment-year" type="text" inputmode="numeric" required>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="govuk-form-group">
+                    <label class="govuk-label govuk-label--m" for="txtNewEoriNumber">
+                        @Messages("eori.newEoriNumberQuestion")
+                    </label>
+                    <div id="account-number-hint" class="govuk-hint">
+                        @Messages("eori.accountNumberHint")
+                    </div>
+                    <input class="govuk-input govuk-input--width-20" id="txtNewEoriNumber" name="new-eori-number" type="text" required>
+                </div>
+                <button class="govuk-button" data-module="govuk-button" id="submit-button" disabled="disabled">
+                    @Messages("eori.continueButton")
+                </button>
+
+            </main>
         </div>
-        <div class="govuk-form-group">
-            <label class="govuk-label govuk-label--m" for="txtNewEoriNumber">
-                @Messages("eori.newEoriNumberQuestion")
-            </label>
-            <div id="account-number-hint" class="govuk-hint">
-                @Messages("eori.accountNumberHint")
-            </div>
-            <input class="govuk-input govuk-input--width-20" id="txtNewEoriNumber" name="new-eori-number" type="text"
-                   onkeyup="EnableDisable(this)">
-        </div>
-        <button class="govuk-button" data-module="govuk-button" id="btnContinue" disabled="disabled">
-            @Messages("eori.continueButton")
-        </button>
 
-    </main>
-</div>
+        <script @{CSPNonce.attr}>
+            document.addEventListener('DOMContentLoaded', function () {
+                const successForm = document.forms[0];
+                const submitButton = document.getElementById("submit-button")
 
-<script type="text/javascript">
-    function EnableDisable(txtEntered) {
-        var btnSubmit = document.getElementById("btnContinue");
+                function disableButton(element) {
+                    const attributes = {
+                        disabled: "disabled",
+                        class: "govuk-button govuk-button--disabled"
+                    };
+                    Object.keys(attributes).forEach(attr => {
+                        element.setAttribute(attr, attributes[attr]);
+                    });
+                }
 
-       if (txtEntered != "") {
-            btnSubmit.disabled = false;
-        } else {
-            //Disable the button when InputText is empty.
-            btnSubmit.disabled = true;
-        }
-    };
+                function enableButton(element) {
+                    element.setAttribute("class", "govuk-button");
+                    element.removeAttribute("disabled")
+                }
 
-</script>
-}
+                function checkAndDisableButton() {
+                    if(successForm.checkValidity()) {
+                        enableButton(submitButton)
+                    } else {
+                        disableButton(submitButton)
+                    }
+                }
+
+                successForm.addEventListener('change', checkAndDisableButton)
+
+            });
+
+        </script>
+    }
 }
