@@ -16,6 +16,4 @@
 
 package models
 
-import java.time.LocalDate
-
 case class EoriUpdate(existingEori: String, date: String, newEori: String)
