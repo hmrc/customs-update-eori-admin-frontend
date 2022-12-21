@@ -22,10 +22,14 @@
 
 @this(
         appConfig: AppConfig,
-        govUkLayout: GovukLayout,
-        hmrcInternalHeader: HmrcInternalHeader
+        govukLayout: GovukLayout,
+        hmrcInternalHeader: HmrcInternalHeader,
+        govukBackLink: GovukBackLink,
 )
-@(pageTitle: Option[String] = None)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
+@(
+        pageTitle: Option[String] = None,
+        backLinkUrl: Option[String] = None
+)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
 
 @header = {
 @hmrcInternalHeader(
@@ -38,14 +42,21 @@
 )
 }
 
+@beforeContent = {
+    @backLinkUrl.map(url =>
+        govukBackLink(BackLink(href = url, content = Text(messages("eori.backLinkText"))))
+    )
+}
+
 @head = {
     <link rel="stylesheet" media="all" type="text/css" href='@routes.Assets.versioned("stylesheets/application.css")' />
 }
 
-@govUkLayout(
+@govukLayout(
     pageTitle = pageTitle,
     headBlock = Some(head),
     headerBlock = Some(header),
+    beforeContentBlock = Some(beforeContent)
 )(contentBlock)
 
 @{
