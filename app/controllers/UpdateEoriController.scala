@@ -16,23 +16,23 @@
 
 package controllers
 
+import models.EoriUpdate
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.i18n.I18nSupport
 import play.api.mvc._
-import uk.gov.hmrc.auth.core.retrieve.Name
-import models.{EoriUpdate}
-import views.html.UpdateEoriView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import views.html.UpdateEoriView
 
-import javax.inject.Inject
-import scala.concurrent.{Future,ExecutionContext}
-import scala.concurrent.Future
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.{ExecutionContext, Future}
 
-class UpdateEoriController @Inject()(
-    mcc: MessagesControllerComponents,
-    viewUpdateEori: UpdateEoriView)(implicit ec: ExecutionContext)
-    extends FrontendController(mcc)
+@Singleton
+case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
+                                          viewUpdateEori: UpdateEoriView,
+                                          auth: AuthAction
+                                         )(implicit ec: ExecutionContext)
+  extends FrontendController(mcc)
     with I18nSupport {
 
   val form = Form(
@@ -42,8 +42,8 @@ class UpdateEoriController @Inject()(
       "new-eori" -> text()
     )(EoriUpdate.apply)(EoriUpdate.unapply))
 
-  def showPage = Action { implicit request =>
-    Ok(viewUpdateEori(form))
+  def showPage = auth.async { implicit request =>
+    Future(Ok(viewUpdateEori(form)))
   }
 
   /*def continueUpdateEori() = Action { implicit request =>

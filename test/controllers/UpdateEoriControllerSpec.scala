@@ -17,40 +17,63 @@
 package controllers
 
 
-import org.scalatest.Ignore
+import org.mockito.Mockito.reset
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.Application
 import play.api.http.Status
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.mvc.MessagesControllerComponents
+import views.html.UpdateEoriView
 
-@Ignore
-class UpdateEoriControllerSpec extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
+import scala.concurrent.ExecutionContext.Implicits.global
+
+class UpdateEoriControllerSpec
+  extends AnyWordSpec
+    with Matchers
+    with GuiceOneAppPerSuite
+    with AuthenticationBehaviours
+    with MockitoSugar
+    with BeforeAndAfterEach {
   override def fakeApplication(): Application =
     new GuiceApplicationBuilder()
       .configure(
-        "metrics.jvm"     -> false,
+        "metrics.jvm" -> false,
         "metrics.enabled" -> false
       )
       .build()
 
   private val fakeRequest = FakeRequest("GET", "/")
+  private val mcc = app.injector.instanceOf[MessagesControllerComponents]
+  private val view = app.injector.instanceOf[UpdateEoriView]
+  private val controller = UpdateEoriController(mcc, view, testAuthAction)
 
-  private val controller = app.injector.instanceOf[UpdateEoriController]
+  override def beforeEach(): Unit = {
+    reset(mockAuthConnector)
+  }
 
   "GET /" should {
-    "return 200" in {
+    "return 200" in withSignedInUser {
       val result = controller.showPage(fakeRequest)
       status(result) shouldBe Status.OK
     }
 
-    "return HTML" in {
+    "return HTML" in withSignedInUser {
       val result = controller.showPage(fakeRequest)
       contentType(result) shouldBe Some("text/html")
-      charset(result)     shouldBe Some("utf-8")
+      charset(result) shouldBe Some("utf-8")
+    }
+
+    "redirect to STRIDE login for not logged-in user" in withNotSignedInUser {
+      val result = controller.showPage(fakeRequest)
+      status(result) shouldBe SEE_OTHER
+      val Some(redirectURL) = redirectLocation(result)
+      redirectURL should include("/stride/sign-in")
     }
   }
 }

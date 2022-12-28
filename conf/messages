@@ -12,6 +12,7 @@ eori.companyEstablishedDateQuestion=What date was the company established?
 eori.currentEoriNumberQuestion=What is the company’s current EORI number?
 eori.newEoriNumberQuestion=What is the company’s new EORI number?
 eori.accountNumberHint=The first two letters are GB, followed by 12 digits. For example, GB123456123456.
+eori.backLinkText=Back
 
 # Eori Action
 eoriAction.cancelSubscriptions=Cancel subscriptions to HMRC services

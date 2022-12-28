@@ -28,15 +28,11 @@
 
 @(form: Form[_])(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = Some("EORI number management service")) {
+@layout(pageTitle = Some("EORI number management service"), backLinkUrl = Some(controllers.routes.EoriActionController.showPage.toString)) {
     @formHelper(action = controllers.routes.UpdateEoriController.showPage) {
 
-        <div class="govuk-width-container ">
-            <a class="govuk-back-link" href='@controllers.routes.EoriActionController.showPage'>
-                Back
-            </a>
-
-            <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
+        <div class="govuk-width-container">
+            <main class="govuk-main-wrapper govuk-!-padding-0" id="main-content" role="main">
                 <h1 class="govuk-heading-l">
                     @Messages("eori.replaceExistingEori")
                 </h1>
