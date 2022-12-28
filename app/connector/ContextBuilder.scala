@@ -20,10 +20,8 @@ import play.api.Configuration
 
 trait ContextBuilder {
   val configuration: Configuration
-  lazy val enrolmentServiceBaseContext: String =
-    configuration.get[String]("enrolment.service.context")
-  lazy val customsDataStoreBaseContext: String =
-    configuration.get[String]("customs-data-store.context")
-  lazy val customsDataStoreToken: String = "Bearer " + configuration
-    .get[String]("customs-data-store.token")
+  lazy val enrolmentStoreProxyServiceBase: String = configuration.get[String]("services.enrolment-store-proxy")
+  lazy val taxEnrolmentsServiceBase: String = configuration.get[String]("services.tax-enrolments")
+  lazy val customsDataStoreBase: String = configuration.get[String]("services.customs-data-store")
+  lazy val customsDataStoreToken: String = "Bearer " + configuration.get[String]("customs-data-store.token")
 }

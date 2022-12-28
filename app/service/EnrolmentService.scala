@@ -17,8 +17,8 @@
 package service
 
 import cats.data.EitherT
-import cats.instances.future._
 import connector._
+import models.EnrolmentKey._
 import models.{Enrolment, Eori, ErrorMessage}
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -26,24 +26,31 @@ import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class EnrolmentService @Inject()(
-    qg: QueryGroupsConnector,
-    qu: QueryUsersConnector,
-    qkf: QueryKnownFactsConnector)(implicit ec: ExecutionContext) {
+class EnrolmentService @Inject()(groupsConnector: QueryGroupsConnector,
+                                 usersConnector: connector.QueryUsersConnector,
+                                 knownFactsConnector: QueryKnownFactsConnector,
+                                 upsertKnownFactsConnector: UpsertKnownFactsConnector,
+                                 deAllocateGroupConnector: DeAllocateGroupConnector,
+                                 reAllocateGroupConnector: ReAllocateGroupConnector,
+                                 removeKnownFactsConnector: RemoveKnownFactsConnector
+                                )(implicit ec: ExecutionContext) {
 
-  def update(existingEori: Eori, date: LocalDate, newEori: Eori)(
-      implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Enrolment]] = {
+  def updateWithESP(existingEori: Eori, date: LocalDate, newEori: Eori)
+                   (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Enrolment]] = {
+    val queryGroups = groupsConnector.query(existingEori, HMRC_CUS_ORG)
+    val queryUsers = usersConnector.query(existingEori, HMRC_CUS_ORG)
+    val queryKnownFacts = knownFactsConnector.query(existingEori, HMRC_CUS_ORG, date)
 
-    val queryGroups = qg.queryGroups(existingEori)
-    val queryUsers = qu.queryUsers(existingEori)
-    val queryKnownFacts = qkf.queryKnownFacts(existingEori, date)
-
-    val f = for {
-      enrolment <- EitherT(queryKnownFacts) //ES20
-      userId <- EitherT(queryUsers) //ES0
-      groupId <- EitherT(queryGroups) //ES1
+    val result = for {
+      enrolment <- EitherT(queryKnownFacts) // ES20
+      userId <- EitherT(queryUsers) // ES0
+      groupId <- EitherT(queryGroups) // ES1
+      _ <- EitherT(upsertKnownFactsConnector.upsertWithESP(newEori, HMRC_CUS_ORG, enrolment)) // ES6
+      _ <- EitherT(deAllocateGroupConnector.deAllocateWithESP(existingEori, HMRC_CUS_ORG, groupId)) // ES9
+      _ <- EitherT(reAllocateGroupConnector.reAllocateWithESP(newEori, HMRC_CUS_ORG, userId, groupId)) // ES8
+      _ <- EitherT(removeKnownFactsConnector.removeWithESP(existingEori, HMRC_CUS_ORG)) // ES7
 
     } yield enrolment;
-    f.value
+    result.value
   }
 }

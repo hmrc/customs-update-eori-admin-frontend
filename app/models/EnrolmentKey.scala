@@ -16,11 +16,27 @@
 
 package models
 
-case class EnrolmentKey(key: String) {
-  override def toString: String = key
-}
 
-object EnrolmentKey {
-  def apply(eori: Eori): EnrolmentKey =
-    EnrolmentKey(s"HMRC-CUS-ORG~EORINumber~$eori")
+
+object EnrolmentKey extends Enumeration {
+  type EnrolmentKey = EnrolmentKeyVal
+  case class EnrolmentKeyVal(serviceName: String, description: String) {
+    def getEnrolmentKey(eori: Eori): String = s"$serviceName~EORINumber~$eori"
+    def getEnrolmentKey(eori: String): String = s"$serviceName~EORINumber~$eori"
+  }
+
+  // HMRC-CUS-ORG*  Customs Declaration Service (Existing Service from Old customs update eori)
+  val HMRC_CUS_ORG = EnrolmentKeyVal("HMRC-CUS-ORG", "Customs Declaration Service")
+
+  // HMRC-ATAR-ORG*  Advance Tariff Registration
+  val HMRC_ATAR_ORG = EnrolmentKeyVal("HMRC-ATAR-ORG", "Advance Tariff Registration")
+
+  // HMRC-GVMS-ORG*  Goods Vehicle Movement System
+  val HMRC_GVMS_ORG = EnrolmentKeyVal("HMRC-GVMS-ORG", "Goods Vehicle Movement System")
+
+  // HMRC-SS-ORG*	 Safety & Security Great Britain
+  val HMRC_SS_ORG = EnrolmentKeyVal("HMRC-SS-ORG", "GB Safety & Security")
+
+  // HMRC-CTS-ORG*  Customs Trader Services (Services: Route 1, NDRC, C18)
+  val HMRC_CTS_ORG = EnrolmentKeyVal("HMRC-SS-ORG", "Customs Trader Services")
 }

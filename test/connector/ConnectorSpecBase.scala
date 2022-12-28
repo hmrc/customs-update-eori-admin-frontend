@@ -1,0 +1,47 @@
+/*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package connector
+
+import org.mockito.ArgumentMatchers.{eq => meq, _}
+import org.mockito.Mockito.{reset, when}
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatestplus.mockito.MockitoSugar
+import play.api.{ConfigLoader, Configuration}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+
+
+class ConnectorSpecBase
+  extends AnyWordSpec
+    with Matchers
+    with ScalaFutures
+    with MockitoSugar
+    with BeforeAndAfterEach {
+
+  protected implicit val mockHeaderCarrier = mock[HeaderCarrier]
+  protected val mockHttpClient = mock[HttpClient]
+  protected val mockConfig = mock[Configuration]
+
+  override def beforeEach(): Unit = {
+    reset(mockConfig, mockHttpClient)
+
+    when(mockConfig.get[String](meq("services.enrolment-store-proxy"))(any[ConfigLoader[String]]))
+      .thenReturn("http://localhost:1234")
+  }
+}

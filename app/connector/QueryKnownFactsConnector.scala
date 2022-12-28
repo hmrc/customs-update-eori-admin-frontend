@@ -16,11 +16,12 @@
 
 package connector
 
+import models.EnrolmentKey.EnrolmentKey
 import models._
 import play.api.Configuration
 import play.api.libs.json.{Json, OWrites, Reads}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, UpstreamErrorResponse}
 import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, UpstreamErrorResponse}
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -44,19 +45,16 @@ object QueryKnownFactsRequest {
     Json.writes[QueryKnownFactsRequest]
 }
 
-class QueryKnownFactsConnector @Inject()(
-    httpClient: HttpClient,
-    config: Configuration)(implicit ec: ExecutionContext)
-    extends {
-  val configuration = config
-} with ContextBuilder {
+class QueryKnownFactsConnector @Inject()(httpClient: HttpClient, config: Configuration)(implicit ec: ExecutionContext)
+  extends {
+    val configuration = config
+  } with ContextBuilder {
 
-  def queryKnownFacts(eori: Eori, dateOfEstablishment: LocalDate)(
-      implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Enrolment]] = {
-    val url = s"$enrolmentServiceBaseContext/enrolment-store/enrolments"
+  def query(eori: Eori, enrolmentKey: EnrolmentKey, dateOfEstablishment: LocalDate)(
+    implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Enrolment]] = {
+    val url = s"$enrolmentStoreProxyServiceBase/enrolment-store/enrolments"
     val key = "DateOfEstablishment"
-    val req = QueryKnownFactsRequest("HMRC-CUS-ORG",
-                                     Seq(KeyValue("EORINumber", eori.eori)))
+    val req = QueryKnownFactsRequest(enrolmentKey.serviceName, Seq(KeyValue("EORINumber", eori.toString)))
 
     httpClient
       .POST[QueryKnownFactsRequest, Either[UpstreamErrorResponse, QueryKnownFactsResponse]](url, req)
@@ -72,10 +70,9 @@ class QueryKnownFactsConnector @Inject()(
       }
   }
 
-  private def verifyDateOfEstablishment(
-      dateOfEstablishment: LocalDate,
-      key: String,
-      queryKnownFactsResponse: QueryKnownFactsResponse): Option[Boolean] = {
+  private def verifyDateOfEstablishment(dateOfEstablishment: LocalDate,
+                                        key: String,
+                                        queryKnownFactsResponse: QueryKnownFactsResponse): Option[Boolean] = {
     queryKnownFactsResponse.enrolments.head.verifiers
       .find(_.key == key)
       .map(d => stringToLocalDate(d.value) == dateOfEstablishment)

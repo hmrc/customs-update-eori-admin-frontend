@@ -16,7 +16,8 @@
 
 package connector
 
-import models._
+import models.EnrolmentKey.EnrolmentKey
+import models.{EnrolmentKey, Eori, ErrorMessage, UserId}
 import play.api.Configuration
 import play.api.libs.json.{Json, Reads}
 import uk.gov.hmrc.http.HttpReads.Implicits._
@@ -31,17 +32,13 @@ object Users {
   implicit val reads: Reads[Users] = Json.reads[Users]
 }
 
-class QueryUsersConnector @Inject()(
-    httpClient: HttpClient,
-    config: Configuration)(implicit ec: ExecutionContext)
-    extends {
-  val configuration = config
-} with ContextBuilder {
+class QueryUsersConnector @Inject()(httpClient: HttpClient, config: Configuration)(implicit ec: ExecutionContext)
+  extends {
+    val configuration = config
+  } with ContextBuilder {
 
-  def queryUsers(eori: Eori)(
-      implicit hc: HeaderCarrier): Future[Either[ErrorMessage, UserId]] = {
-    val url =
-      s"$enrolmentServiceBaseContext/enrolment-store/enrolments/${EnrolmentKey(eori)}/users"
+  def query(eori: Eori, enrolmentKey: EnrolmentKey)(implicit hc: HeaderCarrier): Future[Either[ErrorMessage, UserId]] = {
+    val url = s"$enrolmentStoreProxyServiceBase/enrolment-store/enrolments/${enrolmentKey.getEnrolmentKey(eori)}/users"
     httpClient.GET[Either[UpstreamErrorResponse, Users]](url).map { users =>
       users.map { gs =>
         Right(UserId(gs.principalUserIds.head))
