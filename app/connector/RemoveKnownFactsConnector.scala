@@ -16,9 +16,9 @@
 
 package connector
 
-import models.EnrolmentKey.EnrolmentKey
+import config.AppConfig
+import models.EnrolmentKey.EnrolmentKeyType
 import models.{Eori, ErrorMessage}
-import play.api.Configuration
 import play.api.http.Status._
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
@@ -26,10 +26,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class RemoveKnownFactsConnector @Inject()(httpClient: HttpClient, config: Configuration)(implicit ec: ExecutionContext)
-  extends {
-    val configuration = config
-  } with ContextBuilder {
+class RemoveKnownFactsConnector @Inject()(httpClient: HttpClient, config: AppConfig)(implicit ec: ExecutionContext) {
 
   private def remove(url: String, service: String)(
     implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
@@ -42,15 +39,15 @@ class RemoveKnownFactsConnector @Inject()(httpClient: HttpClient, config: Config
     }
   }
 
-  def removeWithESP(eori: Eori, enrolmentKey: EnrolmentKey)
+  def removeWithESP(eori: Eori, enrolmentKey: EnrolmentKeyType)
                    (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
-    val url = s"$enrolmentStoreProxyServiceBase/enrolment-store/enrolments/${enrolmentKey.getEnrolmentKey(eori)}"
+    val url = s"${config.enrolmentStoreProxyServiceUrl}/enrolment-store/enrolments/${enrolmentKey.getEnrolmentKey(eori)}"
     remove(url, "Enrolment-Store-Proxy")
   }
 
-  def removeWithTE(eori: Eori, enrolmentKey: EnrolmentKey)
+  def removeWithTE(eori: Eori, enrolmentKey: EnrolmentKeyType)
                   (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
-    val url = s"$taxEnrolmentsServiceBase/enrolments/${enrolmentKey.getEnrolmentKey(eori)}"
+    val url = s"${config.taxEnrolmentsServiceUrl}/enrolments/${enrolmentKey.getEnrolmentKey(eori)}"
     remove(url, "Tax-Enrolments")
   }
 }

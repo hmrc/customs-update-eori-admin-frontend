@@ -16,9 +16,9 @@
 
 package connector
 
-import models.EnrolmentKey.EnrolmentKey
+import config.AppConfig
+import models.EnrolmentKey.EnrolmentKeyType
 import models.{Enrolment, Eori, ErrorMessage, KeyValue}
-import play.api.Configuration
 import play.api.http.Status.NO_CONTENT
 import play.api.libs.json.{Json, OWrites}
 import uk.gov.hmrc.http.HttpReads.Implicits._
@@ -37,13 +37,10 @@ object UpsertKnownFactsRequest {
     UpsertKnownFactsRequest(e.verifiers)
 }
 
-class UpsertKnownFactsConnector @Inject()(httpClient: HttpClient, config: Configuration)(implicit ec: ExecutionContext)
-  extends {
-    val configuration = config
-  } with ContextBuilder {
+class UpsertKnownFactsConnector @Inject()(httpClient: HttpClient, config: AppConfig)(implicit ec: ExecutionContext) {
 
   private def upsert(url: String, enrolment: Enrolment, service: String)
-            (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
+                    (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
     httpClient.PUT[UpsertKnownFactsRequest, HttpResponse](
       url,
       UpsertKnownFactsRequest(enrolment)) map {
@@ -55,15 +52,15 @@ class UpsertKnownFactsConnector @Inject()(httpClient: HttpClient, config: Config
     }
   }
 
-  def upsertWithESP(eori: Eori, enrolmentKey: EnrolmentKey, enrolment: Enrolment)
+  def upsertWithESP(eori: Eori, enrolmentKey: EnrolmentKeyType, enrolment: Enrolment)
                    (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
-    val url = s"$enrolmentStoreProxyServiceBase/enrolment-store/enrolments/${enrolmentKey.getEnrolmentKey(eori)}"
+    val url = s"${config.enrolmentStoreProxyServiceUrl}/enrolment-store/enrolments/${enrolmentKey.getEnrolmentKey(eori)}"
     upsert(url, enrolment, "Enrolment-Store-Proxy")
   }
 
-  def upsertWithTE(eori: Eori, enrolmentKey: EnrolmentKey, enrolment: Enrolment)
+  def upsertWithTE(eori: Eori, enrolmentKey: EnrolmentKeyType, enrolment: Enrolment)
                   (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
-    val url = s"$taxEnrolmentsServiceBase/enrolments/${enrolmentKey.getEnrolmentKey(eori)}"
+    val url = s"${config.taxEnrolmentsServiceUrl}/enrolments/${enrolmentKey.getEnrolmentKey(eori)}"
     upsert(url, enrolment, "Tax-Enrolments")
   }
 }

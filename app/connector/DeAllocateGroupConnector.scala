@@ -16,9 +16,9 @@
 
 package connector
 
+import config.AppConfig
+import models.EnrolmentKey._
 import models._
-import EnrolmentKey._
-import play.api.Configuration
 import play.api.http.Status._
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
@@ -26,10 +26,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class DeAllocateGroupConnector @Inject()(httpClient: HttpClient, config: Configuration)(implicit ec: ExecutionContext)
-  extends {
-    val configuration = config
-  } with ContextBuilder {
+class DeAllocateGroupConnector @Inject()(httpClient: HttpClient, config: AppConfig)(implicit ec: ExecutionContext) {
 
   private def deAllocateGroup(url: String, service: String)(implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
     httpClient.DELETE[HttpResponse](url) map {
@@ -41,18 +38,18 @@ class DeAllocateGroupConnector @Inject()(httpClient: HttpClient, config: Configu
     }
   }
 
-  def deAllocateWithESP(eori: Eori, enrolmentKey: EnrolmentKey, groupId: GroupId)
+  def deAllocateWithESP(eori: Eori, enrolmentKey: EnrolmentKeyType, groupId: GroupId)
                        (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
     deAllocateGroup(
-      s"$enrolmentStoreProxyServiceBase/enrolment-store/groups/$groupId/enrolments/${enrolmentKey.getEnrolmentKey(eori)}",
+      s"${config.enrolmentStoreProxyServiceUrl}/enrolment-store/groups/$groupId/enrolments/${enrolmentKey.getEnrolmentKey(eori)}",
       "Enrolment-Store-Proxy"
     )
   }
 
-  def deAllocateGroupWithTE(eori: Eori, enrolmentKey: EnrolmentKey, groupId: GroupId)
+  def deAllocateGroupWithTE(eori: Eori, enrolmentKey: EnrolmentKeyType, groupId: GroupId)
                            (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
     deAllocateGroup(
-      s"$taxEnrolmentsServiceBase/groups/$groupId/enrolments/${enrolmentKey.getEnrolmentKey(eori)}",
+      s"${config.taxEnrolmentsServiceUrl}/groups/$groupId/enrolments/${enrolmentKey.getEnrolmentKey(eori)}",
       "Tax-Enrolments"
     )
   }

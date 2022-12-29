@@ -28,7 +28,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class RemoveKnownFactsConnectorSpec extends ConnectorSpecBase {
 
-  private val connector = new RemoveKnownFactsConnector(mockHttpClient, mockConfig)
+  private val connector = new RemoveKnownFactsConnector(mockHttpClient, mockAppConfig)
 
   "The Remove Known Facts Connector" should {
     "call the remove known facts service with a DELETE command with the correct url" in {

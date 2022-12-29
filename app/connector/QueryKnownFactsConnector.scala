@@ -16,9 +16,9 @@
 
 package connector
 
-import models.EnrolmentKey.EnrolmentKey
+import config.AppConfig
+import models.EnrolmentKey.EnrolmentKeyType
 import models._
-import play.api.Configuration
 import play.api.libs.json.{Json, OWrites, Reads}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, UpstreamErrorResponse}
@@ -45,14 +45,11 @@ object QueryKnownFactsRequest {
     Json.writes[QueryKnownFactsRequest]
 }
 
-class QueryKnownFactsConnector @Inject()(httpClient: HttpClient, config: Configuration)(implicit ec: ExecutionContext)
-  extends {
-    val configuration = config
-  } with ContextBuilder {
+class QueryKnownFactsConnector @Inject()(httpClient: HttpClient, config: AppConfig)(implicit ec: ExecutionContext) {
 
-  def query(eori: Eori, enrolmentKey: EnrolmentKey, dateOfEstablishment: LocalDate)(
-    implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Enrolment]] = {
-    val url = s"$enrolmentStoreProxyServiceBase/enrolment-store/enrolments"
+  def query(eori: Eori, enrolmentKey: EnrolmentKeyType, dateOfEstablishment: LocalDate)
+           (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Enrolment]] = {
+    val url = s"${config.enrolmentStoreProxyServiceUrl}/enrolment-store/enrolments"
     val key = "DateOfEstablishment"
     val req = QueryKnownFactsRequest(enrolmentKey.serviceName, Seq(KeyValue("EORINumber", eori.toString)))
 

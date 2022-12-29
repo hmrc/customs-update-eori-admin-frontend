@@ -31,7 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class QueryKnownFactsConnectorSpec extends ConnectorSpecBase {
 
-  private val connector = new QueryKnownFactsConnector(mockHttpClient, mockConfig)
+  private val connector = new QueryKnownFactsConnector(mockHttpClient, mockAppConfig)
 
   "The Query Known Facts Connector" should {
     "return an Enrolment for a valid EORI" in {

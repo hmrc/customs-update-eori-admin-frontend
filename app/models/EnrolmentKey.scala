@@ -19,11 +19,14 @@ package models
 
 
 object EnrolmentKey extends Enumeration {
-  type EnrolmentKey = EnrolmentKeyVal
-  case class EnrolmentKeyVal(serviceName: String, description: String) {
+  type EnrolmentKeyType = EnrolmentKeyVal
+  case class EnrolmentKeyVal(serviceName: String, description: String) extends super.Val {
     def getEnrolmentKey(eori: Eori): String = s"$serviceName~EORINumber~$eori"
     def getEnrolmentKey(eori: String): String = s"$serviceName~EORINumber~$eori"
   }
+
+  import scala.language.implicitConversions
+  implicit def valueToEnrolmentKeyVal(x: Value): EnrolmentKeyVal = x.asInstanceOf[EnrolmentKeyVal]
 
   // HMRC-CUS-ORG*  Customs Declaration Service (Existing Service from Old customs update eori)
   val HMRC_CUS_ORG = EnrolmentKeyVal("HMRC-CUS-ORG", "Customs Declaration Service")

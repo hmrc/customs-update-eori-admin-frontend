@@ -21,6 +21,7 @@ import play.api.Configuration
 
 @Singleton
 class AppConfig @Inject()(config: Configuration) {
-  val welshLanguageSupportEnabled: Boolean = config.getOptional[Boolean]("features.welsh-language-support").getOrElse(false)
-
+  val enrolmentStoreProxyServiceUrl: String = config.get[String]("services.enrolment-store-proxy")
+  val taxEnrolmentsServiceUrl: String = config.get[String]("services.tax-enrolments")
+  val customsDataStoreUrl: String = config.get[String]("services.customs-data-store")
 }

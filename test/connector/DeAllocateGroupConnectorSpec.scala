@@ -28,7 +28,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class DeAllocateGroupConnectorSpec extends ConnectorSpecBase {
 
-  private val connector = new DeAllocateGroupConnector(mockHttpClient, mockConfig)
+  private val connector = new DeAllocateGroupConnector(mockHttpClient, mockAppConfig)
 
   "The Delete Enrolment Connector" should {
     "call the de-enrolment service with a DELETE command with the correct url" in {

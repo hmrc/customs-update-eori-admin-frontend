@@ -16,9 +16,9 @@
 
 package connector
 
-import models.EnrolmentKey.EnrolmentKey
+import config.AppConfig
+import models.EnrolmentKey.EnrolmentKeyType
 import models.{Eori, ErrorMessage, GroupId}
-import play.api.Configuration
 import play.api.libs.json.{Json, Reads}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, UpstreamErrorResponse}
@@ -32,13 +32,10 @@ object Groups {
   implicit val reads: Reads[Groups] = Json.reads[Groups]
 }
 
-class QueryGroupsConnector @Inject()(httpClient: HttpClient, config: Configuration)(implicit ec: ExecutionContext)
-  extends {
-    val configuration = config
-  } with ContextBuilder {
+class QueryGroupsConnector @Inject()(httpClient: HttpClient, config: AppConfig)(implicit ec: ExecutionContext) {
 
-  def query(eori: Eori, enrolmentKey: EnrolmentKey)(implicit hc: HeaderCarrier): Future[Either[ErrorMessage, GroupId]] = {
-    val url = s"$enrolmentStoreProxyServiceBase/enrolment-store/enrolments/${enrolmentKey.getEnrolmentKey(eori)}/groups"
+  def query(eori: Eori, enrolmentKey: EnrolmentKeyType)(implicit hc: HeaderCarrier): Future[Either[ErrorMessage, GroupId]] = {
+    val url = s"${config.enrolmentStoreProxyServiceUrl}/enrolment-store/enrolments/${enrolmentKey.getEnrolmentKey(eori)}/groups"
 
     httpClient.GET[Either[UpstreamErrorResponse, Groups]](url).map { groups =>
       groups.map { gs =>

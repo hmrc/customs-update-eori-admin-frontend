@@ -19,7 +19,7 @@ package service
 import cats.data.EitherT
 import connector._
 import models.EnrolmentKey._
-import models.{Enrolment, Eori, ErrorMessage}
+import models.{Enrolment, EnrolmentKey, Eori, ErrorMessage}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import java.time.LocalDate
@@ -32,11 +32,21 @@ class EnrolmentService @Inject()(groupsConnector: QueryGroupsConnector,
                                  upsertKnownFactsConnector: UpsertKnownFactsConnector,
                                  deAllocateGroupConnector: DeAllocateGroupConnector,
                                  reAllocateGroupConnector: ReAllocateGroupConnector,
-                                 removeKnownFactsConnector: RemoveKnownFactsConnector
+                                 removeKnownFactsConnector: RemoveKnownFactsConnector,
+                                 customsDataStoreConnector: CustomsDataStoreConnector
                                 )(implicit ec: ExecutionContext) {
 
-  def updateWithESP(existingEori: Eori, date: LocalDate, newEori: Eori)
-                   (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Enrolment]] = {
+  def getEnrolments(existingEori: Eori, date: LocalDate)(implicit hc: HeaderCarrier) = {
+    Future.sequence(
+      EnrolmentKey.values.toSeq.map(enrolmentKey => {
+        knownFactsConnector.query(existingEori, enrolmentKey, date)
+          .map(enrolmentKey.serviceName -> _.isRight)
+      })
+    )
+  }
+
+  def update(existingEori: Eori, date: LocalDate, newEori: Eori)
+            (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Enrolment]] = {
     val queryGroups = groupsConnector.query(existingEori, HMRC_CUS_ORG)
     val queryUsers = usersConnector.query(existingEori, HMRC_CUS_ORG)
     val queryKnownFacts = knownFactsConnector.query(existingEori, HMRC_CUS_ORG, date)
@@ -49,8 +59,8 @@ class EnrolmentService @Inject()(groupsConnector: QueryGroupsConnector,
       _ <- EitherT(deAllocateGroupConnector.deAllocateWithESP(existingEori, HMRC_CUS_ORG, groupId)) // ES9
       _ <- EitherT(reAllocateGroupConnector.reAllocateWithESP(newEori, HMRC_CUS_ORG, userId, groupId)) // ES8
       _ <- EitherT(removeKnownFactsConnector.removeWithESP(existingEori, HMRC_CUS_ORG)) // ES7
-
-    } yield enrolment;
+      _ <- EitherT(customsDataStoreConnector.notify(existingEori)) //Notify Customs Data Store
+    } yield enrolment
     result.value
   }
 }

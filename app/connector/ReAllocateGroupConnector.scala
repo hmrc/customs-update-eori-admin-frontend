@@ -16,9 +16,9 @@
 
 package connector
 
-import models.EnrolmentKey.EnrolmentKey
+import config.AppConfig
+import models.EnrolmentKey.EnrolmentKeyType
 import models._
-import play.api.Configuration
 import play.api.http.Status._
 import play.api.libs.json.{Json, OWrites}
 import uk.gov.hmrc.http.HttpReads.Implicits._
@@ -35,13 +35,10 @@ object ReEnrolRequest {
   implicit val writes: OWrites[ReEnrolRequest] = Json.writes[ReEnrolRequest]
 }
 
-class ReAllocateGroupConnector @Inject()(httpClient: HttpClient, config: Configuration)(implicit ec: ExecutionContext)
-  extends {
-    val configuration = config
-  } with ContextBuilder {
+class ReAllocateGroupConnector @Inject()(httpClient: HttpClient, config: AppConfig)(implicit ec: ExecutionContext) {
 
   private def reAllocate(url: String, userId: UserId, service: String)
-                (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
+                        (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
     val req = ReEnrolRequest(userId.id)
 
     httpClient.POST[ReEnrolRequest, HttpResponse](url, req, Seq("Content-Type" -> "application/json")) map { resp =>
@@ -53,15 +50,15 @@ class ReAllocateGroupConnector @Inject()(httpClient: HttpClient, config: Configu
     }
   }
 
-  def reAllocateWithESP(eori: Eori, enrolmentKey: EnrolmentKey, userId: UserId, groupId: GroupId)
+  def reAllocateWithESP(eori: Eori, enrolmentKey: EnrolmentKeyType, userId: UserId, groupId: GroupId)
                        (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
-    val url = s"$enrolmentStoreProxyServiceBase/enrolment-store/groups/$groupId/enrolments/${enrolmentKey.getEnrolmentKey(eori)}"
+    val url = s"${config.enrolmentStoreProxyServiceUrl}/enrolment-store/groups/$groupId/enrolments/${enrolmentKey.getEnrolmentKey(eori)}"
     reAllocate(url, userId, "Enrolment-Store-Proxy")
   }
 
-  def allocateGroupWithTE(eori: Eori, enrolmentKey: EnrolmentKey, userId: UserId, groupId: GroupId)
+  def allocateGroupWithTE(eori: Eori, enrolmentKey: EnrolmentKeyType, userId: UserId, groupId: GroupId)
                          (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
-    val url = s"$taxEnrolmentsServiceBase/groups/$groupId/enrolments/${enrolmentKey.getEnrolmentKey(eori)}"
+    val url = s"${config.taxEnrolmentsServiceUrl}/groups/$groupId/enrolments/${enrolmentKey.getEnrolmentKey(eori)}"
     reAllocate(url, userId, "Tax-Enrolments")
   }
 }

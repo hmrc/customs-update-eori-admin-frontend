@@ -16,16 +16,14 @@
 
 package connector
 
-import org.mockito.ArgumentMatchers.{eq => meq, _}
+import config.AppConfig
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.{ConfigLoader, Configuration}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
-
 
 class ConnectorSpecBase
   extends AnyWordSpec
@@ -36,12 +34,15 @@ class ConnectorSpecBase
 
   protected implicit val mockHeaderCarrier = mock[HeaderCarrier]
   protected val mockHttpClient = mock[HttpClient]
-  protected val mockConfig = mock[Configuration]
+  protected val mockAppConfig = mock[AppConfig]
 
   override def beforeEach(): Unit = {
-    reset(mockConfig, mockHttpClient)
+    reset(mockAppConfig, mockHttpClient)
 
-    when(mockConfig.get[String](meq("services.enrolment-store-proxy"))(any[ConfigLoader[String]]))
+    when(mockAppConfig.enrolmentStoreProxyServiceUrl)
       .thenReturn("http://localhost:1234")
+
+    when(mockAppConfig.customsDataStoreUrl)
+      .thenReturn("http://localhost:1111")
   }
 }

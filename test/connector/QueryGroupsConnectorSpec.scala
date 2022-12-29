@@ -28,7 +28,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class QueryGroupsConnectorSpec extends ConnectorSpecBase {
 
-  private val connector = new QueryGroupsConnector(mockHttpClient, mockConfig)
+  private val connector = new QueryGroupsConnector(mockHttpClient, mockAppConfig)
 
   override def beforeEach(): Unit = {
     super.beforeEach()
