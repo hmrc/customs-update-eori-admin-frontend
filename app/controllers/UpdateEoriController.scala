@@ -16,38 +16,91 @@
 
 package controllers
 
-import models.EoriUpdate
+import models.DateOfEstablishment.stringToLocalDate
+import models.{ConfirmEoriUpdate, EnrolmentKey, Eori, EoriUpdate}
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.i18n.I18nSupport
 import play.api.mvc._
+import service.EnrolmentService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import views.html.UpdateEoriView
+import views.html.{ConfirmEoriUpdateView, UpdateEoriView}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success}
 
 @Singleton
 case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
                                           viewUpdateEori: UpdateEoriView,
-                                          auth: AuthAction
+                                          viewConfirmUpdate: ConfirmEoriUpdateView,
+                                          auth: AuthAction,
+                                          enrolmentService: EnrolmentService
                                          )(implicit ec: ExecutionContext)
   extends FrontendController(mcc)
     with I18nSupport {
 
-  val form = Form(
+  val formEoriUpdate = Form(
     mapping(
       "existing-eori" -> text(),
-      "date-of-establishment" -> text(),
+      "date-of-establishment-day" -> text(),
+      "date-of-establishment-month" -> text(),
+      "date-of-establishment-year" -> text(),
       "new-eori" -> text()
     )(EoriUpdate.apply)(EoriUpdate.unapply))
 
-  def showPage = auth.async { implicit request =>
-    Future(Ok(viewUpdateEori(form)))
+  val formEoriUpdateConfirmation = Form(
+    mapping(
+      "existing-eori" -> text(),
+      "date-of-establishment" -> text(),
+      "new-eori" -> text(),
+      "enrolment-list" -> text(),
+      "confirm" -> boolean
+    )(ConfirmEoriUpdate.apply)(ConfirmEoriUpdate.unapply))
+
+  def showPage = auth { implicit request =>
+    Ok(viewUpdateEori(formEoriUpdate))
   }
 
-  /*def continueUpdateEori() = Action { implicit request =>
-    Ok(uk.gov.hmrc.customsupdateeoriadminfrontend.controllers.routes.html.ConfirmEoriUpdateView)
-  }*/
+  def continueUpdateEori = auth { implicit request =>
+    formEoriUpdate.bindFromRequest.fold(
+      _ => Ok(viewUpdateEori(formEoriUpdate)),
+      eoriUpdate => Redirect(controllers.routes.UpdateEoriController.showConfirmPage(eoriUpdate.existingEori, eoriUpdate.dateOfEstablishment, eoriUpdate.newEori))
+    )
+  }
+
+  def showConfirmPage(oldEoriNumber: String, establishmentDate: String, newEoriNumber: String) = auth.async { implicit request =>
+    enrolmentService.getEnrolments(Eori(oldEoriNumber), stringToLocalDate(establishmentDate))
+      .map(enrolments => {
+        val enrolmentList = enrolments.filter(_._2).map(_._1).toList
+        Ok(viewConfirmUpdate(
+          formEoriUpdateConfirmation.fill(ConfirmEoriUpdate(oldEoriNumber, establishmentDate, newEoriNumber, enrolmentList.mkString(","), false)),
+          enrolmentList
+        ))
+      })
+  }
+
+  def confirmUpdateEori = auth.async { implicit request =>
+    formEoriUpdateConfirmation.bindFromRequest.fold(
+      _ => {
+        Future(Redirect(controllers.routes.UpdateEoriController.showPage))
+      },
+      confirmEoriUpdate => {
+        if (confirmEoriUpdate.isConfirmed) {
+          val updateAllEnrolments = Future.sequence(confirmEoriUpdate.enrolmentList.split(",")
+            .toList.map(EnrolmentKey.getEnrolmentKey(_).get).map(enrolment =>
+            enrolmentService.update(
+              Eori(confirmEoriUpdate.existingEori),
+              stringToLocalDate(confirmEoriUpdate.dateOfEstablishment),
+              Eori(confirmEoriUpdate.newEori),
+              enrolment)
+          ))
+          updateAllEnrolments.map { _ => Redirect(controllers.routes.EoriActionController.showPage)}
+        } else {
+          Future(Redirect(controllers.routes.UpdateEoriController.showPage))
+        }
+      }
+    )
+  }
 
 }

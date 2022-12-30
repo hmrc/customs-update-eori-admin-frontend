@@ -28,18 +28,21 @@ object EnrolmentKey extends Enumeration {
   import scala.language.implicitConversions
   implicit def valueToEnrolmentKeyVal(x: Value): EnrolmentKeyVal = x.asInstanceOf[EnrolmentKeyVal]
 
+  def getDescription(serviceName: String): Option[String] = values.find(_.serviceName == serviceName).map(value => value.description)
+  def getEnrolmentKey(serviceName: String) = values.find(_.serviceName == serviceName)
+
   // HMRC-CUS-ORG*  Customs Declaration Service (Existing Service from Old customs update eori)
-  val HMRC_CUS_ORG = EnrolmentKeyVal("HMRC-CUS-ORG", "Customs Declaration Service")
+  val HMRC_CUS_ORG = EnrolmentKeyVal("HMRC-CUS-ORG", "Customs Declaration Service (CUS)")
 
   // HMRC-ATAR-ORG*  Advance Tariff Registration
-  val HMRC_ATAR_ORG = EnrolmentKeyVal("HMRC-ATAR-ORG", "Advance Tariff Registration")
+  val HMRC_ATAR_ORG = EnrolmentKeyVal("HMRC-ATAR-ORG", "Advance Tariff Registration (ATAR)")
 
   // HMRC-GVMS-ORG*  Goods Vehicle Movement System
-  val HMRC_GVMS_ORG = EnrolmentKeyVal("HMRC-GVMS-ORG", "Goods Vehicle Movement System")
+  val HMRC_GVMS_ORG = EnrolmentKeyVal("HMRC-GVMS-ORG", "Goods Vehicle Movement System (GVMS)")
 
   // HMRC-SS-ORG*	 Safety & Security Great Britain
-  val HMRC_SS_ORG = EnrolmentKeyVal("HMRC-SS-ORG", "GB Safety & Security")
+  val HMRC_SS_ORG = EnrolmentKeyVal("HMRC-SS-ORG", "GB Safety & Security (GB S&S)")
 
   // HMRC-CTS-ORG*  Customs Trader Services (Services: Route 1, NDRC, C18)
-  val HMRC_CTS_ORG = EnrolmentKeyVal("HMRC-SS-ORG", "Customs Trader Services")
+  val HMRC_CTS_ORG = EnrolmentKeyVal("HMRC-CTS-ORG", "Customs Trader Services (Route 1, NDRC, C18)")
 }

@@ -17,14 +17,15 @@
 package connector
 
 import config.AppConfig
+import models.DateOfEstablishment.stringToLocalDate
 import models.EnrolmentKey.EnrolmentKeyType
 import models._
+import play.api.http.Status.{NO_CONTENT, OK}
 import play.api.libs.json.{Json, OWrites, Reads}
 import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -53,17 +54,19 @@ class QueryKnownFactsConnector @Inject()(httpClient: HttpClient, config: AppConf
     val key = "DateOfEstablishment"
     val req = QueryKnownFactsRequest(enrolmentKey.serviceName, Seq(KeyValue("EORINumber", eori.toString)))
 
-    httpClient
-      .POST[QueryKnownFactsRequest, Either[UpstreamErrorResponse, QueryKnownFactsResponse]](url, req)
+    httpClient.POST[QueryKnownFactsRequest, HttpResponse](url, req)
       .map {
-        case Left(UpstreamErrorResponse(_, _, _, _)) =>
-          Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $eori"))
-        case Right(queryKnownFactsResponse) =>
-          verifyDateOfEstablishment(dateOfEstablishment, key, queryKnownFactsResponse) match {
-            case Some(true) => Right(queryKnownFactsResponse.enrolments.head)
-            case Some(false) => Left(ErrorMessage("The date you have entered does not match our records, please try again"))
-            case _ => Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $eori"))
-          }
+        case response => response.status match {
+          case OK =>
+            val queryKnownFactsResponse = Json.parse(response.body).as[QueryKnownFactsResponse]
+            verifyDateOfEstablishment(dateOfEstablishment, key, queryKnownFactsResponse) match {
+              case Some(true) => Right(queryKnownFactsResponse.enrolments.head)
+              case Some(false) => Left(ErrorMessage("The date you have entered does not match our records, please try again"))
+            }
+          case NO_CONTENT => Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $eori"))
+          case failStatus => Left(ErrorMessage(s"Notification failed with HTTP status: $failStatus"))
+        }
+
       }
   }
 
@@ -73,10 +76,5 @@ class QueryKnownFactsConnector @Inject()(httpClient: HttpClient, config: AppConf
     queryKnownFactsResponse.enrolments.head.verifiers
       .find(_.key == key)
       .map(d => stringToLocalDate(d.value) == dateOfEstablishment)
-  }
-
-  private def stringToLocalDate(date: String) = {
-    val dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-    LocalDate.parse(date, dateTimeFormatter)
   }
 }

@@ -21,6 +21,7 @@ import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.time.{Seconds, Span}
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
@@ -32,6 +33,7 @@ class ConnectorSpecBase
     with MockitoSugar
     with BeforeAndAfterEach {
 
+  override implicit val patienceConfig: PatienceConfig = PatienceConfig(Span(5, Seconds))
   protected implicit val mockHeaderCarrier = mock[HeaderCarrier]
   protected val mockHttpClient = mock[HttpClient]
   protected val mockAppConfig = mock[AppConfig]

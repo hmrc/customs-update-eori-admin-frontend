@@ -45,20 +45,20 @@ class EnrolmentService @Inject()(groupsConnector: QueryGroupsConnector,
     )
   }
 
-  def update(existingEori: Eori, date: LocalDate, newEori: Eori)
+  def update(existingEori: Eori, date: LocalDate, newEori: Eori, enrolmentKey: EnrolmentKeyType)
             (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Enrolment]] = {
-    val queryGroups = groupsConnector.query(existingEori, HMRC_CUS_ORG)
-    val queryUsers = usersConnector.query(existingEori, HMRC_CUS_ORG)
-    val queryKnownFacts = knownFactsConnector.query(existingEori, HMRC_CUS_ORG, date)
+    val queryGroups = groupsConnector.query(existingEori, enrolmentKey)
+    val queryUsers = usersConnector.query(existingEori, enrolmentKey)
+    val queryKnownFacts = knownFactsConnector.query(existingEori, enrolmentKey, date)
 
     val result = for {
       enrolment <- EitherT(queryKnownFacts) // ES20
       userId <- EitherT(queryUsers) // ES0
       groupId <- EitherT(queryGroups) // ES1
-      _ <- EitherT(upsertKnownFactsConnector.upsertWithESP(newEori, HMRC_CUS_ORG, enrolment)) // ES6
-      _ <- EitherT(deAllocateGroupConnector.deAllocateWithESP(existingEori, HMRC_CUS_ORG, groupId)) // ES9
-      _ <- EitherT(reAllocateGroupConnector.reAllocateWithESP(newEori, HMRC_CUS_ORG, userId, groupId)) // ES8
-      _ <- EitherT(removeKnownFactsConnector.removeWithESP(existingEori, HMRC_CUS_ORG)) // ES7
+      _ <- EitherT(upsertKnownFactsConnector.upsertWithTE(newEori, enrolmentKey, enrolment)) // ES6
+      _ <- EitherT(deAllocateGroupConnector.deAllocateWithTE(existingEori, enrolmentKey, groupId)) // ES9
+      _ <- EitherT(reAllocateGroupConnector.reAllocateWithTE(newEori, enrolmentKey, userId, groupId)) // ES8
+      _ <- EitherT(removeKnownFactsConnector.removeWithTE(existingEori, enrolmentKey)) // ES7
       _ <- EitherT(customsDataStoreConnector.notify(existingEori)) //Notify Customs Data Store
     } yield enrolment
     result.value

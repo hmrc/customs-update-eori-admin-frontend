@@ -33,7 +33,10 @@ class DeAllocateGroupConnector @Inject()(httpClient: HttpClient, config: AppConf
       _.status match {
         case NO_CONTENT => Right(NO_CONTENT)
         case failStatus =>
-          Left(ErrorMessage(s"[$service] Delete enrolment failed with HTTP status: $failStatus"))
+          {
+            println(failStatus)
+            Left(ErrorMessage(s"[$service] Delete enrolment failed with HTTP status: $failStatus"))
+          }
       }
     }
   }
@@ -46,7 +49,7 @@ class DeAllocateGroupConnector @Inject()(httpClient: HttpClient, config: AppConf
     )
   }
 
-  def deAllocateGroupWithTE(eori: Eori, enrolmentKey: EnrolmentKeyType, groupId: GroupId)
+  def deAllocateWithTE(eori: Eori, enrolmentKey: EnrolmentKeyType, groupId: GroupId)
                            (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
     deAllocateGroup(
       s"${config.taxEnrolmentsServiceUrl}/groups/$groupId/enrolments/${enrolmentKey.getEnrolmentKey(eori)}",

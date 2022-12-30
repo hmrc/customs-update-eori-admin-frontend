@@ -56,7 +56,7 @@ class ReAllocateGroupConnector @Inject()(httpClient: HttpClient, config: AppConf
     reAllocate(url, userId, "Enrolment-Store-Proxy")
   }
 
-  def allocateGroupWithTE(eori: Eori, enrolmentKey: EnrolmentKeyType, userId: UserId, groupId: GroupId)
+  def reAllocateWithTE(eori: Eori, enrolmentKey: EnrolmentKeyType, userId: UserId, groupId: GroupId)
                          (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
     val url = s"${config.taxEnrolmentsServiceUrl}/groups/$groupId/enrolments/${enrolmentKey.getEnrolmentKey(eori)}"
     reAllocate(url, userId, "Tax-Enrolments")

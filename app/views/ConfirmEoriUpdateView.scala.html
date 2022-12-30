@@ -1,0 +1,79 @@
+@*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import views.html.Layout
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
+
+@this(
+        layout: Layout,
+        formHelper: FormWithCSRF
+)
+@(form: Form[_], enrolmentList: List[String])(implicit request: Request[_], messages: Messages)
+
+@layout(pageTitle = Some("EORI number management service"), backLinkUrl = Some(controllers.routes.UpdateEoriController.showPage.toString)) {
+    @formHelper(action = controllers.routes.UpdateEoriController.confirmUpdateEori) {
+        <div class="govuk-width-container ">
+            <main class="govuk-main-wrapper govuk-!-padding-0" id="main-content" role="main">
+
+                <div class="govuk-grid-row">
+                    <div class="govuk-grid-column-two-thirds">
+
+                        <h1 class="govuk-heading-l">
+                            Replacing EORI number @form("existing-eori").value
+                        </h1>
+
+                        <p class="govuk-body">EORI number @form("existing-eori").value is currently subscribed to:</p>
+
+                        <ul class="govuk-list govuk-list--bullet">
+                            @for(enrolment <- enrolmentList) {
+                                <li>@EnrolmentKey.getDescription(enrolment).getOrElse(enrolment)</li>
+                            }
+                        </ul>
+
+                        <input type="hidden" id="existing-eori" name="existing-eori" value="@form.data.get("existing-eori")"/>
+                        <input type="hidden" id="date-of-establishment" name="date-of-establishment" value="@form.data.get("date-of-establishment")"/>
+                        <input type="hidden" id="new-eori" name="new-eori" value="@form.data.get("new-eori")"/>
+                        <input type="hidden" id="enrolment-list" name="enrolment-list" value="@form.data.get("enrolment-list")"/>
+                        <div class="govuk-form-group">
+                            <fieldset class="govuk-fieldset">
+                                <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                                    <h3 class="govuk-fieldset__heading">
+                                        Are you sure you want to replace the current EORI number with @form("new-eori").value?
+                                    </h3>
+                                </legend>
+                                <div class="govuk-radios govuk-radios--inline" data-module="govuk-radios">
+                                    <div class="govuk-radios__item">
+                                        <input class="govuk-radios__input" id="replace-eori-1" name="confirm" type="radio" value=true>
+                                        <label class="govuk-label govuk-radios__label" for="replace-eori-1">Yes</label>
+                                    </div>
+                                    <div class="govuk-radios__item">
+                                        <input class="govuk-radios__input" id="replace-eori-2" name="confirm" type="radio" value=false>
+                                        <label class="govuk-label govuk-radios__label" for="replace-eori-2">No</label>
+                                    </div>
+                                </div>
+
+                            </fieldset>
+                        </div>
+
+                        <button class="govuk-button" data-module="govuk-button">
+                            Confirm
+                        </button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    }
+}

@@ -16,14 +16,4 @@
 
 package models
 
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-
-object DateOfEstablishment {
-  val stringToLocalDate = (date: String) => {
-    val dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-    LocalDate.parse(date, dateTimeFormatter)
-  }
-}
-
-
+case class ConfirmEoriUpdate(existingEori: String, dateOfEstablishment: String, newEori: String, enrolmentList: String, isConfirmed: Boolean)
