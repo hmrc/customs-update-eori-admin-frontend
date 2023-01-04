@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,9 +42,9 @@ class ReAllocateGroupConnectorSpec extends ConnectorSpecBase {
           any[HeaderCarrier],
           any[ExecutionContext]))
         .thenReturn(Future.successful(HttpResponse(CREATED, "")))
-      whenReady(connector.reAllocateWithESP(Eori("GB1234567890"), HMRC_CUS_ORG, UserId("AB123"), GroupId("90ccf333-65d2"))) { _ =>
+      whenReady(connector.reAllocate(Eori("GB1234567890"), HMRC_CUS_ORG, UserId("AB123"), GroupId("90ccf333-65d2"))) { _ =>
         verify(mockHttpClient).POST(
-          meq("http://localhost:1234/enrolment-store/groups/90ccf333-65d2/enrolments/HMRC-CUS-ORG~EORINumber~GB1234567890"),
+          meq("http://localhost:1222/groups/90ccf333-65d2/enrolments/HMRC-CUS-ORG~EORINumber~GB1234567890"),
           meq(ReEnrolRequest("AB123")),
           any[Seq[(String, String)]])(any[Writes[ReEnrolRequest]],
           any[HttpReads[HttpResponse]],
@@ -56,7 +56,7 @@ class ReAllocateGroupConnectorSpec extends ConnectorSpecBase {
     "return an error message if the post request fails " in {
       when(
         mockHttpClient.POST(
-          meq("http://localhost:1234/enrolment-store/groups/90ccf333-65d2/enrolments/HMRC-CUS-ORG~EORINumber~GB1234566634"),
+          meq("http://localhost:1222/groups/90ccf333-65d2/enrolments/HMRC-CUS-ORG~EORINumber~GB1234566634"),
           meq(ReEnrolRequest("AB234")),
           any[Seq[(String, String)]])(
           any[Writes[ReEnrolRequest]],
@@ -64,13 +64,13 @@ class ReAllocateGroupConnectorSpec extends ConnectorSpecBase {
           any[HeaderCarrier],
           any[ExecutionContext]))
         .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
-      val Left(ErrorMessage(message)) = connector.reAllocateWithESP(
+      val Left(ErrorMessage(message)) = connector.reAllocate(
         Eori("GB1234566634"),
         HMRC_CUS_ORG,
         UserId("AB234"),
         GroupId("90ccf333-65d2")
       ).futureValue
-      message should startWith("[Enrolment-Store-Proxy] Allocate group failed with HTTP status: 400")
+      message should startWith("Allocate group failed with HTTP status: 400")
     }
   }
 }

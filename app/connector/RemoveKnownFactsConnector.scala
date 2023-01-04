@@ -28,26 +28,15 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class RemoveKnownFactsConnector @Inject()(httpClient: HttpClient, config: AppConfig)(implicit ec: ExecutionContext) {
 
-  private def remove(url: String, service: String)(
-    implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
+  def remove(eori: Eori, enrolmentKey: EnrolmentKeyType)
+                    (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
+    val url = s"${config.taxEnrolmentsServiceUrl}/enrolments/${enrolmentKey.getEnrolmentKey(eori)}"
     httpClient.DELETE[HttpResponse](url) map {
       _.status match {
         case NO_CONTENT => Right(NO_CONTENT)
         case failStatus =>
-          Left(ErrorMessage(s"[$service] Remove known facts failed with HTTP status: $failStatus"))
+          Left(ErrorMessage(s"Remove known facts failed with HTTP status: $failStatus"))
       }
     }
-  }
-
-  def removeWithESP(eori: Eori, enrolmentKey: EnrolmentKeyType)
-                   (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
-    val url = s"${config.enrolmentStoreProxyServiceUrl}/enrolment-store/enrolments/${enrolmentKey.getEnrolmentKey(eori)}"
-    remove(url, "Enrolment-Store-Proxy")
-  }
-
-  def removeWithTE(eori: Eori, enrolmentKey: EnrolmentKeyType)
-                  (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
-    val url = s"${config.taxEnrolmentsServiceUrl}/enrolments/${enrolmentKey.getEnrolmentKey(eori)}"
-    remove(url, "Tax-Enrolments")
   }
 }

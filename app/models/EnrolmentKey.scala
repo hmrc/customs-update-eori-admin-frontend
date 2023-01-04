@@ -31,18 +31,29 @@ object EnrolmentKey extends Enumeration {
   def getDescription(serviceName: String): Option[String] = values.find(_.serviceName == serviceName).map(value => value.description)
   def getEnrolmentKey(serviceName: String) = values.find(_.serviceName == serviceName)
 
-  // HMRC-CUS-ORG*  Customs Declaration Service (Existing Service from Old customs update eori)
+  // HMRC-CUS-ORG* -> Customs Declaration Service (Existing Service from Old customs update eori)
   val HMRC_CUS_ORG = EnrolmentKeyVal("HMRC-CUS-ORG", "Customs Declaration Service (CUS)")
 
-  // HMRC-ATAR-ORG*  Advance Tariff Registration
+  // HMRC-ATAR-ORG* -> Advance Tariff Registration
   val HMRC_ATAR_ORG = EnrolmentKeyVal("HMRC-ATAR-ORG", "Advance Tariff Registration (ATAR)")
 
-  // HMRC-GVMS-ORG*  Goods Vehicle Movement System
+  // HMRC-GVMS-ORG* -> Goods Vehicle Movement System
   val HMRC_GVMS_ORG = EnrolmentKeyVal("HMRC-GVMS-ORG", "Goods Vehicle Movement System (GVMS)")
 
-  // HMRC-SS-ORG*	 Safety & Security Great Britain
+  // HMRC-SS-ORG* -> Safety & Security Great Britain
   val HMRC_SS_ORG = EnrolmentKeyVal("HMRC-SS-ORG", "GB Safety & Security (GB S&S)")
 
-  // HMRC-CTS-ORG*  Customs Trader Services (Services: Route 1, NDRC, C18)
+  // HMRC-CTS-ORG* -> Customs Trader Services (Services: Route 1, NDRC, C18)
   val HMRC_CTS_ORG = EnrolmentKeyVal("HMRC-CTS-ORG", "Customs Trader Services (Route 1, NDRC, C18)")
+
+  // HMRC-ESC-ORG -> EU Subsidy Compliance
+  val HMRC_ESC_ORG = EnrolmentKeyVal("HMRC-ESC-ORG", "EU Subsidy Compliance ")
+}
+
+object EnrolmentKeySubLists {
+  val ctsList = List(
+    "Route 1",
+    "National Duty Repayment Centre (NDRC)",
+    "C18"
+  )
 }

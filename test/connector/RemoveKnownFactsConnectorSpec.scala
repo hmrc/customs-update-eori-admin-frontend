@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,26 +36,27 @@ class RemoveKnownFactsConnectorSpec extends ConnectorSpecBase {
         mockHttpClient.DELETE(any[String], any[Seq[(String, String)]])(
           any[HttpReads[HttpResponse]], any[HeaderCarrier], any[ExecutionContext]))
         .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
-      whenReady(connector.removeWithESP(Eori("GB1234567890"), HMRC_CUS_ORG)) { _ =>
-        verify(mockHttpClient).DELETE(
-          meq("http://localhost:1234/enrolment-store/enrolments/HMRC-CUS-ORG~EORINumber~GB1234567890"),
-          any[Seq[(String, String)]])(
-          any[HttpReads[HttpResponse]],
-          any[HeaderCarrier],
-          any[ExecutionContext])
-      }
+
+      val Right(response) = connector.remove(Eori("GB1234567890"), HMRC_CUS_ORG).futureValue
+      response shouldBe NO_CONTENT
+      verify(mockHttpClient).DELETE(
+        meq("http://localhost:1222/enrolments/HMRC-CUS-ORG~EORINumber~GB1234567890"),
+        any[Seq[(String, String)]])(
+        any[HttpReads[HttpResponse]],
+        any[HeaderCarrier],
+        any[ExecutionContext])
     }
 
     "return an error message if the delete request fails " in {
       when(mockHttpClient.DELETE(
-        meq("http://localhost:1234/enrolment-store/enrolments/HMRC-CUS-ORG~EORINumber~GB1122334455"),
+        meq("http://localhost:1222/enrolments/HMRC-CUS-ORG~EORINumber~GB1122334455"),
         any[Seq[(String, String)]])(
         any[HttpReads[HttpResponse]],
         any[HeaderCarrier],
         any[ExecutionContext]))
         .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
-      val Left(ErrorMessage(message)) = connector.removeWithESP(Eori("GB1122334455"), HMRC_CUS_ORG).futureValue
-      message shouldBe "[Enrolment-Store-Proxy] Remove known facts failed with HTTP status: 400"
+      val Left(ErrorMessage(message)) = connector.remove(Eori("GB1122334455"), HMRC_CUS_ORG).futureValue
+      message shouldBe "Remove known facts failed with HTTP status: 400"
     }
   }
 }

@@ -37,28 +37,17 @@ object ReEnrolRequest {
 
 class ReAllocateGroupConnector @Inject()(httpClient: HttpClient, config: AppConfig)(implicit ec: ExecutionContext) {
 
-  private def reAllocate(url: String, userId: UserId, service: String)
+  def reAllocate(eori: Eori, enrolmentKey: EnrolmentKeyType, userId: UserId, groupId: GroupId)
                         (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
     val req = ReEnrolRequest(userId.id)
+    val url = s"${config.taxEnrolmentsServiceUrl}/groups/$groupId/enrolments/${enrolmentKey.getEnrolmentKey(eori)}"
 
     httpClient.POST[ReEnrolRequest, HttpResponse](url, req, Seq("Content-Type" -> "application/json")) map { resp =>
       resp.status match {
         case CREATED => Right(CREATED)
         case failStatus =>
-          Left(ErrorMessage(s"[$service] Allocate group failed with HTTP status: $failStatus (${resp.body})"))
+          Left(ErrorMessage(s"Allocate group failed with HTTP status: $failStatus (${resp.body})"))
       }
     }
-  }
-
-  def reAllocateWithESP(eori: Eori, enrolmentKey: EnrolmentKeyType, userId: UserId, groupId: GroupId)
-                       (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
-    val url = s"${config.enrolmentStoreProxyServiceUrl}/enrolment-store/groups/$groupId/enrolments/${enrolmentKey.getEnrolmentKey(eori)}"
-    reAllocate(url, userId, "Enrolment-Store-Proxy")
-  }
-
-  def reAllocateWithTE(eori: Eori, enrolmentKey: EnrolmentKeyType, userId: UserId, groupId: GroupId)
-                         (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
-    val url = s"${config.taxEnrolmentsServiceUrl}/groups/$groupId/enrolments/${enrolmentKey.getEnrolmentKey(eori)}"
-    reAllocate(url, userId, "Tax-Enrolments")
   }
 }

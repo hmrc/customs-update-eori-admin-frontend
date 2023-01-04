@@ -28,32 +28,13 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class DeAllocateGroupConnector @Inject()(httpClient: HttpClient, config: AppConfig)(implicit ec: ExecutionContext) {
 
-  private def deAllocateGroup(url: String, service: String)(implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
+  def deAllocateGroup(eori: Eori, enrolmentKey: EnrolmentKeyType, groupId: GroupId)(implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
+    val url = s"${config.taxEnrolmentsServiceUrl}/groups/$groupId/enrolments/${enrolmentKey.getEnrolmentKey(eori)}"
     httpClient.DELETE[HttpResponse](url) map {
       _.status match {
         case NO_CONTENT => Right(NO_CONTENT)
-        case failStatus =>
-          {
-            println(failStatus)
-            Left(ErrorMessage(s"[$service] Delete enrolment failed with HTTP status: $failStatus"))
-          }
+        case failStatus => Left(ErrorMessage(s"Delete enrolment failed with HTTP status: $failStatus"))
       }
     }
-  }
-
-  def deAllocateWithESP(eori: Eori, enrolmentKey: EnrolmentKeyType, groupId: GroupId)
-                       (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
-    deAllocateGroup(
-      s"${config.enrolmentStoreProxyServiceUrl}/enrolment-store/groups/$groupId/enrolments/${enrolmentKey.getEnrolmentKey(eori)}",
-      "Enrolment-Store-Proxy"
-    )
-  }
-
-  def deAllocateWithTE(eori: Eori, enrolmentKey: EnrolmentKeyType, groupId: GroupId)
-                           (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
-    deAllocateGroup(
-      s"${config.taxEnrolmentsServiceUrl}/groups/$groupId/enrolments/${enrolmentKey.getEnrolmentKey(eori)}",
-      "Tax-Enrolments"
-    )
   }
 }

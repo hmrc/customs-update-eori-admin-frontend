@@ -55,10 +55,10 @@ class EnrolmentService @Inject()(groupsConnector: QueryGroupsConnector,
       enrolment <- EitherT(queryKnownFacts) // ES20
       userId <- EitherT(queryUsers) // ES0
       groupId <- EitherT(queryGroups) // ES1
-      _ <- EitherT(upsertKnownFactsConnector.upsertWithTE(newEori, enrolmentKey, enrolment)) // ES6
-      _ <- EitherT(deAllocateGroupConnector.deAllocateWithTE(existingEori, enrolmentKey, groupId)) // ES9
-      _ <- EitherT(reAllocateGroupConnector.reAllocateWithTE(newEori, enrolmentKey, userId, groupId)) // ES8
-      _ <- EitherT(removeKnownFactsConnector.removeWithTE(existingEori, enrolmentKey)) // ES7
+      _ <- EitherT(upsertKnownFactsConnector.upsert(newEori, enrolmentKey, enrolment)) // ES6
+      _ <- EitherT(deAllocateGroupConnector.deAllocateGroup(existingEori, enrolmentKey, groupId)) // ES9
+      _ <- EitherT(reAllocateGroupConnector.reAllocate(newEori, enrolmentKey, userId, groupId)) // ES8
+      _ <- EitherT(removeKnownFactsConnector.remove(existingEori, enrolmentKey)) // ES7
       _ <- EitherT(customsDataStoreConnector.notify(existingEori)) //Notify Customs Data Store
     } yield enrolment
     result.value

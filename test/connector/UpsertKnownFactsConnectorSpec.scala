@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,12 +36,17 @@ class UpsertKnownFactsConnectorSpec extends ConnectorSpecBase {
       val enrolment = Enrolment(Seq.empty, Seq(KeyValue("DateOfEstablishment", "02/06/2003")))
 
       when(
-        mockHttpClient.PUT(anyString, meq(UpsertKnownFactsRequest(enrolment.verifiers)), any[Seq[(String, String)]])
-        (any[Writes[UpsertKnownFactsRequest]], any[HttpReads[HttpResponse]], any[HeaderCarrier], any[ExecutionContext])).thenReturn(
-        Future.successful(HttpResponse(NO_CONTENT, "")))
+        mockHttpClient.PUT(
+          meq("http://localhost:1222/enrolments/HMRC-CUS-ORG~EORINumber~GB12349876"),
+          meq(UpsertKnownFactsRequest(enrolment.verifiers)), any[Seq[(String, String)]])(
+          any[Writes[UpsertKnownFactsRequest]],
+          any[HttpReads[HttpResponse]],
+          any[HeaderCarrier],
+          any[ExecutionContext]))
+        .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
 
-      val Right(statusCode) =
-        connector.upsertWithESP(Eori("GB12349876"), HMRC_CUS_ORG, enrolment).futureValue
+      val Right(statusCode) = connector.upsert(Eori("GB12349876"), HMRC_CUS_ORG, enrolment)
+        .futureValue
       statusCode shouldBe NO_CONTENT
     }
 
@@ -53,9 +58,9 @@ class UpsertKnownFactsConnectorSpec extends ConnectorSpecBase {
         .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
 
       val Left(ErrorMessage(error)) = connector
-        .upsertWithESP(Eori("GB9999999999"), HMRC_CUS_ORG, emptyEnrolment)
+        .upsert(Eori("GB9999999999"), HMRC_CUS_ORG, emptyEnrolment)
         .futureValue
-      error shouldBe "[Enrolment-Store-Proxy] Upsert failed with HTTP status: 400"
+      error shouldBe "Upsert failed with HTTP status: 400"
     }
   }
 }

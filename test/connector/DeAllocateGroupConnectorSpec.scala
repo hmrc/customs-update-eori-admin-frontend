@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,10 +39,10 @@ class DeAllocateGroupConnectorSpec extends ConnectorSpecBase {
           any[ExecutionContext]))
         .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
       whenReady(
-        connector.deAllocateWithESP(Eori("GB1234567890"), HMRC_CUS_ORG, GroupId("90ccf333-65d2-4bf2-a008-01dfca702161"))) {
+        connector.deAllocateGroup(Eori("GB1234567890"), HMRC_CUS_ORG, GroupId("90ccf333-65d2-4bf2-a008-01dfca702161"))) {
         _ =>
           verify(mockHttpClient).DELETE(
-            meq("http://localhost:1234/enrolment-store/groups/90ccf333-65d2-4bf2-a008-01dfca702161/enrolments/HMRC-CUS-ORG~EORINumber~GB1234567890"),
+            meq("http://localhost:1222/groups/90ccf333-65d2-4bf2-a008-01dfca702161/enrolments/HMRC-CUS-ORG~EORINumber~GB1234567890"),
             any[Seq[(String, String)]]
           )(any[HttpReads[HttpResponse]],
             any[HeaderCarrier],
@@ -53,15 +53,15 @@ class DeAllocateGroupConnectorSpec extends ConnectorSpecBase {
     "return an error message if the delete request fails " in {
       when(
         mockHttpClient.DELETE(
-          meq("http://localhost:1234/enrolment-store/groups/90ccf333-65d2-4bf2-a008-01dfca706334/enrolments/HMRC-CUS-ORG~EORINumber~GB1234566634"),
+          meq("http://localhost:1222/groups/90ccf333-65d2-4bf2-a008-01dfca706334/enrolments/HMRC-CUS-ORG~EORINumber~GB1234566634"),
           any[Seq[(String, String)]]
         )(any[HttpReads[HttpResponse]],
           any[HeaderCarrier],
           any[ExecutionContext]))
         .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
-      val Left(ErrorMessage(message)) = connector.deAllocateWithESP(Eori("GB1234566634"), HMRC_CUS_ORG, GroupId("90ccf333-65d2-4bf2-a008-01dfca706334"))
+      val Left(ErrorMessage(message)) = connector.deAllocateGroup(Eori("GB1234566634"), HMRC_CUS_ORG, GroupId("90ccf333-65d2-4bf2-a008-01dfca706334"))
         .futureValue
-      message shouldBe "[Enrolment-Store-Proxy] Delete enrolment failed with HTTP status: 400"
+      message shouldBe "Delete enrolment failed with HTTP status: 400"
     }
   }
 }

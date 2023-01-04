@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,9 @@ class ConnectorSpecBase
 
     when(mockAppConfig.enrolmentStoreProxyServiceUrl)
       .thenReturn("http://localhost:1234")
+
+    when(mockAppConfig.taxEnrolmentsServiceUrl)
+      .thenReturn("http://localhost:1222")
 
     when(mockAppConfig.customsDataStoreUrl)
       .thenReturn("http://localhost:1111")

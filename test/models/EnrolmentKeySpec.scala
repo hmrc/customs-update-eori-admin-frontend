@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,17 +24,33 @@ class EnrolmentKeySpec
   extends AnyWordSpec
   with Matchers {
 
-  "EnrolmentKey" should {
+  "EnrolmentKey getDescription" should {
     "return the correct description for valid keys" in {
       EnrolmentKey.getDescription(HMRC_CUS_ORG.serviceName).get shouldBe HMRC_CUS_ORG.description
       EnrolmentKey.getDescription(HMRC_ATAR_ORG.serviceName).get shouldBe HMRC_ATAR_ORG.description
       EnrolmentKey.getDescription(HMRC_GVMS_ORG.serviceName).get shouldBe HMRC_GVMS_ORG.description
       EnrolmentKey.getDescription(HMRC_SS_ORG.serviceName).get shouldBe HMRC_SS_ORG.description
       EnrolmentKey.getDescription(HMRC_CTS_ORG.serviceName).get shouldBe HMRC_CTS_ORG.description
+      EnrolmentKey.getDescription(HMRC_ESC_ORG.serviceName).get shouldBe HMRC_ESC_ORG.description
     }
 
     "return the None if key is not valid" in {
       EnrolmentKey.getDescription("DUMMY") shouldBe None
+    }
+  }
+
+  "EnrolmentKey getEnrolmentKey" should {
+    "return the correct description for valid keys" in {
+      EnrolmentKey.getEnrolmentKey(HMRC_CUS_ORG.serviceName).get shouldBe HMRC_CUS_ORG
+      EnrolmentKey.getEnrolmentKey(HMRC_ATAR_ORG.serviceName).get shouldBe HMRC_ATAR_ORG
+      EnrolmentKey.getEnrolmentKey(HMRC_GVMS_ORG.serviceName).get shouldBe HMRC_GVMS_ORG
+      EnrolmentKey.getEnrolmentKey(HMRC_SS_ORG.serviceName).get shouldBe HMRC_SS_ORG
+      EnrolmentKey.getEnrolmentKey(HMRC_CTS_ORG.serviceName).get shouldBe HMRC_CTS_ORG
+      EnrolmentKey.getEnrolmentKey(HMRC_ESC_ORG.serviceName).get shouldBe HMRC_ESC_ORG
+    }
+
+    "return the None if key is not valid" in {
+      EnrolmentKey.getEnrolmentKey("DUMMY") shouldBe None
     }
   }
 }

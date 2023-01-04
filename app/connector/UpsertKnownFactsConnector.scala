@@ -39,28 +39,15 @@ object UpsertKnownFactsRequest {
 
 class UpsertKnownFactsConnector @Inject()(httpClient: HttpClient, config: AppConfig)(implicit ec: ExecutionContext) {
 
-  private def upsert(url: String, enrolment: Enrolment, service: String)
+  def upsert(eori: Eori, enrolmentKey: EnrolmentKeyType, enrolment: Enrolment)
                     (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
-    httpClient.PUT[UpsertKnownFactsRequest, HttpResponse](
-      url,
-      UpsertKnownFactsRequest(enrolment)) map {
+    val url = s"${config.taxEnrolmentsServiceUrl}/enrolments/${enrolmentKey.getEnrolmentKey(eori)}"
+    httpClient.PUT[UpsertKnownFactsRequest, HttpResponse](url, UpsertKnownFactsRequest(enrolment)) map {
       _.status match {
         case NO_CONTENT => Right(NO_CONTENT)
         case failStatus =>
-          Left(ErrorMessage(s"[$service] Upsert failed with HTTP status: $failStatus"))
+          Left(ErrorMessage(s"Upsert failed with HTTP status: $failStatus"))
       }
     }
-  }
-
-  def upsertWithESP(eori: Eori, enrolmentKey: EnrolmentKeyType, enrolment: Enrolment)
-                   (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
-    val url = s"${config.enrolmentStoreProxyServiceUrl}/enrolment-store/enrolments/${enrolmentKey.getEnrolmentKey(eori)}"
-    upsert(url, enrolment, "Enrolment-Store-Proxy")
-  }
-
-  def upsertWithTE(eori: Eori, enrolmentKey: EnrolmentKeyType, enrolment: Enrolment)
-                  (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
-    val url = s"${config.taxEnrolmentsServiceUrl}/enrolments/${enrolmentKey.getEnrolmentKey(eori)}"
-    upsert(url, enrolment, "Tax-Enrolments")
   }
 }
