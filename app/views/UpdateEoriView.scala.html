@@ -1,5 +1,5 @@
 @*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@
 @(form: Form[_])(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = Some("EORI number management service"), backLinkUrl = Some(controllers.routes.EoriActionController.showPage.toString)) {
-    @formHelper(action = controllers.routes.UpdateEoriController.showPage) {
+    @formHelper(action = controllers.routes.UpdateEoriController.continueUpdateEori) {
 
         <div class="govuk-width-container">
             <main class="govuk-main-wrapper govuk-!-padding-0" id="main-content" role="main">
@@ -44,7 +44,7 @@
                     <div id="account-number-hint-current-eori" class="govuk-hint">
                         @Messages("eori.accountNumberHint")
                     </div>
-                    <input class="govuk-input govuk-input--width-20" id="txtCurrentEoriNumber" name="update-current-eori-number" type="text" required>
+                    <input class="govuk-input govuk-input--width-20" id="existing-eori" name="existing-eori" type="text" required>
                 </div>
 
                 <div class="govuk-form-group">
@@ -86,15 +86,15 @@
                     </fieldset>
                 </div>
                 <div class="govuk-form-group">
-                    <label class="govuk-label govuk-label--m" for="txtNewEoriNumber">
+                    <label class="govuk-label govuk-label--m" for="new-eori">
                         @Messages("eori.newEoriNumberQuestion")
                     </label>
                     <div id="account-number-hint" class="govuk-hint">
                         @Messages("eori.accountNumberHint")
                     </div>
-                    <input class="govuk-input govuk-input--width-20" id="txtNewEoriNumber" name="new-eori-number" type="text" required>
+                    <input class="govuk-input govuk-input--width-20" id="new-eori" name="new-eori" type="text" required>
                 </div>
-                <button class="govuk-button" data-module="govuk-button" id="submit-button" disabled="disabled">
+                <button class="govuk-button" data-module="govuk-button" id="submit-button" disabled="disabled" type="submit">
                     @Messages("eori.continueButton")
                 </button>
 

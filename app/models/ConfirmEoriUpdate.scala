@@ -14,14 +14,6 @@
  * limitations under the License.
  */
 
-package config
+package models
 
-import javax.inject.{Inject, Singleton}
-import play.api.Configuration
-
-@Singleton
-class AppConfig @Inject()(config: Configuration) {
-  val enrolmentStoreProxyServiceUrl: String = config.get[String]("services.enrolment-store-proxy")
-  val taxEnrolmentsServiceUrl: String = config.get[String]("services.tax-enrolments")
-  val customsDataStoreUrl: String = config.get[String]("services.customs-data-store")
-}
+case class ConfirmEoriUpdate(existingEori: String, dateOfEstablishment: String, newEori: String, enrolmentList: String, isConfirmed: Boolean)

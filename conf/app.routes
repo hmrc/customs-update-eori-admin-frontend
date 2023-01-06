@@ -8,5 +8,7 @@ GET        /                            controllers.EoriActionController.showPag
 POST       /                            controllers.EoriActionController.continueAction
 
 # Update EORI
-GET       /update/                      controllers.UpdateEoriController.showPage
-#POST      /update/                     controllers.UpdateEoriController.continueUpdateEori()
+GET       /update                       controllers.UpdateEoriController.showPage
+POST      /update                       controllers.UpdateEoriController.continueUpdateEori
+GET       /confirm                      controllers.UpdateEoriController.showConfirmPage(oldEoriNumber: String, establishmentDate: String, newEoriNumber: String)
+POST      /confirm                      controllers.UpdateEoriController.confirmUpdateEori

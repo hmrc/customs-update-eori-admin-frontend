@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,6 @@ package models
 case class EoriAction(cancelOrUpdate: String)
 
 object EoriAction extends Enumeration {
-  val UPDATE_EORI = Value("updateeori")
-  val CANCEL_EORI = Value("canceleori")
+  val UPDATE_EORI = Value("Update-Eori")
+  val CANCEL_EORI = Value("Cancel-Eori")
 }

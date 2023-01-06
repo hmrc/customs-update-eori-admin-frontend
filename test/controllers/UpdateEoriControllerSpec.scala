@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,8 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.MessagesControllerComponents
-import views.html.UpdateEoriView
+import service.EnrolmentService
+import views.html.{ConfirmEoriUpdateView, UpdateEoriView}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -51,7 +52,9 @@ class UpdateEoriControllerSpec
   private val fakeRequest = FakeRequest("GET", "/")
   private val mcc = app.injector.instanceOf[MessagesControllerComponents]
   private val view = app.injector.instanceOf[UpdateEoriView]
-  private val controller = UpdateEoriController(mcc, view, testAuthAction)
+  private val viewConfirmUpdate = app.injector.instanceOf[ConfirmEoriUpdateView]
+  private val enrolmentService = app.injector.instanceOf[EnrolmentService]
+  private val controller = UpdateEoriController(mcc, view, viewConfirmUpdate, testAuthAction, enrolmentService)
 
   override def beforeEach(): Unit = {
     reset(mockAuthConnector)
