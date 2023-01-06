@@ -18,10 +18,11 @@ package config
 
 import javax.inject.{Inject, Singleton}
 import play.api.Configuration
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 @Singleton
-class AppConfig @Inject()(config: Configuration) {
-  val enrolmentStoreProxyServiceUrl: String = config.get[String]("services.enrolment-store-proxy")
-  val taxEnrolmentsServiceUrl: String = config.get[String]("services.tax-enrolments")
-  val customsDataStoreUrl: String = config.get[String]("services.customs-data-store")
+class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig) {
+  val enrolmentStoreProxyServiceUrl: String = s"${servicesConfig.baseUrl("enrolment-store-proxy")}/enrolment-store-proxy"
+  val taxEnrolmentsServiceUrl: String = s"${servicesConfig.baseUrl("tax-enrolments")}/tax-enrolments"
+  val customsDataStoreUrl: String = s"${servicesConfig.baseUrl("customs-data-store")}/customs-data-store/update-eori-history"
 }
