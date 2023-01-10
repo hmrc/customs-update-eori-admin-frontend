@@ -28,23 +28,23 @@
     @layout(pageTitle = Some("EORI number management service")) {
         @formHelper(action = controllers.routes.EoriActionController.continueAction) {
 
-
-            <!--<div class="govuk-notification-banner govuk-notification-banner--success" role="alert"
+@if(form("existing-eori").value && form("new-eori").value) {
+    <div class="govuk-notification-banner govuk-notification-banner--success" role="alert"
      aria-labelledby="govuk-notification-banner-title"
-     data-module="govuk-notification-banner"  style='visibility:hidden'>
-    <div class="govuk-notification-banner__header">
-        <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title" >
-            Success
-        </h2>
+     data-module="govuk-notification-banner" id="banner">
+        <div class="govuk-notification-banner__header">
+            <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title" >
+             Success
+            </h2>
+        </div>
+        <div class="govuk-notification-banner__content">
+            <h3 class="govuk-notification-banner__heading">
+            EORI number @form("existing-eori").value has been replaced with @form("new-eori").value .
+            </h3>
+            <p class="govuk-body">@Messages("eoriAction.successBannerEoriUpdateMessage")</p>
+        </div>
     </div>
-    <div class="govuk-notification-banner__content">
-        <h3 class="govuk-notification-banner__heading">
-            EORI number GB205672212000 has been replaced with GB612599232321.
-        </h3>
-        <p class="govuk-body">The company will get an email confirming that their EORI number has been replaced.</p>
-    </div>
-</div> -->
-
+  }
             <div class="govuk-form-group">
                 <fieldset class="govuk-fieldset">
 
@@ -53,7 +53,8 @@
                         @Messages("eoriAction.questionForReplaceOrCancel")
                         </h1>
                     </legend>
-
+                    <input type="hidden" id="existing-eori" name="existing-eori" value="@form.data.get("existing-eori")"/>
+                    <input type="hidden" id="new-eori" name="new-eori" value="@form.data.get("new-eori")"/>
                     <div class="govuk-radios__item">
                         <input class="govuk-radios__input" id="update-eori" name="update-or-cancel-eori" type="radio"
                         value="@EoriAction.UPDATE_EORI">

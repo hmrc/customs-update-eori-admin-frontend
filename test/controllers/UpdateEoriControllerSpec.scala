@@ -79,4 +79,21 @@ class UpdateEoriControllerSpec
       redirectURL should include("/stride/sign-in")
     }
   }
+
+  "Continue update EORI" should {
+    "redirect to show confirmation page when user click continue" in withSignedInUser {
+      val fakeRequestWithBody = FakeRequest("POST", "/")
+        .withFormUrlEncodedBody("existingEori" -> "GB94449442349", "dateOfEstablishment" -> "04/11/1987", "newEori" -> "GB94449442340")
+      val result = controller.continueUpdateEori(fakeRequestWithBody)
+      status(result) shouldBe Status.OK
+    }
+
+    "redirect to STRIDE login for not logged-in user" in withNotSignedInUser {
+      val result = controller.showPage(fakeRequest)
+      status(result) shouldBe SEE_OTHER
+      val Some(redirectURL) = redirectLocation(result)
+      redirectURL should include("/stride/sign-in")
+    }
+  }
+
 }

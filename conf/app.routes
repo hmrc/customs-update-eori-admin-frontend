@@ -5,7 +5,11 @@ GET        /assets/*file                controllers.Assets.versioned(path = "/pu
 
 # Select Action
 GET        /                            controllers.EoriActionController.showPage
+GET        /success                     controllers.EoriActionController.showPageOnSuccess(cancelOrUpdate: String, oldEori: String, newEori: String)
 POST       /                            controllers.EoriActionController.continueAction
+
+#POST        /                            controllers.EoriActionController.showPage(cancelOrUpdate ?= null, oldEori: String, newEori: String)
+
 
 # Update EORI
 GET       /update                       controllers.UpdateEoriController.showPage

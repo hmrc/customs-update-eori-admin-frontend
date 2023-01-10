@@ -28,7 +28,6 @@ import views.html.{ConfirmEoriUpdateView, UpdateEoriView}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success}
 
 @Singleton
 case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
@@ -95,7 +94,7 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
               Eori(confirmEoriUpdate.newEori),
               enrolment)
           ))
-          updateAllEnrolments.map { _ => Redirect(controllers.routes.EoriActionController.showPage)}
+          updateAllEnrolments.map { _ => Redirect(controllers.routes.EoriActionController.showPageOnSuccess("",confirmEoriUpdate.existingEori,confirmEoriUpdate.newEori ))}
         } else {
           Future(Redirect(controllers.routes.UpdateEoriController.showPage))
         }
