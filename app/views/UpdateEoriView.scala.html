@@ -28,7 +28,7 @@
 
 @(form: Form[_])(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = Some("EORI number management service"), backLinkUrl = Some(controllers.routes.EoriActionController.showPage.toString)) {
+@layout(pageTitle = Some("EORI number management service"), backLinkUrl = Some(controllers.routes.EoriActionController.showPage.toString())) {
     @formHelper(action = controllers.routes.UpdateEoriController.continueUpdateEori) {
 
         <div class="govuk-width-container">

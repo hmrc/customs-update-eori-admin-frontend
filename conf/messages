@@ -15,6 +15,7 @@ eori.accountNumberHint=The first two letters are GB, followed by 12 digits. For 
 eori.backLinkText=Back
 
 # Eori Action
+eoriAction.successBannerEoriUpdateMessage=You should email the company confirming that their EORI number has been replaced.
 eoriAction.cancelSubscriptions=Cancel subscriptions to HMRC services
 eoriAction.questionForReplaceOrCancel=Do you want to replace an existing EORI number or cancel subscriptions to HMRC services?
 

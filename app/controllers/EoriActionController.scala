@@ -33,20 +33,27 @@ case class EoriActionController @Inject()(mcc: MessagesControllerComponents,
   extends FrontendController(mcc) with I18nSupport {
 
   val form: Form[EoriAction] = Form(mapping(
-    "update-or-cancel-eori" -> text()
+    "update-or-cancel-eori" -> text(),
+    "existing-eori" -> optional(text()),
+    "new-eori" -> optional(text())
   )(EoriAction.apply)(EoriAction.unapply))
+
 
   def showPage = auth { implicit request =>
     Ok(viewEoriAction(form))
+  }
+
+  def showPageOnSuccess(cancelOrUpdate: String, oldEori: String, newEori: String) = auth { implicit request =>
+    Ok(viewEoriAction(form.fill(EoriAction(cancelOrUpdate, Some(oldEori), Some(newEori)))))
   }
 
   def continueAction = auth { implicit request =>
     form.bindFromRequest.fold (
       _ => Redirect(controllers.routes.EoriActionController.showPage),
       {
-        case EoriAction(cancelOrUpdate) if EoriAction.withName(cancelOrUpdate) == EoriAction.UPDATE_EORI =>
+        case EoriAction(cancelOrUpdate, _, _) if EoriAction.withName(cancelOrUpdate) == EoriAction.UPDATE_EORI =>
           Redirect(controllers.routes.UpdateEoriController.showPage)
-        case EoriAction(cancelOrUpdate) if EoriAction.withName(cancelOrUpdate) == EoriAction.CANCEL_EORI =>
+        case EoriAction(cancelOrUpdate, _, _) if EoriAction.withName(cancelOrUpdate) == EoriAction.CANCEL_EORI =>
           Redirect(controllers.routes.EoriActionController.showPage)
         case _ => Redirect(controllers.routes.EoriActionController.showPage)
       }
