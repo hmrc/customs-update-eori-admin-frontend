@@ -20,6 +20,13 @@ import play.api.libs.json.Json
 
 case class Eori(eori: String) {
   override def toString: String = eori
+
+  /**
+   * right now, we are only sending partial value of eori in masked field,
+   * Once we figure out what type of masking we are going to use across, we can alter logic here
+   * @return masked value of eori
+   */
+  def getMaskedValue() : String = eori.substring(eori.length/2, eori.length)
 }
 
 object Eori {

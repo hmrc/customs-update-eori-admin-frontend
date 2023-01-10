@@ -19,6 +19,7 @@ package connector
 import config.AppConfig
 import models.EnrolmentKey.EnrolmentKeyType
 import models.{Eori, ErrorMessage}
+import play.api.Logging
 import play.api.http.Status._
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
@@ -26,7 +27,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class RemoveKnownFactsConnector @Inject()(httpClient: HttpClient, config: AppConfig)(implicit ec: ExecutionContext) {
+class RemoveKnownFactsConnector @Inject()(httpClient: HttpClient, config: AppConfig)(implicit ec: ExecutionContext) extends Logging{
 
   def remove(eori: Eori, enrolmentKey: EnrolmentKeyType)
                     (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
@@ -34,8 +35,11 @@ class RemoveKnownFactsConnector @Inject()(httpClient: HttpClient, config: AppCon
     httpClient.DELETE[HttpResponse](url) map {
       _.status match {
         case NO_CONTENT => Right(NO_CONTENT)
-        case failStatus =>
+        case failStatus => {
+          logger.error(s"Remove known facts failed with HTTP status: $failStatus for existing EORI: ${eori.getMaskedValue()}")
           Left(ErrorMessage(s"Remove known facts failed with HTTP status: $failStatus"))
+        }
+
       }
     }
   }

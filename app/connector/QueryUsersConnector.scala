@@ -19,6 +19,7 @@ package connector
 import config.AppConfig
 import models.EnrolmentKey.EnrolmentKeyType
 import models.{Eori, ErrorMessage, UserId}
+import play.api.Logging
 import play.api.libs.json.{Json, Reads}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, UpstreamErrorResponse}
@@ -32,15 +33,25 @@ object Users {
   implicit val reads: Reads[Users] = Json.reads[Users]
 }
 
-class QueryUsersConnector @Inject()(httpClient: HttpClient, config: AppConfig)(implicit ec: ExecutionContext) {
+class QueryUsersConnector @Inject()(httpClient: HttpClient, config: AppConfig)(implicit ec: ExecutionContext) extends Logging {
 
+  /**
+   * ES0 - API call to get users assigned to an enrolment
+   * @param eori
+   * @param enrolmentKey
+   * @param hc
+   * @return
+   */
   def query(eori: Eori, enrolmentKey: EnrolmentKeyType)(implicit hc: HeaderCarrier): Future[Either[ErrorMessage, UserId]] = {
     val url = s"${config.enrolmentStoreProxyServiceUrl}/enrolment-store/enrolments/${enrolmentKey.getEnrolmentKey(eori)}/users"
+
     httpClient.GET[Either[UpstreamErrorResponse, Users]](url).map { users =>
       users.map { gs =>
         Right(UserId(gs.principalUserIds.head))
-      } getOrElse Left(
-        ErrorMessage(s"Could not find User for existing EORI: $eori"))
+      } getOrElse {
+        logger.error(s"Could not find User for existing EORI: ${eori.getMaskedValue()}")
+        Left(ErrorMessage(s"Could not find User for existing EORI: $eori"))
+      }
     }
   }
 }

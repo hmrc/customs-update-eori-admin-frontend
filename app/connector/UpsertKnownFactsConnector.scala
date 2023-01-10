@@ -19,6 +19,7 @@ package connector
 import config.AppConfig
 import models.EnrolmentKey.EnrolmentKeyType
 import models.{Enrolment, Eori, ErrorMessage, KeyValue}
+import play.api.Logging
 import play.api.http.Status.NO_CONTENT
 import play.api.libs.json.{Json, OWrites}
 import uk.gov.hmrc.http.HttpReads.Implicits._
@@ -37,16 +38,26 @@ object UpsertKnownFactsRequest {
     UpsertKnownFactsRequest(e.verifiers)
 }
 
-class UpsertKnownFactsConnector @Inject()(httpClient: HttpClient, config: AppConfig)(implicit ec: ExecutionContext) {
+class UpsertKnownFactsConnector @Inject()(httpClient: HttpClient, config: AppConfig)(implicit ec: ExecutionContext) extends Logging{
 
+  /**
+   * ES6 API call - update enrolment key (old eori with new eori number)
+   * @param eori
+   * @param enrolmentKey
+   * @param enrolment
+   * @param hc
+   * @return
+   */
   def upsert(eori: Eori, enrolmentKey: EnrolmentKeyType, enrolment: Enrolment)
                     (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
     val url = s"${config.taxEnrolmentsServiceUrl}/enrolments/${enrolmentKey.getEnrolmentKey(eori)}"
     httpClient.PUT[UpsertKnownFactsRequest, HttpResponse](url, UpsertKnownFactsRequest(enrolment)) map {
       _.status match {
         case NO_CONTENT => Right(NO_CONTENT)
-        case failStatus =>
+        case failStatus => {
+          logger.error(s"Upsert failed with HTTP status: $failStatus for existing EORI: ${eori.getMaskedValue()}")
           Left(ErrorMessage(s"Upsert failed with HTTP status: $failStatus"))
+        }
       }
     }
   }
