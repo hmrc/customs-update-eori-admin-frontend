@@ -22,6 +22,8 @@ import models.{Eori, ErrorMessage, GroupId}
 import play.api.libs.json.{Json, Reads}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, UpstreamErrorResponse}
+import play.api.Logging
+
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,16 +34,25 @@ object Groups {
   implicit val reads: Reads[Groups] = Json.reads[Groups]
 }
 
-class QueryGroupsConnector @Inject()(httpClient: HttpClient, config: AppConfig)(implicit ec: ExecutionContext) {
+class QueryGroupsConnector @Inject()(httpClient: HttpClient, config: AppConfig)(implicit ec: ExecutionContext) extends Logging {
 
+  /**
+   * ES1 api call to TES - get groups assigned to an enrolment
+   * @param eori
+   * @param enrolmentKey
+   * @param hc
+   * @return
+   */
   def query(eori: Eori, enrolmentKey: EnrolmentKeyType)(implicit hc: HeaderCarrier): Future[Either[ErrorMessage, GroupId]] = {
     val url = s"${config.enrolmentStoreProxyServiceUrl}/enrolment-store/enrolments/${enrolmentKey.getEnrolmentKey(eori)}/groups"
 
     httpClient.GET[Either[UpstreamErrorResponse, Groups]](url).map { groups =>
       groups.map { gs =>
         Right(GroupId(gs.principalGroupIds.head))
-      } getOrElse Left(
-        ErrorMessage(s"Could not find Group for existing EORI: $eori"))
+      } getOrElse{
+        logger.error(s"Could not find Group for existing EORI: ${eori.getMaskedValue()}")
+        Left(ErrorMessage(s"Could not find Group for existing EORI: $eori"))
+      }
     }
   }
 }

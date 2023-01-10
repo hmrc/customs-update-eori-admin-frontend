@@ -19,6 +19,7 @@ package connector
 import config.AppConfig
 import models.EnrolmentKey._
 import models._
+import play.api.Logging
 import play.api.http.Status._
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
@@ -26,14 +27,25 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class DeAllocateGroupConnector @Inject()(httpClient: HttpClient, config: AppConfig)(implicit ec: ExecutionContext) {
+class DeAllocateGroupConnector @Inject()(httpClient: HttpClient, config: AppConfig)(implicit ec: ExecutionContext) extends Logging{
 
+  /**
+   * ES9 api call to TES - delete an enrolment or known fact
+   * @param eori
+   * @param enrolmentKey
+   * @param groupId
+   * @param hc
+   * @return
+   */
   def deAllocateGroup(eori: Eori, enrolmentKey: EnrolmentKeyType, groupId: GroupId)(implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
     val url = s"${config.taxEnrolmentsServiceUrl}/groups/$groupId/enrolments/${enrolmentKey.getEnrolmentKey(eori)}"
     httpClient.DELETE[HttpResponse](url) map {
       _.status match {
         case NO_CONTENT => Right(NO_CONTENT)
-        case failStatus => Left(ErrorMessage(s"Delete enrolment failed with HTTP status: $failStatus"))
+        case failStatus => {
+          logger.error(s"Delete enrolment failed with HTTP status: $failStatus for existing EORI: ${eori.getMaskedValue()}")
+          Left(ErrorMessage(s"Delete enrolment failed with HTTP status: $failStatus"))
+        }
       }
     }
   }

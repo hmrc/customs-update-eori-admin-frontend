@@ -20,6 +20,7 @@ import config.AppConfig
 import models.DateOfEstablishment.stringToLocalDate
 import models.EnrolmentKey.EnrolmentKeyType
 import models._
+import play.api.Logging
 import play.api.http.Status.{NO_CONTENT, OK}
 import play.api.libs.json.{Json, OWrites, Reads}
 import uk.gov.hmrc.http.HttpReads.Implicits._
@@ -46,8 +47,16 @@ object QueryKnownFactsRequest {
     Json.writes[QueryKnownFactsRequest]
 }
 
-class QueryKnownFactsConnector @Inject()(httpClient: HttpClient, config: AppConfig)(implicit ec: ExecutionContext) {
+class QueryKnownFactsConnector @Inject()(httpClient: HttpClient, config: AppConfig)(implicit ec: ExecutionContext) extends Logging{
 
+  /**
+   * ES20 API call - to validate if EORI and key verifiers match. Data validate API call
+   * @param eori
+   * @param enrolmentKey
+   * @param dateOfEstablishment
+   * @param hc
+   * @return
+   */
   def query(eori: Eori, enrolmentKey: EnrolmentKeyType, dateOfEstablishment: LocalDate)
            (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Enrolment]] = {
     val url = s"${config.enrolmentStoreProxyServiceUrl}/enrolment-store/enrolments"
@@ -63,8 +72,14 @@ class QueryKnownFactsConnector @Inject()(httpClient: HttpClient, config: AppConf
               case Some(true) => Right(queryKnownFactsResponse.enrolments.head)
               case Some(false) => Left(ErrorMessage("The date you have entered does not match our records, please try again"))
             }
-          case NO_CONTENT => Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $eori"))
-          case failStatus => Left(ErrorMessage(s"Notification failed with HTTP status: $failStatus"))
+          case NO_CONTENT => {
+            logger.error(s"Could not find Known Facts for existing EORI: ${eori.getMaskedValue()}")
+            Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $eori"))
+          }
+          case failStatus => {
+            logger.error(s"Notification failed with HTTP status:$failStatus for EORI: ${eori.getMaskedValue()}")
+            Left(ErrorMessage(s"Notification failed with HTTP status: $failStatus"))
+          }
         }
 
       }
