@@ -19,6 +19,7 @@ package connector
 import config.AppConfig
 import models.EnrolmentKey.EnrolmentKeyType
 import models._
+import play.api.Logging
 import play.api.http.Status._
 import play.api.libs.json.{Json, OWrites}
 import uk.gov.hmrc.http.HttpReads.Implicits._
@@ -35,7 +36,7 @@ object ReEnrolRequest {
   implicit val writes: OWrites[ReEnrolRequest] = Json.writes[ReEnrolRequest]
 }
 
-class ReAllocateGroupConnector @Inject()(httpClient: HttpClient, config: AppConfig)(implicit ec: ExecutionContext) {
+class ReAllocateGroupConnector @Inject()(httpClient: HttpClient, config: AppConfig)(implicit ec: ExecutionContext) extends Logging{
 
   def reAllocate(eori: Eori, enrolmentKey: EnrolmentKeyType, userId: UserId, groupId: GroupId)
                         (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
@@ -45,8 +46,10 @@ class ReAllocateGroupConnector @Inject()(httpClient: HttpClient, config: AppConf
     httpClient.POST[ReEnrolRequest, HttpResponse](url, req, Seq("Content-Type" -> "application/json")) map { resp =>
       resp.status match {
         case CREATED => Right(CREATED)
-        case failStatus =>
+        case failStatus =>{
+          logger.error(s"Allocate group failed with HTTP status: $failStatus for existing EORI: ${eori.getMaskedValue()}")
           Left(ErrorMessage(s"Allocate group failed with HTTP status: $failStatus (${resp.body})"))
+        }
       }
     }
   }

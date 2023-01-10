@@ -19,6 +19,7 @@ package connector
 import audit.Auditor
 import config.AppConfig
 import models.{Eori, ErrorMessage}
+import play.api.Logging
 import play.api.http.MimeTypes.JSON
 import play.api.http.Status.NO_CONTENT
 import play.mvc.Http.HeaderNames.CONTENT_TYPE
@@ -29,7 +30,7 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CustomsDataStoreConnector @Inject()(httpClient: HttpClient, config: AppConfig, audit: Auditor)
-                                         (implicit ec: ExecutionContext) {
+                                         (implicit ec: ExecutionContext) extends Logging {
 
   def notify(existingEori: Eori)(implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
     val contentType = CONTENT_TYPE -> JSON
@@ -41,8 +42,11 @@ class CustomsDataStoreConnector @Inject()(httpClient: HttpClient, config: AppCon
         auditResponse(response, config.customsDataStoreUrl)
         response.status match {
           case NO_CONTENT => Right(NO_CONTENT)
-          case failStatus =>
+          case failStatus => {
+            logger.error(s"notification failed with HTTP status: $failStatus for existing EORI: ${existingEori.getMaskedValue()}")
             Left(ErrorMessage(s"notification failed with HTTP status: $failStatus"))
+          }
+
         }
       }
   }
