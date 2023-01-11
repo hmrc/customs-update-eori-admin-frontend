@@ -70,18 +70,15 @@ class QueryKnownFactsConnector @Inject()(httpClient: HttpClient, config: AppConf
             val queryKnownFactsResponse = Json.parse(response.body).as[QueryKnownFactsResponse]
             verifyDateOfEstablishment(dateOfEstablishment, key, queryKnownFactsResponse) match {
               case Some(true) => Right(queryKnownFactsResponse.enrolments.head)
-              case Some(false) => Left(ErrorMessage("The date you have entered does not match our records, please try again"))
+              case Some(false) =>
+                logger.error(s"Date not matched for EORI: ${eori.getMaskedValue()}. Service: ${enrolmentKey.serviceName}")
+                Left(ErrorMessage("The date you have entered does not match our records, please try again"))
             }
-          case NO_CONTENT => {
-            logger.error(s"Could not find Known Facts for existing EORI: ${eori.getMaskedValue()}")
-            Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $eori"))
-          }
-          case failStatus => {
-            logger.error(s"Notification failed with HTTP status:$failStatus for EORI: ${eori.getMaskedValue()}")
+          case NO_CONTENT => Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $eori"))
+          case failStatus =>
+            logger.error(s"Notification failed with HTTP status:$failStatus for EORI: ${eori.getMaskedValue()}. Service: ${enrolmentKey.serviceName}")
             Left(ErrorMessage(s"Notification failed with HTTP status: $failStatus"))
-          }
         }
-
       }
   }
 

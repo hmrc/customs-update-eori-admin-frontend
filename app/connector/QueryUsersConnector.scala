@@ -49,7 +49,6 @@ class QueryUsersConnector @Inject()(httpClient: HttpClient, config: AppConfig)(i
       users.map { gs =>
         Right(UserId(gs.principalUserIds.head))
       } getOrElse {
-        logger.error(s"Could not find User for existing EORI: ${eori.getMaskedValue()}")
         Left(ErrorMessage(s"Could not find User for existing EORI: $eori"))
       }
     }

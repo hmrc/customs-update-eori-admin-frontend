@@ -50,7 +50,6 @@ class QueryGroupsConnector @Inject()(httpClient: HttpClient, config: AppConfig)(
       groups.map { gs =>
         Right(GroupId(gs.principalGroupIds.head))
       } getOrElse{
-        logger.error(s"Could not find Group for existing EORI: ${eori.getMaskedValue()}")
         Left(ErrorMessage(s"Could not find Group for existing EORI: $eori"))
       }
     }

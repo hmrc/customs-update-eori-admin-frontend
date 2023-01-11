@@ -36,11 +36,23 @@ class EnrolmentService @Inject()(groupsConnector: QueryGroupsConnector,
                                  customsDataStoreConnector: CustomsDataStoreConnector
                                 )(implicit ec: ExecutionContext) {
 
+
   def getEnrolments(existingEori: Eori, date: LocalDate)(implicit hc: HeaderCarrier) = {
     Future.sequence(
       EnrolmentKey.values.toSeq.map(enrolmentKey => {
-        knownFactsConnector.query(existingEori, enrolmentKey, date)
-          .map(enrolmentKey.serviceName -> _.isRight)
+        val checkEnrolments = for {
+          enrolmentResult <- knownFactsConnector.query(existingEori, enrolmentKey, date)
+            .map(knowFacts => knowFacts.isRight)
+            .recover(_ => false)
+          userResult <- if(enrolmentResult) usersConnector.query(existingEori, enrolmentKey)
+            .map(user => user.isRight)
+            .recover(_ => false) else Future.successful(false)
+          finalResult <- if(userResult) groupsConnector.query(existingEori, enrolmentKey)
+            .map(group => group.isRight)
+            .recover(_ => false) else Future.successful(false)
+        } yield finalResult
+
+        checkEnrolments.map(check => enrolmentKey.serviceName -> check)
       })
     )
   }
