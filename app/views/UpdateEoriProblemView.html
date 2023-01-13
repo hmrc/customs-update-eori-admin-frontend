@@ -1,0 +1,55 @@
+@*
+* Copyright 2022 HM Revenue & Customs
+*
+*@
+
+@import uk.gov.hmrc.customsupdateeoriadminfrontend.views.html.Layout
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF, GovukDateInput, GovukInput, GovukButton}
+@import views.html.helper.CSPNonce
+
+@this(
+layout: Layout,
+formHelper: FormWithCSRF,
+govukDateInput: GovukDateInput,
+govukInput: GovukInput,
+govukButton: GovukButton
+)
+
+@(form: Form[_])(implicit request: Request[_], messages: Messages)
+
+@layout(pageTitle = Some("EORI number management service")) {
+
+<div class="govuk-width-container ">
+
+    <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
+
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+
+                <h1 class="govuk-heading-l">
+                    @Messages("eoriUpdate.problem.heading)
+                </h1>
+
+                <p class="govuk-body">@Messages("eoriUpdate.problem.section1")</p>
+
+                <ul class="govuk-list govuk-list--bullet">
+                    <li>GB Safety and Security (GB S&S)</li>
+                    <li>Goods Vehicle Movement Service (GVMS)</li>
+                </ul>
+
+                <p class="govuk-body">@Messages("eoriupdate.problem.section2")</p>
+
+                <p class="govuk-body">@Messages("eoriupdate.problem.section3")</p>
+
+                <ul class="govuk-list govuk-list--bullet">
+                    <li>Advanced Tariff Rulings (ATAR)</li>
+                </ul>
+
+                <p class="govuk-body"><a href="update-or-cancel" class="govuk-link">@Messages("eoriupdate.problem.homePageLink)</a>.</p>
+
+
+            </div>
+        </div>
+    </main>
+</div>
+}

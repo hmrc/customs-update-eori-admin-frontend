@@ -20,4 +20,9 @@ eoriAction.cancelSubscriptions=Cancel subscriptions to HMRC services
 eoriAction.questionForReplaceOrCancel=Do you want to replace an existing EORI number or cancel subscriptions to HMRC services?
 
 
-# Update Eori
+# Update Eori Problem
+eoriUpdate.problem.heading=There was a problem replacing the EORI number
+eoriUpdate.problem.section1=The new EORI number {} has not been subscribed to:
+eoriupdate.problem.section2=You must manually update these services by [include content to explain next steps].
+eoriupdate.problem.section3=The new EORI number has been successfully subscribed to:
+eoriupdate.problem.homePageLink=Replace another EORI number or cancel subscriptions to HMRC services
