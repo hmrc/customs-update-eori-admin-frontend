@@ -24,7 +24,7 @@ import play.api.i18n.I18nSupport
 import play.api.mvc._
 import service.EnrolmentService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import views.html.{ConfirmEoriUpdateView, UpdateEoriView}
+import views.html.{ConfirmEoriUpdateView, UpdateEoriView, UpdateEoriProblemView}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -33,6 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
                                           viewUpdateEori: UpdateEoriView,
                                           viewConfirmUpdate: ConfirmEoriUpdateView,
+                                          updateEoriProblemView: UpdateEoriProblemView,
                                           auth: AuthAction,
                                           enrolmentService: EnrolmentService
                                          )(implicit ec: ExecutionContext)
