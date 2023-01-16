@@ -17,7 +17,7 @@
 package controllers
 
 import models.DateOfEstablishment.stringToLocalDate
-import models.{ConfirmEoriUpdate, EnrolmentKey, Eori, EoriUpdate}
+import models.{ConfirmEoriUpdate, EnrolmentKey, Eori, EoriUpdate, UpdateEoriProblem}
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.i18n.I18nSupport
@@ -33,7 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
                                           viewUpdateEori: UpdateEoriView,
                                           viewConfirmUpdate: ConfirmEoriUpdateView,
-                                          updateEoriProblemView: UpdateEoriProblemView,
+                                          viewUpdateEoriProblem: UpdateEoriProblemView,
                                           auth: AuthAction,
                                           enrolmentService: EnrolmentService
                                          )(implicit ec: ExecutionContext)
@@ -57,6 +57,12 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
       "enrolment-list" -> text(),
       "confirm" -> boolean
     )(ConfirmEoriUpdate.apply)(ConfirmEoriUpdate.unapply))
+
+  val formUpdateEoriProblem = Form(
+    mapping(
+      "updatedList" -> text()
+    )(UpdateEoriProblem.apply)(UpdateEoriProblem.unapply)
+  )
 
   def showPage = auth { implicit request =>
     Ok(viewUpdateEori(formEoriUpdate))
@@ -95,12 +101,18 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
               Eori(confirmEoriUpdate.newEori),
               enrolment)
           ))
-          updateAllEnrolments.map { _ => Redirect(controllers.routes.EoriActionController.showPageOnSuccess("",confirmEoriUpdate.existingEori,confirmEoriUpdate.newEori ))}
+          //updateAllEnrolments.map { _ => Redirect(controllers.routes.EoriActionController.showPageOnSuccess("",confirmEoriUpdate.existingEori,confirmEoriUpdate.newEori ))}
+          updateAllEnrolments.map { _ => Redirect(controllers.routes.UpdateEoriController.showProblem("nonUpdatedList"))}
         } else {
           Future(Redirect(controllers.routes.UpdateEoriController.showPage))
         }
       }
     )
   }
+
+
+  def showProblem(nonUpdated: String) = auth { implicit request =>
+      Ok(viewUpdateEoriProblem(formUpdateEoriProblem))
+    }
 
 }
