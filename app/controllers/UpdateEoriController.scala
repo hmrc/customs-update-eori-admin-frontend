@@ -66,6 +66,7 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
 
   def showPage = auth { implicit request =>
     Ok(viewUpdateEori(formEoriUpdate))
+    //Ok(viewUpdateEoriProblem(formUpdateEoriProblem))
   }
 
   def continueUpdateEori = auth { implicit request =>
@@ -109,6 +110,7 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
       }
     )
   }
+
 
   def showProblem(nonUpdated: String) = auth { implicit request =>
       Ok(viewUpdateEoriProblem(formUpdateEoriProblem))

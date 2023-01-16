@@ -34,9 +34,6 @@ govukButton: GovukButton
 
   <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
 
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
-
         <h1 class="govuk-heading-l">
           @Messages("eoriUpdate.problem.heading")
         </h1>
@@ -56,10 +53,8 @@ govukButton: GovukButton
           <li>Advanced Tariff Rulings (ATAR)</li>
         </ul>
 
-        <p class="govuk-body"><a href="update-or-cancel" class="govuk-link">@Messages("eoriUpdate.problem.homePageLink")</a>.</p>
+        <p class="govuk-body"><a href="@controllers.routes.EoriActionController.showPage" class="govuk-link">@Messages("eoriUpdate.problem.homePageLink")</a>.</p>
 
-      </div>
-    </div>
   </main>
 </div>
 }
