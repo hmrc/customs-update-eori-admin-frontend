@@ -18,4 +18,4 @@ GET       /confirm                      controllers.UpdateEoriController.showCon
 POST      /confirm                      controllers.UpdateEoriController.confirmUpdateEori
 
 # Update EORI Problem
-GET      /problem                      controllers.UpdateEoriController.showProblem(nonUpdatedList: String)
+POST      /problem                      controllers.UpdateEoriController.showProblem(nonUpdatedList: String)
