@@ -396,7 +396,7 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       when(mockRemoveKnownFacts.remove(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Right(NO_CONTENT)))
 
-      when(mockCustomsDataStore.notify(meq(oldEori))(any[HeaderCarrier]))
+      when(mockCustomsDataStore.notify(meq(newEori))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Right(NO_CONTENT)))
 
       val result = service.update(oldEori, LocalDate.of(1997, 11, 3), newEori, HMRC_CUS_ORG).futureValue
