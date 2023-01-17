@@ -14,16 +14,12 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 @import views.html.Layout
-@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF, GovukDateInput, GovukInput, GovukButton}
-@import views.html.helper.CSPNonce
 
 @this(
         layout: Layout,
         formHelper: FormWithCSRF,
-        govukDateInput: GovukDateInput,
-        govukInput: GovukInput,
-        govukButton: GovukButton
 )
 
 @(form: Form[_])(implicit request: Request[_], messages: Messages)
@@ -34,15 +30,15 @@
         <div class="govuk-width-container">
             <main class="govuk-main-wrapper govuk-!-padding-0" id="main-content" role="main">
                 <h1 class="govuk-heading-l">
-                    @Messages("eori.replaceExistingEori")
+                @messages("eori.replaceExistingEori")
                 </h1>
 
                 <div class="govuk-form-group">
                     <label class="govuk-label govuk-label--m" for="txtCurrentEoriNumber">
-                        @Messages("eori.currentEoriNumberQuestion")
+                    @messages("eori.currentEoriNumberQuestion")
                     </label>
                     <div id="account-number-hint-current-eori" class="govuk-hint">
-                        @Messages("eori.accountNumberHint")
+                    @messages("eori.accountNumberHint")
                     </div>
                     <input class="govuk-input govuk-input--width-20" id="existing-eori" name="existing-eori" type="text" required>
                 </div>
@@ -50,7 +46,7 @@
                 <div class="govuk-form-group">
                     <fieldset class="govuk-fieldset" role="group">
                         <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-                            @Messages("eori.companyEstablishedDateQuestion")
+                        @messages("eori.companyEstablishedDateQuestion")
                         </legend>
 
                         <div class="govuk-date-input" id="date-of-establishment">
@@ -58,7 +54,7 @@
                             <div class="govuk-date-input__item">
                                 <div class="govuk-form-group">
                                     <label class="govuk-label govuk-date-input__label" for="txtDateOfEstablishmentDay">
-                                        @Messages("eori.companyEstablishedDay")
+                                    @messages("eori.companyEstablishedDay")
                                     </label>
                                     <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="txtDateOfEstablishmentDay" name="date-of-establishment-day" type="text" inputmode="numeric" required>
                                 </div>
@@ -67,7 +63,7 @@
                             <div class="govuk-date-input__item">
                                 <div class="govuk-form-group">
                                     <label class="govuk-label govuk-date-input__label" for="txtDateOfEstablishmentMonth">
-                                        @Messages("eori.companyEstablishedMonth")
+                                    @messages("eori.companyEstablishedMonth")
                                     </label>
 
                                     <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="txtDateOfEstablishmentMonth" name="date-of-establishment-month" type="text" inputmode="numeric" required>
@@ -77,7 +73,7 @@
                             <div class="govuk-date-input__item">
                                 <div class="govuk-form-group">
                                     <label class="govuk-label govuk-date-input__label" for="txtDateOfEstablishmentYear">
-                                        @Messages("eori.companyEstablishedYear")
+                                    @messages("eori.companyEstablishedYear")
                                     </label>
                                     <input class="govuk-input govuk-date-input__input govuk-input--width-4" id="txtDateOfEstablishmentYear" name="date-of-establishment-year" type="text" inputmode="numeric" required>
                                 </div>
@@ -87,52 +83,18 @@
                 </div>
                 <div class="govuk-form-group">
                     <label class="govuk-label govuk-label--m" for="new-eori">
-                        @Messages("eori.newEoriNumberQuestion")
+                    @messages("eori.newEoriNumberQuestion")
                     </label>
                     <div id="account-number-hint" class="govuk-hint">
-                        @Messages("eori.accountNumberHint")
+                    @messages("eori.accountNumberHint")
                     </div>
                     <input class="govuk-input govuk-input--width-20" id="new-eori" name="new-eori" type="text" required>
                 </div>
-                <button class="govuk-button" data-module="govuk-button" id="submit-button" disabled="disabled" type="submit">
-                    @Messages("eori.continueButton")
+                <button class="govuk-button" data-module="govuk-button" id="submit-button" type="submit">
+                @messages("eori.continueButton")
                 </button>
 
             </main>
         </div>
-
-        <script @{CSPNonce.attr}>
-            document.addEventListener('DOMContentLoaded', function () {
-                const successForm = document.forms[0];
-                const submitButton = document.getElementById("submit-button")
-
-                function disableButton(element) {
-                    const attributes = {
-                        disabled: "disabled",
-                        class: "govuk-button govuk-button--disabled"
-                    };
-                    Object.keys(attributes).forEach(attr => {
-                        element.setAttribute(attr, attributes[attr]);
-                    });
-                }
-
-                function enableButton(element) {
-                    element.setAttribute("class", "govuk-button");
-                    element.removeAttribute("disabled")
-                }
-
-                function checkAndDisableButton() {
-                    if(successForm.checkValidity()) {
-                        enableButton(submitButton)
-                    } else {
-                        disableButton(submitButton)
-                    }
-                }
-
-                successForm.addEventListener('change', checkAndDisableButton)
-
-            });
-
-        </script>
     }
 }

@@ -48,7 +48,7 @@ object EnrolmentKey extends Enumeration {
   val HMRC_CTS_ORG = EnrolmentKeyVal("HMRC-CTS-ORG", "Customs Trader Services (Route 1, NDRC, C18)")
 
   // HMRC-ESC-ORG -> EU Subsidy Compliance
-  val HMRC_ESC_ORG = EnrolmentKeyVal("HMRC-ESC-ORG", "EU Subsidy Compliance ")
+  val HMRC_ESC_ORG = EnrolmentKeyVal("HMRC-ESC-ORG", "EU Subsidy Compliance")
 }
 
 object EnrolmentKeySubLists {

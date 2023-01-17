@@ -32,27 +32,27 @@
                     <div class="govuk-grid-column-full">
 
                         <h1 class="govuk-heading-l">
-                            Replacing EORI number @form("existing-eori").value
+                        @messages("eoriUpdate.confirm.title", form("existing-eori").value.getOrElse("ERROR"))
                         </h1>
 
-                        <p class="govuk-body">EORI number @form("existing-eori").value is currently subscribed to:</p>
+                        <p class="govuk-body">@messages("eoriUpdate.confirm.details", form("existing-eori").value.getOrElse("ERROR"))</p>
 
                         <ul class="govuk-list govuk-list--bullet">
-                            @for(enrolment <- enrolmentList) {
-                                @if(enrolment.equals("HMRC-CTS-ORG")) {
-                                    @for(cts <- EnrolmentKeySubLists.ctsList) {
-                                        <li>@cts</li>
-                                    }
-                                } else {
-                                    <li>@EnrolmentKey.getDescription(enrolment).getOrElse(enrolment)</li>
+                        @for(enrolment <- enrolmentList) {
+                            @if(enrolment.equals("HMRC-CTS-ORG")) {
+                                @for(cts <- EnrolmentKeySubLists.ctsList) {
+                                    <li>@cts</li>
                                 }
+                            } else {
+                                <li>@EnrolmentKey.getDescription(enrolment).getOrElse(enrolment)</li>
                             }
+                        }
                         </ul>
 
-@*                        <p class="govuk-body">You will not be able to replace ’s EORI number for:</p>*@
-@*                        <ul class="govuk-list govuk-list--bullet">*@
-@*                            <li>Common Transit Convention (CTC)</li>*@
-@*                        </ul>*@
+                        @* <p class="govuk-body">You will not be able to replace ’s EORI number for:</p>*@
+                        @* <ul class="govuk-list govuk-list--bullet">*@
+                        @* <li>Common Transit Convention (CTC)</li>*@
+                        @* </ul>*@
 
                         <input type="hidden" id="existing-eori" name="existing-eori" value="@form.data.get("existing-eori")"/>
                         <input type="hidden" id="date-of-establishment" name="date-of-establishment" value="@form.data.get("date-of-establishment")"/>
@@ -62,7 +62,7 @@
                             <fieldset class="govuk-fieldset">
                                 <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
                                     <h3 class="govuk-fieldset__heading">
-                                        Are you sure you want to replace the current EORI number with @form("new-eori").value?
+                                    @messages("eoriUpdate.confirm.replaceWith", form("new-eori").value.getOrElse("ERROR"))
                                     </h3>
                                 </legend>
                                 <div class="govuk-radios govuk-radios--inline" data-module="govuk-radios">
@@ -80,7 +80,7 @@
                         </div>
 
                         <button class="govuk-button" data-module="govuk-button">
-                            Confirm
+                            @messages("eori.confirmButton")
                         </button>
                     </div>
                 </div>

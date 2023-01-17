@@ -24,7 +24,7 @@ import play.api.i18n.I18nSupport
 import play.api.mvc._
 import service.EnrolmentService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import views.html.{ConfirmEoriUpdateView, UpdateEoriView}
+import views.html.{ConfirmEoriUpdateView, UpdateEoriProblemView, UpdateEoriView}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -33,6 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
                                           viewUpdateEori: UpdateEoriView,
                                           viewConfirmUpdate: ConfirmEoriUpdateView,
+                                          viewUpdateEoriProblem: UpdateEoriProblemView,
                                           auth: AuthAction,
                                           enrolmentService: EnrolmentService
                                          )(implicit ec: ExecutionContext)
@@ -86,15 +87,28 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
       },
       confirmEoriUpdate => {
         if (confirmEoriUpdate.isConfirmed) {
-          val updateAllEnrolments = Future.sequence(confirmEoriUpdate.enrolmentList.split(",")
-            .toList.map(EnrolmentKey.getEnrolmentKey(_).get).map(enrolment =>
-            enrolmentService.update(
-              Eori(confirmEoriUpdate.existingEori),
-              stringToLocalDate(confirmEoriUpdate.dateOfEstablishment),
-              Eori(confirmEoriUpdate.newEori),
-              enrolment)
-          ))
-          updateAllEnrolments.map { _ => Redirect(controllers.routes.EoriActionController.showPageOnSuccess("",confirmEoriUpdate.existingEori,confirmEoriUpdate.newEori ))}
+          val updateAllEnrolments = Future.sequence(
+            confirmEoriUpdate.enrolmentList.split(",")
+              .toList
+              .map(EnrolmentKey.getEnrolmentKey(_).get)
+              .map(enrolment =>
+                enrolmentService.update(
+                  Eori(confirmEoriUpdate.existingEori),
+                  stringToLocalDate(confirmEoriUpdate.dateOfEstablishment),
+                  Eori(confirmEoriUpdate.newEori),
+                  enrolment
+                ).map(enrolment.serviceName -> _)
+              )
+          )
+          updateAllEnrolments.map { updates => {
+            val status = updates.map(either => either._1 -> either._2.isRight).toMap
+            if (status.exists(_._2 == false)) {
+              Ok(viewUpdateEoriProblem(status.filter(_._2 == true).keys.toList, status.filter(_._2 == false).keys.toList, confirmEoriUpdate.newEori))
+            } else {
+              Redirect(controllers.routes.EoriActionController.showPageOnSuccess("", confirmEoriUpdate.existingEori, confirmEoriUpdate.newEori))
+            }
+          }
+          }
         } else {
           Future(Redirect(controllers.routes.UpdateEoriController.showPage))
         }
