@@ -25,12 +25,12 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.Application
 import play.api.http.Status
-import play.api.test.FakeRequest
-import play.api.test.Helpers._
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.MessagesControllerComponents
+import play.api.test.FakeRequest
+import play.api.test.Helpers._
 import service.EnrolmentService
-import views.html.{ConfirmEoriUpdateView, UpdateEoriView}
+import views.html.{ConfirmEoriUpdateView, UpdateEoriProblemView, UpdateEoriView}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -51,10 +51,11 @@ class UpdateEoriControllerSpec
 
   private val fakeRequest = FakeRequest("GET", "/")
   private val mcc = app.injector.instanceOf[MessagesControllerComponents]
-  private val view = app.injector.instanceOf[UpdateEoriView]
+  private val viewUpdateEori = app.injector.instanceOf[UpdateEoriView]
   private val viewConfirmUpdate = app.injector.instanceOf[ConfirmEoriUpdateView]
+  private val viewEoriProblem = app.injector.instanceOf[UpdateEoriProblemView]
   private val enrolmentService = app.injector.instanceOf[EnrolmentService]
-  private val controller = UpdateEoriController(mcc, view, viewConfirmUpdate, testAuthAction, enrolmentService)
+  private val controller = UpdateEoriController(mcc, viewUpdateEori, viewConfirmUpdate, viewEoriProblem, testAuthAction, enrolmentService)
 
   override def beforeEach(): Unit = {
     reset(mockAuthConnector)

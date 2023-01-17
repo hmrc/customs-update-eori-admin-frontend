@@ -8,6 +8,7 @@ eori.companyEstablishedDay=Day
 eori.companyEstablishedMonth=Month
 eori.companyEstablishedYear=Year
 eori.continueButton=Continue
+eori.confirmButton=Confirm
 eori.companyEstablishedDateQuestion=What date was the company established?
 eori.currentEoriNumberQuestion=What is the company’s current EORI number?
 eori.newEoriNumberQuestion=What is the company’s new EORI number?
@@ -16,13 +17,18 @@ eori.backLinkText=Back
 
 # Eori Action
 eoriAction.successBannerEoriUpdateMessage=You should email the company confirming that their EORI number has been replaced.
+eoriAction.successBannerEoriUpdateContent=EORI number {0} has been replaced with {1}.
 eoriAction.cancelSubscriptions=Cancel subscriptions to HMRC services
 eoriAction.questionForReplaceOrCancel=Do you want to replace an existing EORI number or cancel subscriptions to HMRC services?
 
+# Eori Update Confirm
+eoriUpdate.confirm.title=Replacing EORI number {0}
+eoriUpdate.confirm.details=EORI number {0} is currently subscribed to:
+eoriUpdate.confirm.replaceWith=Are you sure you want to replace the current EORI number with {0}?
 
 # Update Eori Problem
 eoriUpdate.problem.heading=There was a problem replacing the EORI number
-eoriUpdate.problem.section1=The new EORI number {} has not been subscribed to:
+eoriUpdate.problem.section1=The new EORI number {0} has not been subscribed to:
 eoriUpdate.problem.section2=You must manually update these services by [include content to explain next steps].
 eoriUpdate.problem.section3=The new EORI number has been successfully subscribed to:
 eoriUpdate.problem.homePageLink=Replace another EORI number or cancel subscriptions to HMRC services

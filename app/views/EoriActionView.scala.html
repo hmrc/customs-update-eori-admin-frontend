@@ -14,13 +14,11 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 @import views.html.Layout
-@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF, GovukRadios}
-@import uk.gov.hmrc.govukfrontend.views.html.components.Text
 
 @this(
         layout: Layout,
-        govukRadios: GovukRadios,
         formHelper: FormWithCSRF
 )
 @(form: Form[_])(implicit request: Request[_], messages: Messages)
@@ -28,51 +26,49 @@
     @layout(pageTitle = Some("EORI number management service")) {
         @formHelper(action = controllers.routes.EoriActionController.continueAction) {
 
-@if(form("existing-eori").value && form("new-eori").value) {
-    <div class="govuk-notification-banner govuk-notification-banner--success" role="alert"
-     aria-labelledby="govuk-notification-banner-title"
-     data-module="govuk-notification-banner" id="banner">
-        <div class="govuk-notification-banner__header">
-            <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title" >
-             Success
-            </h2>
-        </div>
-        <div class="govuk-notification-banner__content">
-            <h3 class="govuk-notification-banner__heading">
-            EORI number @form("existing-eori").value has been replaced with @form("new-eori").value .
-            </h3>
-            <p class="govuk-body">@Messages("eoriAction.successBannerEoriUpdateMessage")</p>
-        </div>
-    </div>
-  }
+            @if(form("existing-eori").value && form("new-eori").value) {
+                <div class="govuk-notification-banner govuk-notification-banner--success" role="alert"
+                aria-labelledby="govuk-notification-banner-title"
+                data-module="govuk-notification-banner" id="banner">
+                    <div class="govuk-notification-banner__header">
+                        <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title" >
+                            Success
+                        </h2>
+                    </div>
+                    <div class="govuk-notification-banner__content">
+                        <h3 class="govuk-notification-banner__heading">
+                        @messages("eoriAction.successBannerEoriUpdateContent", form("existing-eori").value.getOrElse("ERROR"), form("new-eori").value.getOrElse("ERROR"))
+                        </h3>
+                        <p class="govuk-body">@messages("eoriAction.successBannerEoriUpdateMessage")</p>
+                    </div>
+                </div>
+            }
             <div class="govuk-form-group">
                 <fieldset class="govuk-fieldset">
 
                     <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
                         <h1 class="govuk-fieldset__heading">
-                        @Messages("eoriAction.questionForReplaceOrCancel")
+                        @messages("eoriAction.questionForReplaceOrCancel")
                         </h1>
                     </legend>
                     <input type="hidden" id="existing-eori" name="existing-eori" value="@form.data.get("existing-eori")"/>
                     <input type="hidden" id="new-eori" name="new-eori" value="@form.data.get("new-eori")"/>
                     <div class="govuk-radios__item">
-                        <input class="govuk-radios__input" id="update-eori" name="update-or-cancel-eori" type="radio"
-                        value="@EoriAction.UPDATE_EORI">
+                        <input class="govuk-radios__input" id="update-eori" name="update-or-cancel-eori" type="radio" value="@EoriAction.UPDATE_EORI">
                         <label class="govuk-label govuk-radios__label" for="update-eori">
-                        @Messages("eori.replaceExistingEori")
+                        @messages("eori.replaceExistingEori")
                         </label>
                     </div>
                     <div class="govuk-radios__item">
-                        <input class="govuk-radios__input" id="cancel-eori" name="update-or-cancel-eori" type="radio"
-                        value="@EoriAction.CANCEL_EORI">
+                        <input class="govuk-radios__input" id="cancel-eori" name="update-or-cancel-eori" type="radio" value="@EoriAction.CANCEL_EORI">
                         <label class="govuk-label govuk-radios__label" for="cancel-eori" >
-                        @Messages("eoriAction.cancelSubscriptions")
+                        @messages("eoriAction.cancelSubscriptions")
                         </label>
                     </div>
                 </fieldset>
             </div>
             <button class="govuk-button" data-module="govuk-button">
-                Continue
+            @messages("eori.continueButton")
             </button>
         }
 

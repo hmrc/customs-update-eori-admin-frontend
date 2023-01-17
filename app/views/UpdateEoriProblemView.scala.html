@@ -15,51 +15,58 @@
  *@
 
 @import views.html.Layout
-@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF, GovukDateInput, GovukInput, GovukButton}
-@import views.html.helper.CSPNonce
 
 @this(
-layout: Layout,
-formHelper: FormWithCSRF,
-govukDateInput: GovukDateInput,
-govukInput: GovukInput,
-govukButton: GovukButton
+        layout: Layout,
+        govukButton: GovukButton
 )
 
-@(form: Form[_])(implicit request: Request[_], messages: Messages)
+@(successfulUpdateList: List[String], failedUpdateList: List[String], newEoriNumber: String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = Some("EORI number management service")) {
+    @layout(pageTitle = Some("EORI number management service")) {
+        <div class="govuk-width-container ">
+            <main class="govuk-main-wrapper govuk-!-padding-0" id="main-content" role="main">
+                <div class="govuk-grid-row">
+                    <div class="govuk-grid-column-full">
+                        <h1 class="govuk-heading-l">@messages("eoriUpdate.problem.heading")</h1>
+                        <p class="govuk-body">@messages("eoriUpdate.problem.section1", newEoriNumber)</p>
 
-<div class="govuk-width-container ">
+                        <ul class="govuk-list govuk-list--bullet">
+                        @for(enrolment <- failedUpdateList) {
+                            @if(enrolment.equals("HMRC-CTS-ORG")) {
+                                @for(cts <- EnrolmentKeySubLists.ctsList) {
+                                    <li>@cts</li>
+                                }
+                            } else {
+                                <li>@EnrolmentKey.getDescription(enrolment).getOrElse(enrolment)</li>
+                            }
+                        }
+                        </ul>
 
-  <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
+                        <p class="govuk-body">@messages("eoriUpdate.problem.section2")</p>
 
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
+                        @if(successfulUpdateList.nonEmpty) {
+                            <p class="govuk-body">@messages("eoriUpdate.problem.section3")</p>
 
-        <h1 class="govuk-heading-l">
-          @Messages("eoriUpdate.problem.heading")
-        </h1>
+                            <ul class="govuk-list govuk-list--bullet">
+                            @for(enrolment <- successfulUpdateList) {
+                                @if(enrolment.equals("HMRC-CTS-ORG")) {
+                                    @for(cts <- EnrolmentKeySubLists.ctsList) {
+                                        <li>@cts</li>
+                                    }
+                                } else {
+                                    <li>@EnrolmentKey.getDescription(enrolment).getOrElse(enrolment)</li>
+                                }
+                            }
+                            </ul>
+                        }
 
-        <p class="govuk-body">@Messages("eoriUpdate.problem.section1")</p>
-
-        <ul class="govuk-list govuk-list--bullet">
-          <li>GB Safety and Security (GB S&S)</li>
-          <li>Goods Vehicle Movement Service (GVMS)</li>
-        </ul>
-
-        <p class="govuk-body">@Messages("eoriUpdate.problem.section2")</p>
-
-        <p class="govuk-body">@Messages("eoriUpdate.problem.section3")</p>
-
-        <ul class="govuk-list govuk-list--bullet">
-          <li>Advanced Tariff Rulings (ATAR)</li>
-        </ul>
-
-        <p class="govuk-body"><a href="update-or-cancel" class="govuk-link">@Messages("eoriUpdate.problem.homePageLink")</a>.</p>
-
-      </div>
-    </div>
-  </main>
-</div>
-}
+                        <p class="govuk-body">
+                            <a href="@controllers.routes.EoriActionController.showPage" class="govuk-link">@messages("eoriUpdate.problem.homePageLink")</a>
+                            .
+                        </p>
+                    </div>
+                </div>
+            </main>
+        </div>
+    }

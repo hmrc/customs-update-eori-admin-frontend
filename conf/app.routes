@@ -16,6 +16,3 @@ GET       /update                       controllers.UpdateEoriController.showPag
 POST      /update                       controllers.UpdateEoriController.continueUpdateEori
 GET       /confirm                      controllers.UpdateEoriController.showConfirmPage(oldEoriNumber: String, establishmentDate: String, newEoriNumber: String)
 POST      /confirm                      controllers.UpdateEoriController.confirmUpdateEori
-
-# Update EORI Problem
-POST      /problem                      controllers.UpdateEoriController.showProblem(nonUpdatedList: String)
