@@ -72,7 +72,7 @@ class CustomsDataStoreConnectorSpec extends ConnectorSpecBase {
 
       val Left(ErrorMessage(error)) =
         connector.notify(Eori("GB9999999999")).futureValue
-      error shouldBe "notification failed with HTTP status: 500"
+      error shouldBe "Notification failed with HTTP status: 500"
     }
 
     "Eori model object serializes correctly" in {
