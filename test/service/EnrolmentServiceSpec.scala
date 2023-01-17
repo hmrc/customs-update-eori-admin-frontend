@@ -185,6 +185,41 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       result.filter(_._2).toList.map(_._1) shouldBe List(HMRC_GVMS_ORG.serviceName, HMRC_SS_ORG.serviceName)
     }
 
+    "return only GVMS if Eori enrolled" in {
+      val oldEori = Eori("GB123456789002")
+      val dateOfEstablishment = "03/11/1998"
+
+      val mockData: Enrolment = Enrolment(Seq(KeyValue("EORINumber", oldEori.toString)), Seq(KeyValue("DateOfEstablishment", dateOfEstablishment)));
+
+      when(mockQueryKnownFacts.query(meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
+
+      when(mockQueryKnownFacts.query(meq(oldEori), meq(HMRC_ATAR_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
+
+      when(mockQueryKnownFacts.query(meq(oldEori), meq(HMRC_SS_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
+
+      when(mockQueryKnownFacts.query(meq(oldEori), meq(HMRC_GVMS_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(mockData)))
+
+      when(mockQueryGroups.query(meq(oldEori), meq(HMRC_GVMS_ORG))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(mockGroupIdData)))
+
+      when(mockQueryUsers.query(meq(oldEori), meq(HMRC_GVMS_ORG))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(mockUserIdData)))
+
+      when(mockQueryKnownFacts.query(meq(oldEori), meq(HMRC_CTS_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
+
+      when(mockQueryKnownFacts.query(meq(oldEori), meq(HMRC_ESC_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
+
+      val result = service.getEnrolments(oldEori, LocalDate.of(1998, 11, 3)).futureValue
+      result.count(_._2) shouldBe 1
+      result.filter(_._2).toList.map(_._1) shouldBe List(HMRC_GVMS_ORG.serviceName)
+    }
+
     "return only CTS even CUS has Know Facts (Special Case!!!)" in {
       val oldEori = Eori("GB123456789003")
       val dateOfEstablishment = "03/11/1998"
