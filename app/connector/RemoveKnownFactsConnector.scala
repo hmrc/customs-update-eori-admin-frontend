@@ -27,10 +27,10 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class RemoveKnownFactsConnector @Inject()(httpClient: HttpClient, config: AppConfig)(implicit ec: ExecutionContext) extends Logging{
+class RemoveKnownFactsConnector @Inject()(httpClient: HttpClient, config: AppConfig)(implicit ec: ExecutionContext) extends Logging {
 
   def remove(eori: Eori, enrolmentKey: EnrolmentKeyType)
-                    (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
+            (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
     val url = s"${config.taxEnrolmentsServiceUrl}/enrolments/${enrolmentKey.getEnrolmentKey(eori)}"
     httpClient.DELETE[HttpResponse](url) map {
       _.status match {

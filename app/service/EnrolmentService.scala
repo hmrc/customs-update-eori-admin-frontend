@@ -36,7 +36,6 @@ class EnrolmentService @Inject()(groupsConnector: QueryGroupsConnector,
                                  customsDataStoreConnector: CustomsDataStoreConnector
                                 )(implicit ec: ExecutionContext) {
 
-
   def getEnrolments(existingEori: Eori, date: LocalDate)(implicit hc: HeaderCarrier) = {
     Future.sequence(
       EnrolmentKey.values.toSeq.map(enrolmentKey => {
@@ -71,7 +70,7 @@ class EnrolmentService @Inject()(groupsConnector: QueryGroupsConnector,
       _ <- EitherT(deAllocateGroupConnector.deAllocateGroup(existingEori, enrolmentKey, groupId)) // ES9
       _ <- EitherT(removeKnownFactsConnector.remove(existingEori, enrolmentKey)) // ES7
       _ <- EitherT(reAllocateGroupConnector.reAllocate(newEori, enrolmentKey, userId, groupId)) // ES8
-      _ <- EitherT(customsDataStoreConnector.notify(existingEori)) //Notify Customs Data Store
+      _ <- EitherT(customsDataStoreConnector.notify(newEori)) // Notify Customs Data Store with new number
     } yield enrolment
     result.value
   }
