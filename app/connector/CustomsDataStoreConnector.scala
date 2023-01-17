@@ -32,21 +32,20 @@ import scala.concurrent.{ExecutionContext, Future}
 class CustomsDataStoreConnector @Inject()(httpClient: HttpClient, config: AppConfig, audit: Auditor)
                                          (implicit ec: ExecutionContext) extends Logging {
 
-  def notify(existingEori: Eori)(implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
+  def notify(newEori: Eori)(implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
     val contentType = CONTENT_TYPE -> JSON
 
-    auditRequest(config.customsDataStoreUrl, existingEori.eori)
+    auditRequest(config.customsDataStoreUrl, newEori.eori)
 
-    httpClient.POST[Eori, HttpResponse](config.customsDataStoreUrl, existingEori, Seq(contentType))
+    httpClient.POST[Eori, HttpResponse](config.customsDataStoreUrl, newEori, Seq(contentType))
       .map { response =>
         auditResponse(response, config.customsDataStoreUrl)
         response.status match {
           case NO_CONTENT => Right(NO_CONTENT)
           case failStatus => {
-            logger.error(s"notification failed with HTTP status: $failStatus for existing EORI: ${existingEori.getMaskedValue()}")
-            Left(ErrorMessage(s"notification failed with HTTP status: $failStatus"))
+            logger.error(s"Notification failed with HTTP status: $failStatus for EORI: ${newEori.getMaskedValue()}")
+            Left(ErrorMessage(s"Notification failed with HTTP status: $failStatus"))
           }
-
         }
       }
   }

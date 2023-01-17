@@ -76,8 +76,8 @@ class QueryKnownFactsConnector @Inject()(httpClient: HttpClient, config: AppConf
             }
           case NO_CONTENT => Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $eori"))
           case failStatus =>
-            logger.error(s"Notification failed with HTTP status:$failStatus for EORI: ${eori.getMaskedValue()}. Service: ${enrolmentKey.serviceName}")
-            Left(ErrorMessage(s"Notification failed with HTTP status: $failStatus"))
+            logger.error(s"Query known facts failed with HTTP status:$failStatus for EORI: ${eori.getMaskedValue()}. Service: ${enrolmentKey.serviceName}")
+            Left(ErrorMessage(s"Query known facts failed with HTTP status: $failStatus"))
         }
       }
   }
