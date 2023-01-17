@@ -16,7 +16,6 @@
 
 @import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 @import views.html.Layout
-@import views.html.helper.CSPNonce
 
 @this(
         layout: Layout,
@@ -91,46 +90,11 @@
                     </div>
                     <input class="govuk-input govuk-input--width-20" id="new-eori" name="new-eori" type="text" required>
                 </div>
-                <button class="govuk-button" data-module="govuk-button" id="submit-button" disabled="disabled" type="submit">
+                <button class="govuk-button" data-module="govuk-button" id="submit-button" type="submit">
                 @messages("eori.continueButton")
                 </button>
 
             </main>
         </div>
-
-        <script @{
-            CSPNonce.attr
-        }>
-                document.addEventListener('DOMContentLoaded', function () {
-                    const successForm = document.forms[0];
-                    const submitButton = document.getElementById("submit-button")
-
-                    function disableButton(element) {
-                        const attributes = {
-                            disabled: "disabled",
-                            class: "govuk-button govuk-button--disabled"
-                        };
-                        Object.keys(attributes).forEach(attr => {
-                            element.setAttribute(attr, attributes[attr]);
-                        });
-                    }
-
-                    function enableButton(element) {
-                        element.setAttribute("class", "govuk-button");
-                        element.removeAttribute("disabled")
-                    }
-
-                    function checkAndDisableButton() {
-                        if (successForm.checkValidity()) {
-                            enableButton(submitButton)
-                        } else {
-                            disableButton(submitButton)
-                        }
-                    }
-
-                    successForm.addEventListener('change', checkAndDisableButton)
-                });
-
-        </script>
     }
 }
