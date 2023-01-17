@@ -43,7 +43,7 @@ class CustomsDataStoreConnector @Inject()(httpClient: HttpClient, config: AppCon
         response.status match {
           case NO_CONTENT => Right(NO_CONTENT)
           case failStatus => {
-            logger.error(s"Notification failed with HTTP status: $failStatus for existing EORI: ${newEori.getMaskedValue()}")
+            logger.error(s"Notification failed with HTTP status: $failStatus for EORI: ${newEori.getMaskedValue()}")
             Left(ErrorMessage(s"Notification failed with HTTP status: $failStatus"))
           }
         }
