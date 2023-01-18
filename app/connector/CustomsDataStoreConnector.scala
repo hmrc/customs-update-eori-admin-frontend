@@ -21,7 +21,7 @@ import config.AppConfig
 import models.{Eori, ErrorMessage}
 import play.api.Logging
 import play.api.http.MimeTypes.JSON
-import play.api.http.Status.NO_CONTENT
+import play.api.http.Status.{NOT_FOUND, NO_CONTENT}
 import play.mvc.Http.HeaderNames.CONTENT_TYPE
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
@@ -41,11 +41,15 @@ class CustomsDataStoreConnector @Inject()(httpClient: HttpClient, config: AppCon
       .map { response =>
         auditResponse(response, config.customsDataStoreUrl)
         response.status match {
-          case NO_CONTENT => Right(NO_CONTENT)
-          case failStatus => {
+          case NO_CONTENT =>
+            logger.info(s"[CDS] No content for EORI: ${newEori.getMaskedValue()}")
+            Right(NO_CONTENT)
+          case NOT_FOUND =>
+            logger.info(s"[CDS] Not found notification for EORI: ${newEori.getMaskedValue()}")
+            Right(NOT_FOUND)
+          case failStatus =>
             logger.error(s"Notification failed with HTTP status: $failStatus for EORI: ${newEori.getMaskedValue()}")
             Left(ErrorMessage(s"Notification failed with HTTP status: $failStatus"))
-          }
         }
       }
   }
