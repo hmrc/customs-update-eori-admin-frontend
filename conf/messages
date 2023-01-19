@@ -34,4 +34,7 @@ eoriUpdate.problem.section2.phrase2.serviceNowUrl=https://ukrc.service-now.com/e
 eoriUpdate.problem.section2.phrase3=create a live service ticket on ServiceNow
 eoriUpdate.problem.section2.phrase4=to fix the problem.
 eoriUpdate.problem.section3=The new EORI number has been successfully subscribed to:
+eoriUpdate.problem.section4.phrase1=The EORI number {0} does not have any subscriptions.
+eoriUpdate.problem.section4.phrase2=replace an existing EORI number or cancel subscriptions to HMRC services.
+eoriUpdate.problem.section4.phrase3=Go back to
 eoriUpdate.problem.homePageLink=Replace another EORI number or cancel subscriptions to HMRC services.
