@@ -1,0 +1,100 @@
+@*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
+@import views.html.Layout
+
+@this(
+        layout: Layout,
+        formHelper: FormWithCSRF,
+)
+
+@(form: Form[_])(implicit request: Request[_], messages: Messages)
+
+@layout(pageTitle = Some("EORI number management service"), backLinkUrl = Some(controllers.routes.EoriActionController.showPage.toString())) {
+    @formHelper(action = controllers.routes.UpdateEoriController.continueUpdateEori) {
+
+        <div class="govuk-width-container">
+            <main class="govuk-main-wrapper govuk-!-padding-0" id="main-content" role="main">
+                <h1 class="govuk-heading-l">
+                @messages("eori.cancelExistingEori")
+                </h1>
+
+                <div class="govuk-form-group">
+                    <label class="govuk-label govuk-label--m" for="txtCurrentEoriNumber">
+                    @messages("eori.currentEoriNumberQuestion")
+                    </label>
+                    <div id="txtCurrentEoriNumber" class="govuk-hint">
+                    @messages("eori.accountNumberHint")
+                    </div>
+                    <input class="govuk-input govuk-input--width-20" id="existing-eori" name="existing-eori" type="text" required>
+                </div>
+
+                <div class="govuk-form-group">
+                    <fieldset class="govuk-fieldset" role="group">
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                        @messages("eori.companyEstablishedDateQuestion")
+                        </legend>
+
+                        <div class="govuk-date-input" id="date-of-establishment">
+
+                            <div class="govuk-date-input__item">
+                                <div class="govuk-form-group">
+                                    <label class="govuk-label govuk-date-input__label" for="txtDateOfEstablishmentDay">
+                                    @messages("eori.companyEstablishedDay")
+                                    </label>
+                                    <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="txtDateOfEstablishmentDay" name="date-of-establishment-day" type="text" inputmode="numeric" required>
+                                </div>
+                            </div>
+
+                            <div class="govuk-date-input__item">
+                                <div class="govuk-form-group">
+                                    <label class="govuk-label govuk-date-input__label" for="txtDateOfEstablishmentMonth">
+                                    @messages("eori.companyEstablishedMonth")
+                                    </label>
+
+                                    <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="txtDateOfEstablishmentMonth" name="date-of-establishment-month" type="text" inputmode="numeric" required>
+                                </div>
+                            </div>
+
+                            <div class="govuk-date-input__item">
+                                <div class="govuk-form-group">
+                                    <label class="govuk-label govuk-date-input__label" for="txtDateOfEstablishmentYear">
+                                    @messages("eori.companyEstablishedYear")
+                                    </label>
+                                    <input class="govuk-input govuk-date-input__input govuk-input--width-4" id="txtDateOfEstablishmentYear" name="date-of-establishment-year" type="text" inputmode="numeric" required>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <!--<div class="govuk-form-group">
+                    <label class="govuk-label govuk-label&#45;&#45;m" for="new-eori">
+                    @messages("eori.newEoriNumberQuestion")
+                    </label>
+                    <div id="account-number-hint" class="govuk-hint">
+                    @messages("eori.accountNumberHint")
+                    </div>
+                    <input class="govuk-input govuk-input&#45;&#45;width-20" id="new-eori" name="new-eori" type="text" required>
+                </div>-->
+                <button class="govuk-button" data-module="govuk-button" id="submit-button" type="submit">
+                @messages("eori.continueButton")
+                </button>
+
+            </main>
+        </div>
+    }
+}
