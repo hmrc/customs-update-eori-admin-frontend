@@ -35,10 +35,10 @@
                         @messages("eoriUpdate.confirm.title", form("existing-eori").value.getOrElse("ERROR"))
                         </h1>
 
-                        @if(enrolmentList.isEmpty){
-                        <p class="govuk-body">@messages("eoriUpdate.problem.section4.phrase1", form("existing-eori").value.getOrElse("ERROR"))</p>
-                        <span class="govuk-body">@messages("eoriUpdate.problem.section4.phrase3")</span> <a href="/customs-update-eori-admin-frontend/update" class="govuk-link">@messages("eoriUpdate.problem.section4.phrase2")</a>
-                        }else{
+                        @if(enrolmentList.isEmpty) {
+                            <p class="govuk-body">@messages("eoriUpdate.problem.section4.phrase1", form("existing-eori").value.getOrElse("ERROR"))</p>
+                            <span class="govuk-body">@messages("eoriUpdate.problem.section4.phrase3")</span> <a href="/customs-update-eori-admin-frontend" class="govuk-link">@messages("eoriUpdate.problem.section4.phrase2")</a>
+                        } else {
                         <p class="govuk-body">@messages("eoriUpdate.confirm.details", form("existing-eori").value.getOrElse("ERROR"))</p>
 
                         <ul class="govuk-list govuk-list--bullet">
