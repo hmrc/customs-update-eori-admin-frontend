@@ -33,7 +33,7 @@ object EnrolmentKey extends Enumeration {
   def getEnrolmentKey(serviceName: String) = values.find(_.serviceName == serviceName)
 
   // HMRC-CUS-ORG* -> Customs Declaration Service (Existing Service from Old customs update eori)
-  val HMRC_CUS_ORG = EnrolmentKeyVal("HMRC-CUS-ORG", "Customs Declaration Service (CUS)")
+  val HMRC_CUS_ORG = EnrolmentKeyVal("HMRC-CUS-ORG", "Customs Declaration Service (CDS)")
 
   // HMRC-ATAR-ORG* -> Advance Tariff Registration
   val HMRC_ATAR_ORG = EnrolmentKeyVal("HMRC-ATAR-ORG", "Advance Tariff Registration (ATAR)")
