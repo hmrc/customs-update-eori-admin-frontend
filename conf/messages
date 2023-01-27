@@ -45,7 +45,7 @@ eoriUpdate.problem.homePageLink=Replace another EORI number or cancel subscripti
 
 # Cancel EORI
 eoriCancel.heading=Cancel a company’s subscriptions to HMRC services
-eoriCancelConfirm.heading=Cancel subscriptions for:
+eoriCancelConfirm.heading=Cancel subscriptions for
 eoriCancelConfirm.section1=You can cancel ’s subscriptions for:
 eoriCancelConfirm.section2=You will not be able to cancel ’s subscriptions for:
 eoriCancelConfirm.confirmQ=Are you sure you want to cancel ’s subscriptions?
