@@ -14,18 +14,15 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 @import views.html.Layout
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 
 @this(
 layout: Layout,
-formHelper: FormWithCSRF,
-govukDateInput: GovukDateInput,
-govukInput: GovukInput,
-govukButton: GovukButton
+formHelper: FormWithCSRF
 )
 
-@(form: Form[_])(implicit request: Request[_], messages: Messages)
+@(form: Form[_], enrolmentList: List[String])(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = Some("EORI number management service"), backLinkUrl = Some(controllers.routes.CancelEoriController.showPage.toString())) {
 @formHelper(action = controllers.routes.EoriActionController.showPage) {
