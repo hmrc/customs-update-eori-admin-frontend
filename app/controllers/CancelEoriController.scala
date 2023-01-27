@@ -17,7 +17,7 @@
 package controllers
 
 import models.DateOfEstablishment.stringToLocalDate
-import models.{ConfirmEoriCancel, Eori, EoriCancel}
+import models.{CancelableEnrolments, ConfirmEoriCancel, Eori, EoriCancel}
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.i18n.I18nSupport
@@ -70,9 +70,11 @@ case class CancelEoriController @Inject()(mcc: MessagesControllerComponents,
     enrolmentService.getEnrolments(Eori(existingEori), stringToLocalDate(establishmentDate))
       .map(enrolments => {
         val enrolmentList = enrolments.filter(_._2).map(_._1).toList
+        val cancelableEnrolments = enrolmentList.filter(e => CancelableEnrolments.values.contains(e))
+        val notCancelableEnrolments = enrolmentList.filter(e => !CancelableEnrolments.values.contains(e))
         Ok(viewConfirmCancelEori(
           formConfirmCancelEori.fill(ConfirmEoriCancel(existingEori, establishmentDate, enrolmentList.mkString(","), false)),
-          enrolmentList
+          cancelableEnrolments, notCancelableEnrolments
         ))
       })
   }

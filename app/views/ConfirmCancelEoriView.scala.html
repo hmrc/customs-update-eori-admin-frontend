@@ -22,7 +22,7 @@ layout: Layout,
 formHelper: FormWithCSRF
 )
 
-@(form: Form[_], enrolmentList: List[String])(implicit request: Request[_], messages: Messages)
+@(form: Form[_], cancelableEnrolments: List[String], notCancelableEnrolments: List[String])(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = Some("EORI number management service"), backLinkUrl = Some(controllers.routes.CancelEoriController.showPage.toString())) {
 @formHelper(action = controllers.routes.EoriActionController.showPage) {
@@ -37,7 +37,7 @@ formHelper: FormWithCSRF
 
       <p class="govuk-body">@messages("eoriCancelConfirm.section1")</p>
         <ul class="govuk-list govuk-list--bullet">
-            @for(enrolment <- enrolmentList) {
+            @for(enrolment <- cancelableEnrolments) {
                 @if(enrolment.equals("HMRC-CTS-ORG")) {
                     @for(cts <- EnrolmentKeySubLists.ctsList) {
                         <li>@cts</li>
@@ -48,8 +48,20 @@ formHelper: FormWithCSRF
             }
         </ul>
 
-      <p class="govuk-body">@messages("eoriCancelConfirm.section2")</p>
-
+        @if(notCancelableEnrolments.nonEmpty) {
+            <p class="govuk-body">@messages("eoriCancelConfirm.section2")</p>
+            <ul class="govuk-list govuk-list--bullet">
+            @for(enrolment <- notCancelableEnrolments) {
+                @if(enrolment.equals("HMRC-CTS-ORG")) {
+                    @for(cts <- EnrolmentKeySubLists.ctsList) {
+                        <li>@cts</li>
+                    }
+                } else {
+                        <li>@EnrolmentKey.getDescription(enrolment).getOrElse(enrolment)</li>
+                }
+            }
+            </ul>
+        }
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
           <h3 class="govuk-fieldset__heading">

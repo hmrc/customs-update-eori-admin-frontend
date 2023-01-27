@@ -16,6 +16,7 @@
 
 package models
 
+import models.EnrolmentKey.{HMRC_ATAR_ORG, HMRC_ESC_ORG, HMRC_GVMS_ORG, HMRC_SS_ORG}
 
 
 object EnrolmentKey extends Enumeration {
@@ -57,4 +58,8 @@ object EnrolmentKeySubLists {
     "National Duty Repayment Centre (NDRC)",
     "C18"
   )
+}
+
+object CancelableEnrolments {
+    val values = List(HMRC_ATAR_ORG, HMRC_GVMS_ORG, HMRC_SS_ORG, HMRC_ESC_ORG).map(e => e.serviceName)
 }
