@@ -60,8 +60,6 @@ case class CancelEoriController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def continueCancelEori = auth { implicit request =>
-    println("### inside continuecanceleori")
-
     formConfirmCancelEori.bindFromRequest.fold(
       _ => Ok(viewConfirmCancelEori(formConfirmCancelEori)),
       cancelSubscription => Redirect(controllers.routes.CancelEoriController.showConfirmCancel(cancelSubscription.existingEori, cancelSubscription.dateOfEstablishment))
@@ -69,8 +67,6 @@ case class CancelEoriController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def showConfirmCancel(existingEori: String, establishmentDate: String) = auth.async { implicit request =>
-    println("### inside showConfirmCancel")
-
     enrolmentService.getEnrolments(Eori(existingEori), stringToLocalDate(establishmentDate))
       .map(enrolments => {
         val enrolmentList = enrolments.filter(_._2).map(_._1).toList
