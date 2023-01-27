@@ -60,9 +60,9 @@ case class CancelEoriController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def continueCancelEori = auth { implicit request =>
-    formConfirmCancelEori.bindFromRequest.fold(
-      _ => Ok(viewConfirmCancelEori(formConfirmCancelEori)),
-      cancelSubscription => Redirect(controllers.routes.CancelEoriController.showConfirmCancel(cancelSubscription.existingEori, cancelSubscription.dateOfEstablishment))
+    formCancelEori.bindFromRequest.fold(
+      _ => Ok(cancelEoriView(formCancelEori)),
+      eoriCancel => Redirect(controllers.routes.CancelEoriController.showConfirmCancel(eoriCancel.existingEori, eoriCancel.dateOfEstablishment))
     )
   }
 
@@ -72,6 +72,7 @@ case class CancelEoriController @Inject()(mcc: MessagesControllerComponents,
         val enrolmentList = enrolments.filter(_._2).map(_._1).toList
         Ok(viewConfirmCancelEori(
           formConfirmCancelEori.fill(ConfirmEoriCancel(existingEori, establishmentDate, enrolmentList.mkString(","), false)),
+          enrolmentList
         ))
       })
   }

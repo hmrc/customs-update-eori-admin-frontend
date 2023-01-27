@@ -36,6 +36,17 @@ formHelper: FormWithCSRF
     <div class="govuk-form-group">
 
       <p class="govuk-body">@messages("eoriCancelConfirm.section1")</p>
+        <ul class="govuk-list govuk-list--bullet">
+            @for(enrolment <- enrolmentList) {
+                @if(enrolment.equals("HMRC-CTS-ORG")) {
+                    @for(cts <- EnrolmentKeySubLists.ctsList) {
+                        <li>@cts</li>
+                    }
+                } else {
+                <li>@EnrolmentKey.getDescription(enrolment).getOrElse(enrolment)</li>
+                }
+            }
+        </ul>
 
       <p class="govuk-body">@messages("eoriCancelConfirm.section2")</p>
 
