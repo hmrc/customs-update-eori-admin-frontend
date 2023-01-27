@@ -16,14 +16,15 @@
 
 package controllers
 
-import models.EoriCancel
+import models.DateOfEstablishment.stringToLocalDate
+import models.{ConfirmEoriCancel, Eori, EoriCancel}
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.i18n.I18nSupport
 import play.api.mvc._
 import service.EnrolmentService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import views.html.CancelEoriView
+import views.html.{CancelEoriView, ConfirmCancelEoriView}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
@@ -31,6 +32,7 @@ import scala.concurrent.ExecutionContext
 @Singleton
 case class CancelEoriController @Inject()(mcc: MessagesControllerComponents,
                                           cancelEoriView: CancelEoriView,
+                                          viewConfirmCancelEori: ConfirmCancelEoriView,
                                           auth: AuthAction,
                                           enrolmentService: EnrolmentService
                                          )(implicit ec: ExecutionContext)
@@ -45,9 +47,37 @@ case class CancelEoriController @Inject()(mcc: MessagesControllerComponents,
       "date-of-establishment-year" -> text()
     )(EoriCancel.apply)(EoriCancel.unapply))
 
+  val formConfirmCancelEori = Form(
+    mapping(
+      "existing-eori" -> text(),
+      "date-of-establishment" -> text(),
+      "enrolment-list" -> text(),
+      "confirm" -> boolean
+    )(ConfirmEoriCancel.apply)(ConfirmEoriCancel.unapply))
+
   def showPage = auth { implicit request =>
     Ok(cancelEoriView(formCancelEori))
   }
 
+  def continueCancelEori = auth { implicit request =>
+    println("### inside continuecanceleori")
+
+    formConfirmCancelEori.bindFromRequest.fold(
+      _ => Ok(viewConfirmCancelEori(formConfirmCancelEori)),
+      cancelSubscription => Redirect(controllers.routes.CancelEoriController.showConfirmCancel(cancelSubscription.existingEori, cancelSubscription.dateOfEstablishment))
+    )
+  }
+
+  def showConfirmCancel(existingEori: String, establishmentDate: String) = auth.async { implicit request =>
+    println("### inside showConfirmCancel")
+
+    enrolmentService.getEnrolments(Eori(existingEori), stringToLocalDate(establishmentDate))
+      .map(enrolments => {
+        val enrolmentList = enrolments.filter(_._2).map(_._1).toList
+        Ok(viewConfirmCancelEori(
+          formConfirmCancelEori.fill(ConfirmEoriCancel(existingEori, establishmentDate, enrolmentList.mkString(","), false)),
+        ))
+      })
+  }
 
 }
