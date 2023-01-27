@@ -1,0 +1,73 @@
+@*
+* Copyright 2023 HM Revenue & Customs
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*@
+
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
+@import views.html.Layout
+
+@this(
+layout: Layout,
+formHelper: FormWithCSRF,
+govukDateInput: GovukDateInput,
+govukInput: GovukInput,
+govukButton: GovukButton
+)
+
+@(form: Form[_])(implicit request: Request[_], messages: Messages)
+
+@layout(pageTitle = Some("EORI number management service"), backLinkUrl = Some(controllers.routes.CancelSubscriptionsController.showPage.toString())) {
+@formHelper(action = controllers.routes.EoriActionController.showPage) {
+
+<div class="govuk-width-container ">
+  <main class="govuk-main-wrapper govuk-!-padding-0" id="main-content" role="main">
+    <h1 class="govuk-heading-l">
+      @messages("eoriCancelConfirm.heading")
+    </h1>
+
+    <div class="govuk-form-group">
+
+      <p class="govuk-body">@messages("eoriCancelConfirm.section1")</p>
+
+      <p class="govuk-body">@messages("eoriCancelConfirm.section2")</p>
+
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+          <h3 class="govuk-fieldset__heading">
+            @messages("eoriCancelConfirm.confirmQ")
+          </h3>
+        </legend>
+        <div class="govuk-radios govuk-radios--inline" data-module="govuk-radios">
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input" id="confirm-cancel-subscription-yes" name="confirm-cancel" type="radio" value="yes">
+            <label class="govuk-label govuk-radios__label" for="confirm-cancel-subscription-yes">@messages("eori.radioButtonYes")</label>
+          </div>
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input" id="confirm-cancel-subscription-no" name="confirm-cancel" type="radio" value="no">
+            <label class="govuk-label govuk-radios__label" for="confirm-cancel-subscription-no">@messages("eori.radioButtonNo")</label>
+          </div>
+        </div>
+      </fieldset>
+    </div>
+
+    <div class="govuk-button-group">
+      <button class="govuk-button" data-module="govuk-button">
+        @messages("eori.confirmButton")
+      </button>
+    </div>
+  </main>
+</div>
+
+}
+}
