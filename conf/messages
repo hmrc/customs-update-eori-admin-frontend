@@ -15,6 +15,8 @@ eori.currentEoriNumberQuestion=What is the company’s current EORI number?
 eori.newEoriNumberQuestion=What is the company’s new EORI number?
 eori.accountNumberHint=The first two letters are GB, followed by 12 digits. For example, GB123456123456.
 eori.backLinkText=Back
+eori.radioButtonYes=Yes
+eori.radioButtonNo=No
 
 # Eori Action
 eoriAction.successBannerEoriUpdateMessage=You should email the company confirming that their EORI number has been replaced.
