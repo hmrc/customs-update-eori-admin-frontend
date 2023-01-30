@@ -16,8 +16,6 @@
 
 package controllers
 
-import controllers.{AuthenticationBehaviours, EoriActionController}
-import models.EoriAction
 import org.mockito.Mockito.reset
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
@@ -26,19 +24,22 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.Application
 import play.api.http.Status
+import play.api.http.Status.SEE_OTHER
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.MessagesControllerComponents
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import views.html.EoriActionView
+import play.api.test.Helpers.{charset, contentType, defaultAwaitTimeout, redirectLocation, status}
+import service.EnrolmentService
+import views.html.{CancelEoriView, ConfirmCancelEoriView}
 
-class EoriActionControllerSpec
-  extends AnyWordSpec
-    with Matchers
-    with GuiceOneAppPerSuite
-    with AuthenticationBehaviours
-    with MockitoSugar
-    with BeforeAndAfterEach {
+import scala.concurrent.ExecutionContext.Implicits.global
+
+class CancelEoriControllerSpec extends AnyWordSpec
+  with Matchers
+  with GuiceOneAppPerSuite
+  with AuthenticationBehaviours
+  with MockitoSugar
+  with BeforeAndAfterEach {
   override def fakeApplication(): Application =
     new GuiceApplicationBuilder()
       .configure(
@@ -47,18 +48,18 @@ class EoriActionControllerSpec
       )
       .build()
 
-  val fakeRequest = FakeRequest("GET", "/")
-
+  private val fakeRequest = FakeRequest("GET", "/")
   private val mcc = app.injector.instanceOf[MessagesControllerComponents]
-  private val view = app.injector.instanceOf[EoriActionView]
-
-  private val controller = EoriActionController(mcc, view, testAuthAction)
+  private val viewCancelEori = app.injector.instanceOf[CancelEoriView]
+  private val viewConfirmCancel = app.injector.instanceOf[ConfirmCancelEoriView]
+  private val enrolmentService = app.injector.instanceOf[EnrolmentService]
+  private val controller = CancelEoriController(mcc, viewCancelEori, viewConfirmCancel, testAuthAction, enrolmentService)
 
   override def beforeEach(): Unit = {
     reset(mockAuthConnector)
   }
 
-  "Show Page" should {
+  "GET /" should {
     "return 200" in withSignedInUser {
       val result = controller.showPage(fakeRequest)
       status(result) shouldBe Status.OK
@@ -76,25 +77,15 @@ class EoriActionControllerSpec
       val Some(redirectURL) = redirectLocation(result)
       redirectURL should include("/stride/sign-in")
     }
+
   }
 
-  "Continue action" should {
-    "redirect to update page when user select update Eori number" in withSignedInUser {
+  "Continue update EORI" should {
+    "redirect to show confirmation page when user click continue" in withSignedInUser {
       val fakeRequestWithBody = FakeRequest("POST", "/")
-        .withFormUrlEncodedBody("update-or-cancel-eori" -> EoriAction.UPDATE_EORI.toString)
-      val result = controller.continueAction(fakeRequestWithBody)
-      status(result) shouldBe SEE_OTHER
-      val Some(redirectURL) = redirectLocation(result)
-      redirectURL should include("/update")
-    }
-
-    "redirect to cancel page when user select update Eori number" in withSignedInUser {
-      val fakeRequestWithBody = FakeRequest("POST", "/")
-        .withFormUrlEncodedBody("update-or-cancel-eori" -> EoriAction.CANCEL_EORI.toString)
-      val result = controller.continueAction(fakeRequestWithBody)
-      status(result) shouldBe SEE_OTHER
-      val Some(redirectURL) = redirectLocation(result)
-      redirectURL should include("/") // TODO fix that when we have cancel page
+        .withFormUrlEncodedBody("existingEori" -> "GB94449442349", "dateOfEstablishment" -> "04/11/1987")
+      val result = controller.continueCancelEori(fakeRequestWithBody)
+      status(result) shouldBe Status.OK
     }
 
     "redirect to STRIDE login for not logged-in user" in withNotSignedInUser {
@@ -104,4 +95,6 @@ class EoriActionControllerSpec
       redirectURL should include("/stride/sign-in")
     }
   }
+
 }
+
