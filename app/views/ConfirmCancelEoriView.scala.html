@@ -25,7 +25,7 @@ formHelper: FormWithCSRF
 @(form: Form[_], cancelableEnrolments: List[String], notCancelableEnrolments: List[String])(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = Some("EORI number management service"), backLinkUrl = Some(controllers.routes.CancelEoriController.showPage.toString())) {
-@formHelper(action = controllers.routes.EoriActionController.showPage) {
+@formHelper(action = controllers.routes.CancelEoriController.confirmCancelEori) {
 
 <div class="govuk-width-container ">
   <main class="govuk-main-wrapper govuk-!-padding-0" id="main-content" role="main">
@@ -33,6 +33,9 @@ formHelper: FormWithCSRF
       @messages("eoriCancelConfirm.heading")
     </h1>
 
+      <input type="hidden" id="existing-eori" name="existing-eori" value="@form.data.get("existing-eori")"/>
+      <input type="hidden" id="date-of-establishment" name="date-of-establishment" value="@form.data.get("date-of-establishment")"/>
+      <input type="hidden" id="enrolment-list" name="enrolment-list" value="@form.data.get("enrolment-list")"/>
     <div class="govuk-form-group">
 
       <p class="govuk-body">@messages("eoriCancelConfirm.section1")</p>
@@ -70,11 +73,11 @@ formHelper: FormWithCSRF
         </legend>
         <div class="govuk-radios govuk-radios--inline" data-module="govuk-radios">
           <div class="govuk-radios__item">
-            <input class="govuk-radios__input" id="confirm-cancel-subscription-yes" name="confirm-cancel" type="radio" value="yes">
+            <input class="govuk-radios__input" id="confirm-cancel-subscription-yes" name="confirm" type="radio" value="true">
             <label class="govuk-label govuk-radios__label" for="confirm-cancel-subscription-yes">@messages("eori.radioButtonYes")</label>
           </div>
           <div class="govuk-radios__item">
-            <input class="govuk-radios__input" id="confirm-cancel-subscription-no" name="confirm-cancel" type="radio" value="no">
+            <input class="govuk-radios__input" id="confirm-cancel-subscription-no" name="confirm" type="radio" value="false">
             <label class="govuk-label govuk-radios__label" for="confirm-cancel-subscription-no">@messages("eori.radioButtonNo")</label>
           </div>
         </div>

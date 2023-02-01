@@ -19,6 +19,7 @@ POST      /confirm                      controllers.UpdateEoriController.confirm
 
 
 # Cancel EORI
-GET       /cancel                       controllers.CancelEoriController.showPage
-POST       /cancel                      controllers.CancelEoriController.continueCancelEori
-GET        /confirmcancel               controllers.CancelEoriController.showConfirmCancel(existingEori: String, establishmentDate: String)
+GET       /cancel                      controllers.CancelEoriController.showPage
+POST      /cancel                      controllers.CancelEoriController.continueCancelEori
+GET       /confirmcancel               controllers.CancelEoriController.showConfirmCancel(existingEori: String, establishmentDate: String)
+POST      /confirmcancel               controllers.CancelEoriController.confirmCancelEori

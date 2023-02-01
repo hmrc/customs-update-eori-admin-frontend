@@ -17,22 +17,23 @@
 package controllers
 
 import models.DateOfEstablishment.stringToLocalDate
-import models.{CancelableEnrolments, ConfirmEoriCancel, Eori, EoriCancel}
+import models._
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.i18n.I18nSupport
 import play.api.mvc._
 import service.EnrolmentService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import views.html.{CancelEoriView, ConfirmCancelEoriView}
+import views.html.{CancelEoriProblemView, CancelEoriView, ConfirmCancelEoriView}
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 case class CancelEoriController @Inject()(mcc: MessagesControllerComponents,
                                           cancelEoriView: CancelEoriView,
                                           viewConfirmCancelEori: ConfirmCancelEoriView,
+                                          cancelEoriProblemView: CancelEoriProblemView,
                                           auth: AuthAction,
                                           enrolmentService: EnrolmentService
                                          )(implicit ec: ExecutionContext)
@@ -77,6 +78,42 @@ case class CancelEoriController @Inject()(mcc: MessagesControllerComponents,
           cancelableEnrolments, notCancelableEnrolments
         ))
       })
+  }
+
+  def confirmCancelEori = auth.async { implicit request =>
+    formConfirmCancelEori.bindFromRequest.fold(
+      _ => {
+        Future(Redirect(controllers.routes.CancelEoriController.showPage))
+      },
+      confirmEoriCancel => {
+        Future(Redirect(controllers.routes.EoriActionController.showPageOnSuccess(EoriAction.CANCEL_EORI.toString, confirmEoriCancel.existingEori, confirmEoriCancel.existingEori)))
+       /* if (confirmEoriCancel.isConfirmed) {
+          val updateAllEnrolments = Future.sequence(
+            confirmEoriCancel.enrolmentList.split(",")
+              .toList
+              .map(EnrolmentKey.getEnrolmentKey(_).get)
+              .map(enrolment =>
+                enrolmentService.cancel(
+                  Eori(confirmEoriCancel.existingEori),
+                  stringToLocalDate(confirmEoriCancel.dateOfEstablishment),
+                  enrolment
+                ).map(enrolment.serviceName -> _)
+              )
+          )
+          updateAllEnrolments.map { updates => {
+            val status = updates.map(either => either._1 -> either._2.isRight).toMap
+            if (status.exists(_._2 == false)) {
+              Ok(cancelEoriProblemView(status.filter(_._2 == true).keys.toList, status.filter(_._2 == false).keys.toList))
+            } else {
+              Redirect(controllers.routes.EoriActionController.showPageOnSuccess("", confirmEoriCancel.existingEori, confirmEoriCancel.existingEori))
+            }
+          }
+          }
+        } else {
+          Future(Redirect(controllers.routes.CancelEoriController.showPage))
+        }*/
+      }
+    )
   }
 
 }

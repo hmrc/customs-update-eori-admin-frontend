@@ -74,4 +74,31 @@ class EnrolmentService @Inject()(groupsConnector: QueryGroupsConnector,
     } yield enrolment
     result.value
   }
+
+  /**
+   * TODO API is not implemented yet. For now, it returns enrolments.
+   * @param existingEori
+   * @param date
+   * @param enrolmentKey
+   * @param hc
+   * @return
+   */
+  def cancel(existingEori: Eori, date: LocalDate, enrolmentKey: EnrolmentKeyType)
+            (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Enrolment]] = {
+    val queryGroups = groupsConnector.query(existingEori, enrolmentKey)
+    val queryUsers = usersConnector.query(existingEori, enrolmentKey)
+    val queryKnownFacts = knownFactsConnector.query(existingEori, enrolmentKey, date)
+
+    val result = for {
+      enrolment <- EitherT(queryKnownFacts) // ES20
+      userId <- EitherT(queryUsers) // ES0
+      groupId <- EitherT(queryGroups) // ES1
+//      _ <- EitherT(upsertKnownFactsConnector.upsert(existingEori, enrolmentKey, enrolment)) // ES6
+//      _ <- EitherT(deAllocateGroupConnector.deAllocateGroup(existingEori, enrolmentKey, groupId)) // ES9
+//      _ <- EitherT(removeKnownFactsConnector.remove(existingEori, enrolmentKey)) // ES7
+//      _ <- EitherT(reAllocateGroupConnector.reAllocate(existingEori, enrolmentKey, userId, groupId)) // ES8
+//      _ <- EitherT(customsDataStoreConnector.notify(existingEori))
+    } yield enrolment
+    result.value
+  }
 }
