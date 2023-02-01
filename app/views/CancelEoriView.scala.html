@@ -25,12 +25,12 @@
 @(form: Form[_])(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = Some("EORI number management service"), backLinkUrl = Some(controllers.routes.EoriActionController.showPage.toString())) {
-    @formHelper(action = controllers.routes.UpdateEoriController.continueUpdateEori) {
+    @formHelper(action = controllers.routes.CancelEoriController.continueCancelEori) {
 
         <div class="govuk-width-container">
             <main class="govuk-main-wrapper govuk-!-padding-0" id="main-content" role="main">
                 <h1 class="govuk-heading-l">
-                @messages("eori.replaceExistingEori")
+                @messages("eori.cancelExistingEori")
                 </h1>
 
                 <div class="govuk-form-group">
@@ -81,15 +81,15 @@
                         </div>
                     </fieldset>
                 </div>
-                <div class="govuk-form-group">
-                    <label class="govuk-label govuk-label--m" for="new-eori">
+                <!--<div class="govuk-form-group">
+                    <label class="govuk-label govuk-label&#45;&#45;m" for="new-eori">
                     @messages("eori.newEoriNumberQuestion")
                     </label>
                     <div id="account-number-hint" class="govuk-hint">
                     @messages("eori.accountNumberHint")
                     </div>
-                    <input class="govuk-input govuk-input--width-20" id="new-eori" name="new-eori" type="text" required>
-                </div>
+                    <input class="govuk-input govuk-input&#45;&#45;width-20" id="new-eori" name="new-eori" type="text" required>
+                </div>-->
                 <button class="govuk-button" data-module="govuk-button" id="submit-button" type="submit">
                 @messages("eori.continueButton")
                 </button>

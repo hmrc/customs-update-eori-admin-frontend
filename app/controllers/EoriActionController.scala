@@ -54,7 +54,7 @@ case class EoriActionController @Inject()(mcc: MessagesControllerComponents,
         case EoriAction(cancelOrUpdate, _, _) if EoriAction.withName(cancelOrUpdate) == EoriAction.UPDATE_EORI =>
           Redirect(controllers.routes.UpdateEoriController.showPage)
         case EoriAction(cancelOrUpdate, _, _) if EoriAction.withName(cancelOrUpdate) == EoriAction.CANCEL_EORI =>
-          Redirect(controllers.routes.EoriActionController.showPage)
+          Redirect(controllers.routes.CancelEoriController.showPage)
         case _ => Redirect(controllers.routes.EoriActionController.showPage)
       }
     )

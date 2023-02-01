@@ -4,6 +4,7 @@ service.text = This is your new service
 
 # Common messages
 eori.replaceExistingEori=Replace an existing EORI number
+eori.cancelExistingEori=Cancel a company's subscriptions to HMRC services
 eori.companyEstablishedDay=Day
 eori.companyEstablishedMonth=Month
 eori.companyEstablishedYear=Year
@@ -14,6 +15,8 @@ eori.currentEoriNumberQuestion=What is the company’s current EORI number?
 eori.newEoriNumberQuestion=What is the company’s new EORI number?
 eori.accountNumberHint=The first two letters are GB, followed by 12 digits. For example, GB123456123456.
 eori.backLinkText=Back
+eori.radioButtonYes=Yes
+eori.radioButtonNo=No
 
 # Eori Action
 eoriAction.successBannerEoriUpdateMessage=You should email the company confirming that their EORI number has been replaced.
@@ -38,3 +41,14 @@ eoriUpdate.problem.section4.phrase1=The EORI number {0} does not have any subscr
 eoriUpdate.problem.section4.phrase2=replace an existing EORI number or cancel subscriptions to HMRC services.
 eoriUpdate.problem.section4.phrase3=Go back to
 eoriUpdate.problem.homePageLink=Replace another EORI number or cancel subscriptions to HMRC services.
+
+
+# Cancel EORI
+eoriCancel.heading=Cancel a company’s subscriptions to HMRC services
+eoriCancelConfirm.heading=Cancel subscriptions for
+eoriCancelConfirm.section1=You can cancel ’s subscriptions for:
+eoriCancelConfirm.section2=You will not be able to cancel ’s subscriptions for:
+eoriCancelConfirm.confirmQ=Are you sure you want to cancel ’s subscriptions?
+eoriCancelConfirm.confirmQ=Are you sure you want to cancel ’s subscriptions?
+eoriAction.successBannerEoriCancelHeading=Subscriptions cancelled for {0}.
+eoriAction.successBannerEoriCancelContent=You should email the company confirming that EORI number {0} subscriptions have been cancelled for:

@@ -26,10 +26,30 @@
     @layout(pageTitle = Some("EORI number management service")) {
         @formHelper(action = controllers.routes.EoriActionController.continueAction) {
 
-            @if(form("existing-eori").value && form("new-eori").value) {
+            @if(form("update-or-cancel-eori").value.getOrElse("ERROR").equalsIgnoreCase("Update-Eori")) {
+                    <!--   Update Journey      -->
+                    @if(form("existing-eori").value && form("new-eori").value) {
+                    <div class="govuk-notification-banner govuk-notification-banner--success" role="alert"
+                         aria-labelledby="govuk-notification-banner-title"
+                         data-module="govuk-notification-banner" id="banner">
+                        <div class="govuk-notification-banner__header">
+                            <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title" >
+                                Success
+                            </h2>
+                        </div>
+                        <div class="govuk-notification-banner__content">
+                            <h3 class="govuk-notification-banner__heading">
+                                @messages("eoriAction.successBannerEoriUpdateContent", form("existing-eori").value.getOrElse("ERROR"), form("new-eori").value.getOrElse("ERROR"))
+                            </h3>
+                            <p class="govuk-body">@messages("eoriAction.successBannerEoriUpdateMessage")</p>
+                        </div>
+                    </div>
+                    }
+            }else{
+                <!--   TODO   Cancel Journey - Content to be changed      -->
                 <div class="govuk-notification-banner govuk-notification-banner--success" role="alert"
-                aria-labelledby="govuk-notification-banner-title"
-                data-module="govuk-notification-banner" id="banner">
+                     aria-labelledby="govuk-notification-banner-title"
+                     data-module="govuk-notification-banner" id="banner">
                     <div class="govuk-notification-banner__header">
                         <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title" >
                             Success
@@ -37,12 +57,12 @@
                     </div>
                     <div class="govuk-notification-banner__content">
                         <h3 class="govuk-notification-banner__heading">
-                        @messages("eoriAction.successBannerEoriUpdateContent", form("existing-eori").value.getOrElse("ERROR"), form("new-eori").value.getOrElse("ERROR"))
-                        </h3>
-                        <p class="govuk-body">@messages("eoriAction.successBannerEoriUpdateMessage")</p>
+                            @messages("eoriAction.successBannerEoriCancelHeading", form("existing-eori").value.getOrElse("ERROR"))                        </h3>
+                        <p class="govuk-body">@messages("eoriAction.successBannerEoriCancelContent", form("existing-eori").value.getOrElse("ERROR"))</p>
                     </div>
                 </div>
             }
+
             <div class="govuk-form-group">
                 <fieldset class="govuk-fieldset">
 

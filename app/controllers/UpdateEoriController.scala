@@ -17,7 +17,7 @@
 package controllers
 
 import models.DateOfEstablishment.stringToLocalDate
-import models.{ConfirmEoriUpdate, EnrolmentKey, Eori, EoriUpdate}
+import models.{ConfirmEoriUpdate, EnrolmentKey, Eori, EoriAction, EoriUpdate}
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.i18n.I18nSupport
@@ -105,7 +105,7 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
             if (status.exists(_._2 == false)) {
               Ok(viewUpdateEoriProblem(status.filter(_._2 == true).keys.toList, status.filter(_._2 == false).keys.toList, confirmEoriUpdate.newEori))
             } else {
-              Redirect(controllers.routes.EoriActionController.showPageOnSuccess("", confirmEoriUpdate.existingEori, confirmEoriUpdate.newEori))
+              Redirect(controllers.routes.EoriActionController.showPageOnSuccess(EoriAction.UPDATE_EORI.toString , confirmEoriUpdate.existingEori, confirmEoriUpdate.newEori))
             }
           }
           }

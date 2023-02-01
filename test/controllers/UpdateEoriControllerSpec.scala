@@ -16,7 +16,6 @@
 
 package controllers
 
-
 import org.mockito.Mockito.reset
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
