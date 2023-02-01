@@ -81,7 +81,7 @@ class CancelEoriControllerSpec extends AnyWordSpec
 
   }
 
-  "Continue update EORI" should {
+  "Continue cancel EORI" should {
     "redirect to show confirmation page when user click continue" in withSignedInUser {
       val fakeRequestWithBody = FakeRequest("POST", "/")
         .withFormUrlEncodedBody("existingEori" -> "GB94449442349", "dateOfEstablishment" -> "04/11/1987")
@@ -95,6 +95,23 @@ class CancelEoriControllerSpec extends AnyWordSpec
       val Some(redirectURL) = redirectLocation(result)
       redirectURL should include("/stride/sign-in")
     }
+  }
+
+  "Confirm cancel EORI" should {
+    "redirect to show confirmation page when user click continue" in withSignedInUser {
+      val fakeRequestWithBody = FakeRequest("POST", "/")
+        .withFormUrlEncodedBody("existingEori" -> "GB123456789123", "dateOfEstablishment" -> "11/12/1997")
+      val result = controller.confirmCancelEori(fakeRequestWithBody)
+      status(result) shouldBe Status.SEE_OTHER
+    }
+
+    "redirect to STRIDE login for not logged-in user" in withNotSignedInUser {
+      val result = controller.showPage(fakeRequest)
+      status(result) shouldBe SEE_OTHER
+      val Some(redirectURL) = redirectLocation(result)
+      redirectURL should include("/stride/sign-in")
+    }
+
   }
 
 }
