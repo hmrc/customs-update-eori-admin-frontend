@@ -57,9 +57,8 @@
                     </div>
                     <div class="govuk-notification-banner__content">
                         <h3 class="govuk-notification-banner__heading">
-                            @messages("eoriAction.successBannerEoriUpdateContent", form("existing-eori").value.getOrElse("ERROR"), form("new-eori").value.getOrElse("ERROR"))
-                        </h3>
-                        <p class="govuk-body">@messages("eoriAction.successBannerEoriUpdateMessage")</p>
+                            @messages("eoriAction.successBannerEoriCancelHeading", form("existing-eori").value.getOrElse("ERROR"))                        </h3>
+                        <p class="govuk-body">@messages("eoriAction.successBannerEoriCancelContent", form("existing-eori").value.getOrElse("ERROR"))</p>
                     </div>
                 </div>
             }
