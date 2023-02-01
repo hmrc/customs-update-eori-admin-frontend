@@ -26,7 +26,7 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.http.Status.NO_CONTENT
+import play.api.http.Status.{NOT_FOUND, NO_CONTENT}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import java.time.LocalDate
@@ -370,7 +370,7 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
   }
 
   "Update Eori" should {
-    "get enrolments if existing EORI is found by the enrolment service" in {
+    "update enrolments if existing EORI is found by the enrolment service" in {
       val oldEori = Eori("GB123456789005")
       val newEori = Eori("GB9866255332")
       val dateOfEstablishment = "03/11/1997"
@@ -403,5 +403,290 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       result shouldBe Right(mockData);
     }
 
+    "update enrolments if existing EORI is found by the enrolment service and notify return 404" in {
+      val oldEori = Eori("GB123456789005")
+      val newEori = Eori("GB9866255332")
+      val dateOfEstablishment = "03/11/1997"
+
+      val mockData: Enrolment = Enrolment(Seq(KeyValue("EORINumber", oldEori.toString)), Seq(KeyValue("DateOfEstablishment", dateOfEstablishment)));
+
+      when(mockQueryKnownFacts.query(meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(mockData)))
+      when(mockQueryUsers.query(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(UserId("0012236665"))))
+      when(mockQueryGroups.query(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(GroupId("90ccf333-65d2-4bf2-a008-abc23783"))))
+
+      when(mockUpsertKnownFacts.upsert(meq(newEori), meq(HMRC_CUS_ORG), meq(mockData))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(NO_CONTENT)))
+
+      when(mockDeAllocateGroup.deAllocateGroup(meq(oldEori), meq(HMRC_CUS_ORG), meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783")))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(NO_CONTENT)))
+
+      when(mockReAllocateGroup.reAllocate(meq(newEori), meq(HMRC_CUS_ORG), meq(UserId("0012236665")), meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783")))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(NO_CONTENT)))
+
+      when(mockRemoveKnownFacts.remove(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(NO_CONTENT)))
+
+      when(mockCustomsDataStore.notify(meq(newEori))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(NOT_FOUND)))
+
+      val result = service.update(oldEori, LocalDate.of(1997, 11, 3), newEori, HMRC_CUS_ORG).futureValue
+      result shouldBe Right(mockData);
+    }
+
+    "return Error Message if there is no user Id" in {
+      val oldEori = Eori("GB123456789005")
+      val newEori = Eori("GB9866255332")
+      val dateOfEstablishment = "03/11/1997"
+
+      val mockData: Enrolment = Enrolment(Seq(KeyValue("EORINumber", oldEori.toString)), Seq(KeyValue("DateOfEstablishment", dateOfEstablishment)));
+
+      when(mockQueryKnownFacts.query(meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(mockData)))
+      when(mockQueryUsers.query(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find User for existing EORI: $oldEori"))))
+
+      val result = service.update(oldEori, LocalDate.of(1997, 11, 3), newEori, HMRC_CUS_ORG).futureValue
+      result shouldBe Left(ErrorMessage(s"Could not find User for existing EORI: $oldEori"))
+    }
+
+    "return Error Message if there is no group Id" in {
+      val oldEori = Eori("GB123456789005")
+      val newEori = Eori("GB9866255332")
+      val dateOfEstablishment = "03/11/1997"
+
+      val mockData: Enrolment = Enrolment(Seq(KeyValue("EORINumber", oldEori.toString)), Seq(KeyValue("DateOfEstablishment", dateOfEstablishment)));
+
+      when(mockQueryKnownFacts.query(meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(mockData)))
+      when(mockQueryUsers.query(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(UserId("0012236665"))))
+      when(mockQueryGroups.query(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Group for existing EORI: $oldEori"))))
+
+      val result = service.update(oldEori, LocalDate.of(1997, 11, 3), newEori, HMRC_CUS_ORG).futureValue
+      result shouldBe Left(ErrorMessage(s"Could not find Group for existing EORI: $oldEori"))
+    }
+
+    "return Error Message if upsert known facts to new number fails" in {
+      val oldEori = Eori("GB123456789005")
+      val newEori = Eori("GB9866255332")
+      val dateOfEstablishment = "03/11/1997"
+
+      val mockData: Enrolment = Enrolment(Seq(KeyValue("EORINumber", oldEori.toString)), Seq(KeyValue("DateOfEstablishment", dateOfEstablishment)));
+
+      when(mockQueryKnownFacts.query(meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(mockData)))
+      when(mockQueryUsers.query(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(UserId("0012236665"))))
+      when(mockQueryGroups.query(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(GroupId("90ccf333-65d2-4bf2-a008-abc23783"))))
+
+      when(mockUpsertKnownFacts.upsert(meq(newEori), meq(HMRC_CUS_ORG), meq(mockData))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Left(ErrorMessage(s"Upsert failed with HTTP status: 500"))))
+
+      val result = service.update(oldEori, LocalDate.of(1997, 11, 3), newEori, HMRC_CUS_ORG).futureValue
+      result shouldBe Left(ErrorMessage(s"Upsert failed with HTTP status: 500"))
+    }
+
+    "return Error Message if de allocate from group fails" in {
+      val oldEori = Eori("GB123456789005")
+      val newEori = Eori("GB9866255332")
+      val dateOfEstablishment = "03/11/1997"
+
+      val mockData: Enrolment = Enrolment(Seq(KeyValue("EORINumber", oldEori.toString)), Seq(KeyValue("DateOfEstablishment", dateOfEstablishment)));
+
+      when(mockQueryKnownFacts.query(meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(mockData)))
+      when(mockQueryUsers.query(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(UserId("0012236665"))))
+      when(mockQueryGroups.query(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(GroupId("90ccf333-65d2-4bf2-a008-abc23783"))))
+
+      when(mockUpsertKnownFacts.upsert(meq(newEori), meq(HMRC_CUS_ORG), meq(mockData))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(NO_CONTENT)))
+
+      when(mockDeAllocateGroup.deAllocateGroup(meq(oldEori), meq(HMRC_CUS_ORG), meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783")))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Left(ErrorMessage(s"Delete enrolment failed with HTTP status: 500"))))
+
+      val result = service.update(oldEori, LocalDate.of(1997, 11, 3), newEori, HMRC_CUS_ORG).futureValue
+      result shouldBe Left(ErrorMessage(s"Delete enrolment failed with HTTP status: 500"))
+    }
+
+    "return Error Message if re allocate to group fails" in {
+      val oldEori = Eori("GB123456789005")
+      val newEori = Eori("GB9866255332")
+      val dateOfEstablishment = "03/11/1997"
+
+      val mockData: Enrolment = Enrolment(Seq(KeyValue("EORINumber", oldEori.toString)), Seq(KeyValue("DateOfEstablishment", dateOfEstablishment)));
+
+      when(mockQueryKnownFacts.query(meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(mockData)))
+      when(mockQueryUsers.query(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(UserId("0012236665"))))
+      when(mockQueryGroups.query(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(GroupId("90ccf333-65d2-4bf2-a008-abc23783"))))
+
+      when(mockUpsertKnownFacts.upsert(meq(newEori), meq(HMRC_CUS_ORG), meq(mockData))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(NO_CONTENT)))
+
+      when(mockDeAllocateGroup.deAllocateGroup(meq(oldEori), meq(HMRC_CUS_ORG), meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783")))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(NO_CONTENT)))
+
+      when(mockRemoveKnownFacts.remove(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(NO_CONTENT)))
+
+      when(mockReAllocateGroup.reAllocate(meq(newEori), meq(HMRC_CUS_ORG), meq(UserId("0012236665")), meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783")))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Left(ErrorMessage(s"Allocate group failed with HTTP status: 500 (Some Text)"))))
+
+      val result = service.update(oldEori, LocalDate.of(1997, 11, 3), newEori, HMRC_CUS_ORG).futureValue
+      result shouldBe Left(ErrorMessage(s"Allocate group failed with HTTP status: 500 (Some Text)"))
+    }
+
+    "return Error Message if remove known facts of old number fails" in {
+      val oldEori = Eori("GB123456789005")
+      val newEori = Eori("GB9866255332")
+      val dateOfEstablishment = "03/11/1997"
+
+      val mockData: Enrolment = Enrolment(Seq(KeyValue("EORINumber", oldEori.toString)), Seq(KeyValue("DateOfEstablishment", dateOfEstablishment)));
+
+      when(mockQueryKnownFacts.query(meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(mockData)))
+      when(mockQueryUsers.query(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(UserId("0012236665"))))
+      when(mockQueryGroups.query(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(GroupId("90ccf333-65d2-4bf2-a008-abc23783"))))
+
+      when(mockUpsertKnownFacts.upsert(meq(newEori), meq(HMRC_CUS_ORG), meq(mockData))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(NO_CONTENT)))
+
+      when(mockDeAllocateGroup.deAllocateGroup(meq(oldEori), meq(HMRC_CUS_ORG), meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783")))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(NO_CONTENT)))
+
+      when(mockReAllocateGroup.reAllocate(meq(newEori), meq(HMRC_CUS_ORG), meq(UserId("0012236665")), meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783")))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(NO_CONTENT)))
+
+      when(mockRemoveKnownFacts.remove(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Left(ErrorMessage(s"Remove known facts failed with HTTP status: 500"))))
+
+      val result = service.update(oldEori, LocalDate.of(1997, 11, 3), newEori, HMRC_CUS_ORG).futureValue
+      result shouldBe Left(ErrorMessage(s"Remove known facts failed with HTTP status: 500"))
+    }
+
+    "return Error Message if notify fails" in {
+      val oldEori = Eori("GB123456789005")
+      val newEori = Eori("GB9866255332")
+      val dateOfEstablishment = "03/11/1997"
+
+      val mockData: Enrolment = Enrolment(Seq(KeyValue("EORINumber", oldEori.toString)), Seq(KeyValue("DateOfEstablishment", dateOfEstablishment)));
+
+      when(mockQueryKnownFacts.query(meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(mockData)))
+      when(mockQueryUsers.query(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(UserId("0012236665"))))
+      when(mockQueryGroups.query(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(GroupId("90ccf333-65d2-4bf2-a008-abc23783"))))
+
+      when(mockUpsertKnownFacts.upsert(meq(newEori), meq(HMRC_CUS_ORG), meq(mockData))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(NO_CONTENT)))
+
+      when(mockDeAllocateGroup.deAllocateGroup(meq(oldEori), meq(HMRC_CUS_ORG), meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783")))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(NO_CONTENT)))
+
+      when(mockReAllocateGroup.reAllocate(meq(newEori), meq(HMRC_CUS_ORG), meq(UserId("0012236665")), meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783")))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(NO_CONTENT)))
+
+      when(mockRemoveKnownFacts.remove(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(NO_CONTENT)))
+
+      when(mockCustomsDataStore.notify(meq(newEori))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Left(ErrorMessage(s"Notification failed with HTTP status: 500"))))
+
+      val result = service.update(oldEori, LocalDate.of(1997, 11, 3), newEori, HMRC_CUS_ORG).futureValue
+      result shouldBe Left(ErrorMessage(s"Notification failed with HTTP status: 500"))
+    }
+
+  }
+
+  "Cancel Eori" should {
+    "cancel enrolments if existing EORI is found by the enrolment service" in {
+      val oldEori = Eori("GB123456789006")
+      val dateOfEstablishment = "03/11/1997"
+
+      val mockData: Enrolment = Enrolment(Seq(KeyValue("EORINumber", oldEori.toString)), Seq(KeyValue("DateOfEstablishment", dateOfEstablishment)));
+
+      when(mockQueryKnownFacts.query(meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(mockData)))
+      when(mockQueryGroups.query(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(GroupId("90ccf333-65d2-4bf2-a008-abc23783"))))
+
+      when(mockDeAllocateGroup.deAllocateGroup(meq(oldEori), meq(HMRC_CUS_ORG), meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783")))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(NO_CONTENT)))
+
+      when(mockRemoveKnownFacts.remove(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(NO_CONTENT)))
+
+      val result = service.cancel(oldEori, LocalDate.of(1997, 11, 3), HMRC_CUS_ORG).futureValue
+      result shouldBe Right(mockData);
+    }
+
+    "return Error Message if there is no group Id" in {
+      val oldEori = Eori("GB123456789006")
+      val dateOfEstablishment = "03/11/1997"
+
+      val mockData: Enrolment = Enrolment(Seq(KeyValue("EORINumber", oldEori.toString)), Seq(KeyValue("DateOfEstablishment", dateOfEstablishment)));
+
+      when(mockQueryKnownFacts.query(meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(mockData)))
+
+      when(mockQueryGroups.query(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Group for existing EORI: $oldEori"))))
+
+      val result = service.cancel(oldEori, LocalDate.of(1997, 11, 3), HMRC_CUS_ORG).futureValue
+      result shouldBe Left(ErrorMessage(s"Could not find Group for existing EORI: $oldEori"));
+    }
+
+    "return Error Message if de allocate from group fails" in {
+      val oldEori = Eori("GB123456789006")
+      val dateOfEstablishment = "03/11/1997"
+
+      val mockData: Enrolment = Enrolment(Seq(KeyValue("EORINumber", oldEori.toString)), Seq(KeyValue("DateOfEstablishment", dateOfEstablishment)));
+
+      when(mockQueryKnownFacts.query(meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(mockData)))
+
+      when(mockQueryGroups.query(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(GroupId("90ccf333-65d2-4bf2-a008-abc23783"))))
+
+      when(mockDeAllocateGroup.deAllocateGroup(meq(oldEori), meq(HMRC_CUS_ORG), meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783")))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Left(ErrorMessage(s"Delete enrolment failed with HTTP status: 500"))))
+
+      val result = service.cancel(oldEori, LocalDate.of(1997, 11, 3), HMRC_CUS_ORG).futureValue
+      result shouldBe Left(ErrorMessage(s"Delete enrolment failed with HTTP status: 500"));
+    }
+
+    "return Error Message if remove known facts fails" in {
+      val oldEori = Eori("GB123456789006")
+      val dateOfEstablishment = "03/11/1997"
+
+      val mockData: Enrolment = Enrolment(Seq(KeyValue("EORINumber", oldEori.toString)), Seq(KeyValue("DateOfEstablishment", dateOfEstablishment)));
+
+      when(mockQueryKnownFacts.query(meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(mockData)))
+
+      when(mockQueryGroups.query(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(GroupId("90ccf333-65d2-4bf2-a008-abc23783"))))
+
+      when(mockDeAllocateGroup.deAllocateGroup(meq(oldEori), meq(HMRC_CUS_ORG), meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783")))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(NO_CONTENT)))
+
+      when(mockRemoveKnownFacts.remove(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Left(ErrorMessage(s"Remove known facts failed with HTTP status: 500"))))
+
+      val result = service.cancel(oldEori, LocalDate.of(1997, 11, 3), HMRC_CUS_ORG).futureValue
+      result shouldBe Left(ErrorMessage(s"Remove known facts failed with HTTP status: 500"));
+    }
   }
 }

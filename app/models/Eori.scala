@@ -26,7 +26,7 @@ case class Eori(eori: String) {
    * Once we figure out what type of masking we are going to use across, we can alter logic here
    * @return masked value of eori
    */
-  def getMaskedValue() : String = eori.substring(eori.length/2, eori.length)
+  def getMaskedValue() : String = eori
 }
 
 object Eori {
