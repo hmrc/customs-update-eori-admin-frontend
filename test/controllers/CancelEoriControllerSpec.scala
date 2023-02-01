@@ -30,7 +30,7 @@ import play.api.mvc.MessagesControllerComponents
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{charset, contentType, defaultAwaitTimeout, redirectLocation, status}
 import service.EnrolmentService
-import views.html.{CancelEoriView, ConfirmCancelEoriView}
+import views.html.{CancelEoriProblemView, CancelEoriView, ConfirmCancelEoriView}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -52,8 +52,9 @@ class CancelEoriControllerSpec extends AnyWordSpec
   private val mcc = app.injector.instanceOf[MessagesControllerComponents]
   private val viewCancelEori = app.injector.instanceOf[CancelEoriView]
   private val viewConfirmCancel = app.injector.instanceOf[ConfirmCancelEoriView]
+  private val viewCancelEoriProblem = app.injector.instanceOf[CancelEoriProblemView]
   private val enrolmentService = app.injector.instanceOf[EnrolmentService]
-  private val controller = CancelEoriController(mcc, viewCancelEori, viewConfirmCancel, testAuthAction, enrolmentService)
+  private val controller = CancelEoriController(mcc, viewCancelEori, viewConfirmCancel, viewCancelEoriProblem, testAuthAction, enrolmentService)
 
   override def beforeEach(): Unit = {
     reset(mockAuthConnector)
