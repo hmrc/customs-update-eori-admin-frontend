@@ -55,7 +55,7 @@ class UpsertKnownFactsConnector @Inject()(httpClient: HttpClient, config: AppCon
       _.status match {
         case NO_CONTENT => Right(NO_CONTENT)
         case failStatus => {
-          logger.error(s"Upsert failed with HTTP status: $failStatus for existing EORI: ${eori.getMaskedValue()}")
+          logger.error(s"Upsert failed with HTTP status: $failStatus for existing EORI: $eori")
           Left(ErrorMessage(s"Upsert failed with HTTP status: $failStatus"))
         }
       }

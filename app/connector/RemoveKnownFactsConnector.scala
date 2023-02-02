@@ -36,7 +36,7 @@ class RemoveKnownFactsConnector @Inject()(httpClient: HttpClient, config: AppCon
       _.status match {
         case NO_CONTENT => Right(NO_CONTENT)
         case failStatus => {
-          logger.error(s"Remove known facts failed with HTTP status: $failStatus for existing EORI: ${eori.getMaskedValue()}")
+          logger.error(s"Remove known facts failed with HTTP status: $failStatus for existing EORI: $eori")
           Left(ErrorMessage(s"Remove known facts failed with HTTP status: $failStatus"))
         }
 

@@ -16,13 +16,20 @@
 
 package models
 
-import play.api.libs.json.Json
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-case class Eori(eori: String) {
-  override def toString: String = eori
+class DateOfEstablishmentSpec
+  extends AnyWordSpec
+  with Matchers {
+
+  "Date of establishment" should {
+    "return the correct date for a string" in {
+      val strDate = "12/02/2000"
+      val result = DateOfEstablishment.stringToLocalDate(strDate)
+      result.getYear shouldBe 2000
+      result.getMonthValue shouldBe 2
+      result.getDayOfMonth shouldBe 12
+    }
+  }
 }
-
-object Eori {
-  implicit val formats = Json.format[Eori]
-}
-

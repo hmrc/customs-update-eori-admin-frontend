@@ -18,79 +18,78 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 
 @this(
-layout: Layout,
-formHelper: FormWithCSRF
+        layout: Layout,
+        formHelper: FormWithCSRF
 )
 
 @(form: Form[_], cancelableEnrolments: List[String], notCancelableEnrolments: List[String])(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = Some("EORI number management service"), backLinkUrl = Some(controllers.routes.CancelEoriController.showPage.toString())) {
-@formHelper(action = controllers.routes.CancelEoriController.confirmCancelEori) {
+    @formHelper(action = controllers.routes.CancelEoriController.confirmCancelEori) {
 
-<div class="govuk-width-container ">
-  <main class="govuk-main-wrapper govuk-!-padding-0" id="main-content" role="main">
-    <h1 class="govuk-heading-l">
-      @messages("eoriCancelConfirm.heading")
-    </h1>
+        <div class="govuk-width-container ">
+            <main class="govuk-main-wrapper govuk-!-padding-0" id="main-content" role="main">
+                <h1 class="govuk-heading-l">
+                @messages("eoriCancelConfirm.heading")
+                </h1>
 
-      <input type="hidden" id="existing-eori" name="existing-eori" value="@form.data.get("existing-eori")"/>
-      <input type="hidden" id="date-of-establishment" name="date-of-establishment" value="@form.data.get("date-of-establishment")"/>
-      <input type="hidden" id="enrolment-list" name="enrolment-list" value="@form.data.get("enrolment-list")"/>
-    <div class="govuk-form-group">
-
-      <p class="govuk-body">@messages("eoriCancelConfirm.section1")</p>
-        <ul class="govuk-list govuk-list--bullet">
-            @for(enrolment <- cancelableEnrolments) {
-                @if(enrolment.equals("HMRC-CTS-ORG")) {
-                    @for(cts <- EnrolmentKeySubLists.ctsList) {
-                        <li>@cts</li>
+                <input type="hidden" id="existing-eori" name="existing-eori" value="@form.data.get("existing-eori")"/>
+                <input type="hidden" id="date-of-establishment" name="date-of-establishment" value="@form.data.get("date-of-establishment")"/>
+                <input type="hidden" id="enrolment-list" name="enrolment-list" value="@form.data.get("enrolment-list")"/>
+                <div class="govuk-form-group">
+                    <p class="govuk-body">@messages("eoriCancelConfirm.section1")</p>
+                    <ul class="govuk-list govuk-list--bullet">
+                    @for(enrolment <- cancelableEnrolments) {
+                        @if(enrolment.equals("HMRC-CTS-ORG")) {
+                            @for(cts <- EnrolmentKeySubLists.ctsList) {
+                                <li>@cts</li>
+                            }
+                        } else {
+                            <li>@EnrolmentKey.getDescription(enrolment).getOrElse(enrolment)</li>
+                        }
                     }
-                } else {
-                <li>@EnrolmentKey.getDescription(enrolment).getOrElse(enrolment)</li>
-                }
-            }
-        </ul>
+                    </ul>
 
-        @if(notCancelableEnrolments.nonEmpty) {
-            <p class="govuk-body">@messages("eoriCancelConfirm.section2")</p>
-            <ul class="govuk-list govuk-list--bullet">
-            @for(enrolment <- notCancelableEnrolments) {
-                @if(enrolment.equals("HMRC-CTS-ORG")) {
-                    @for(cts <- EnrolmentKeySubLists.ctsList) {
-                        <li>@cts</li>
+                    @if(notCancelableEnrolments.nonEmpty) {
+                        <p class="govuk-body">@messages("eoriCancelConfirm.section2")</p>
+                        <ul class="govuk-list govuk-list--bullet">
+                        @for(enrolment <- notCancelableEnrolments) {
+                            @if(enrolment.equals("HMRC-CTS-ORG")) {
+                                @for(cts <- EnrolmentKeySubLists.ctsList) {
+                                    <li>@cts</li>
+                                }
+                            } else {
+                                <li>@EnrolmentKey.getDescription(enrolment).getOrElse(enrolment)</li>
+                            }
+                        }
+                        </ul>
                     }
-                } else {
-                        <li>@EnrolmentKey.getDescription(enrolment).getOrElse(enrolment)</li>
-                }
-            }
-            </ul>
-        }
-      <fieldset class="govuk-fieldset">
-        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-          <h3 class="govuk-fieldset__heading">
-            @messages("eoriCancelConfirm.confirmQ")
-          </h3>
-        </legend>
-        <div class="govuk-radios govuk-radios--inline" data-module="govuk-radios">
-          <div class="govuk-radios__item">
-            <input class="govuk-radios__input" id="confirm-cancel-subscription-yes" name="confirm" type="radio" value="true">
-            <label class="govuk-label govuk-radios__label" for="confirm-cancel-subscription-yes">@messages("eori.radioButtonYes")</label>
-          </div>
-          <div class="govuk-radios__item">
-            <input class="govuk-radios__input" id="confirm-cancel-subscription-no" name="confirm" type="radio" value="false">
-            <label class="govuk-label govuk-radios__label" for="confirm-cancel-subscription-no">@messages("eori.radioButtonNo")</label>
-          </div>
+                    <fieldset class="govuk-fieldset">
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                            <h3 class="govuk-fieldset__heading">
+                            @messages("eoriCancelConfirm.confirmQ")
+                            </h3>
+                        </legend>
+                        <div class="govuk-radios govuk-radios--inline" data-module="govuk-radios">
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" id="confirm-cancel-subscription-yes" name="confirm" type="radio" value="true">
+                                <label class="govuk-label govuk-radios__label" for="confirm-cancel-subscription-yes">@messages("eori.radioButtonYes")</label>
+                            </div>
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" id="confirm-cancel-subscription-no" name="confirm" type="radio" value="false">
+                                <label class="govuk-label govuk-radios__label" for="confirm-cancel-subscription-no">@messages("eori.radioButtonNo")</label>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="govuk-button-group">
+                    <button class="govuk-button" data-module="govuk-button">
+                    @messages("eori.confirmButton")
+                    </button>
+                </div>
+            </main>
         </div>
-      </fieldset>
-    </div>
 
-    <div class="govuk-button-group">
-      <button class="govuk-button" data-module="govuk-button">
-        @messages("eori.confirmButton")
-      </button>
-    </div>
-  </main>
-</div>
-
-}
+    }
 }

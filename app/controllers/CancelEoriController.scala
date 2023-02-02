@@ -63,19 +63,20 @@ case class CancelEoriController @Inject()(mcc: MessagesControllerComponents,
   def continueCancelEori = auth { implicit request =>
     formCancelEori.bindFromRequest.fold(
       _ => Ok(cancelEoriView(formCancelEori)),
-      eoriCancel => Redirect(controllers.routes.CancelEoriController.showConfirmCancel(eoriCancel.existingEori, eoriCancel.dateOfEstablishment))
+      eoriCancel => Redirect(controllers.routes.CancelEoriController.showConfirmCancelPage(eoriCancel.existingEori, eoriCancel.dateOfEstablishment))
     )
   }
 
-  def showConfirmCancel(existingEori: String, establishmentDate: String) = auth.async { implicit request =>
+  def showConfirmCancelPage(existingEori: String, establishmentDate: String) = auth.async { implicit request =>
     enrolmentService.getEnrolments(Eori(existingEori), stringToLocalDate(establishmentDate))
       .map(enrolments => {
         val enrolmentList = enrolments.filter(_._2).map(_._1).toList
         val cancelableEnrolments = enrolmentList.filter(e => CancelableEnrolments.values.contains(e))
         val notCancelableEnrolments = enrolmentList.filter(e => !CancelableEnrolments.values.contains(e))
         Ok(viewConfirmCancelEori(
-          formConfirmCancelEori.fill(ConfirmEoriCancel(existingEori, establishmentDate, enrolmentList.mkString(","), false)),
-          cancelableEnrolments, notCancelableEnrolments
+          formConfirmCancelEori.fill(ConfirmEoriCancel(existingEori, establishmentDate, cancelableEnrolments.mkString(","), false)),
+          cancelableEnrolments,
+          notCancelableEnrolments
         ))
       })
   }
@@ -86,7 +87,7 @@ case class CancelEoriController @Inject()(mcc: MessagesControllerComponents,
         Future(Redirect(controllers.routes.CancelEoriController.showPage))
       },
       confirmEoriCancel => {
-        Future(Redirect(controllers.routes.EoriActionController.showPageOnSuccess(EoriAction.CANCEL_EORI.toString, confirmEoriCancel.existingEori, confirmEoriCancel.existingEori)))
+        Future(Redirect(controllers.routes.EoriActionController.showPageOnSuccess(EoriAction.CANCEL_EORI.toString, confirmEoriCancel.existingEori, "")))
        /* if (confirmEoriCancel.isConfirmed) {
           val updateAllEnrolments = Future.sequence(
             confirmEoriCancel.enrolmentList.split(",")

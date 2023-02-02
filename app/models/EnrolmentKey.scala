@@ -24,7 +24,6 @@ object EnrolmentKey extends Enumeration {
   case class EnrolmentKeyVal(serviceName: String, description: String) extends super.Val {
     def getEnrolmentKey(eori: Eori): String = s"$serviceName~EORINumber~$eori"
     def getEnrolmentKey(eori: String): String = s"$serviceName~EORINumber~$eori"
-    def getMaskedEnrolmentKey(eori: Eori) : String = s"$serviceName~EORINumber~${eori.getMaskedValue()}"
   }
 
   import scala.language.implicitConversions
