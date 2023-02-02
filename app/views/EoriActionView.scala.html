@@ -1,19 +1,18 @@
 @*
- * Copyright 2023 HM Revenue & Customs
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *@
-
+* Copyright 2023 HM Revenue & Customs
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*@
 @import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 @import views.html.Layout
 
@@ -27,11 +26,11 @@
         @formHelper(action = controllers.routes.EoriActionController.continueAction) {
 
             @if(form("update-or-cancel-eori").value.getOrElse("ERROR").equalsIgnoreCase("Update-Eori")) {
-                    <!--   Update Journey      -->
-                    @if(form("existing-eori").value && form("new-eori").value) {
+                <!--   Update Journey      -->
+                @if(form("existing-eori").value && form("new-eori").value) {
                     <div class="govuk-notification-banner govuk-notification-banner--success" role="alert"
-                         aria-labelledby="govuk-notification-banner-title"
-                         data-module="govuk-notification-banner" id="banner">
+                    aria-labelledby="govuk-notification-banner-title"
+                    data-module="govuk-notification-banner" id="banner">
                         <div class="govuk-notification-banner__header">
                             <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title" >
                                 Success
@@ -39,28 +38,31 @@
                         </div>
                         <div class="govuk-notification-banner__content">
                             <h3 class="govuk-notification-banner__heading">
-                                @messages("eoriAction.successBannerEoriUpdateContent", form("existing-eori").value.getOrElse("ERROR"), form("new-eori").value.getOrElse("ERROR"))
+                            @messages("eoriAction.successBannerEoriUpdateContent", form("existing-eori").value.getOrElse("ERROR"), form("new-eori").value.getOrElse("ERROR"))
                             </h3>
                             <p class="govuk-body">@messages("eoriAction.successBannerEoriUpdateMessage")</p>
                         </div>
                     </div>
-                    }
-            }else{
-                <!--   TODO   Cancel Journey - Content to be changed      -->
-                <div class="govuk-notification-banner govuk-notification-banner--success" role="alert"
-                     aria-labelledby="govuk-notification-banner-title"
-                     data-module="govuk-notification-banner" id="banner">
-                    <div class="govuk-notification-banner__header">
-                        <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title" >
-                            Success
-                        </h2>
-                    </div>
-                    <div class="govuk-notification-banner__content">
-                        <h3 class="govuk-notification-banner__heading">
+                }
+            }
+            @if(form("update-or-cancel-eori").value.getOrElse("ERROR").equalsIgnoreCase("Cancel-Eori")) {
+                @if(form("existing-eori").value) {
+                        <!--   TODO   Cancel Journey - Content to be changed      -->
+                    <div class="govuk-notification-banner govuk-notification-banner--success" role="alert"
+                    aria-labelledby="govuk-notification-banner-title"
+                    data-module="govuk-notification-banner" id="banner">
+                        <div class="govuk-notification-banner__header">
+                            <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title" >
+                                Success
+                            </h2>
+                        </div>
+                        <div class="govuk-notification-banner__content">
+                            <h3 class="govuk-notification-banner__heading">
                             @messages("eoriAction.successBannerEoriCancelHeading", form("existing-eori").value.getOrElse("ERROR"))                        </h3>
-                        <p class="govuk-body">@messages("eoriAction.successBannerEoriCancelContent", form("existing-eori").value.getOrElse("ERROR"))</p>
+                            <p class="govuk-body">@messages("eoriAction.successBannerEoriCancelContent", form("existing-eori").value.getOrElse("ERROR"))</p>
+                        </div>
                     </div>
-                </div>
+                }
             }
 
             <div class="govuk-form-group">
