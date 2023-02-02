@@ -43,7 +43,7 @@ class DeAllocateGroupConnector @Inject()(httpClient: HttpClient, config: AppConf
       _.status match {
         case NO_CONTENT => Right(NO_CONTENT)
         case failStatus => {
-          logger.error(s"Delete enrolment failed with HTTP status: $failStatus for existing EORI: ${eori.getMaskedValue()}")
+          logger.error(s"Delete enrolment failed with HTTP status: $failStatus for existing EORI: $eori")
           Left(ErrorMessage(s"Delete enrolment failed with HTTP status: $failStatus"))
         }
       }

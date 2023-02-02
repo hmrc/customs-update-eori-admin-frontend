@@ -94,7 +94,7 @@ class EoriActionControllerSpec
       val result = controller.continueAction(fakeRequestWithBody)
       status(result) shouldBe SEE_OTHER
       val Some(redirectURL) = redirectLocation(result)
-      redirectURL should include("/") // TODO fix that when we have cancel page
+      redirectURL should include("/cancel")
     }
 
     "redirect to STRIDE login for not logged-in user" in withNotSignedInUser {

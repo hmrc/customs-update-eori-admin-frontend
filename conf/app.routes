@@ -14,12 +14,12 @@ POST       /                            controllers.EoriActionController.continu
 # Update EORI
 GET       /update                       controllers.UpdateEoriController.showPage
 POST      /update                       controllers.UpdateEoriController.continueUpdateEori
-GET       /confirm                      controllers.UpdateEoriController.showConfirmPage(oldEoriNumber: String, establishmentDate: String, newEoriNumber: String)
-POST      /confirm                      controllers.UpdateEoriController.confirmUpdateEori
+GET       /confirm-update               controllers.UpdateEoriController.showConfirmUpdatePage(oldEoriNumber: String, establishmentDate: String, newEoriNumber: String)
+POST      /confirm-update               controllers.UpdateEoriController.confirmUpdateEori
 
 
 # Cancel EORI
 GET       /cancel                      controllers.CancelEoriController.showPage
 POST      /cancel                      controllers.CancelEoriController.continueCancelEori
-GET       /confirmcancel               controllers.CancelEoriController.showConfirmCancel(existingEori: String, establishmentDate: String)
-POST      /confirmcancel               controllers.CancelEoriController.confirmCancelEori
+GET       /confirm-cancel              controllers.CancelEoriController.showConfirmCancelPage(existingEori: String, establishmentDate: String)
+POST      /confirm-cancel              controllers.CancelEoriController.confirmCancelEori

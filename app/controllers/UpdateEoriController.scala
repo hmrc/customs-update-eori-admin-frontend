@@ -65,11 +65,12 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
   def continueUpdateEori = auth { implicit request =>
     formEoriUpdate.bindFromRequest.fold(
       _ => Ok(viewUpdateEori(formEoriUpdate)),
-      eoriUpdate => Redirect(controllers.routes.UpdateEoriController.showConfirmPage(eoriUpdate.existingEori, eoriUpdate.dateOfEstablishment, eoriUpdate.newEori))
+      eoriUpdate =>
+        Redirect(controllers.routes.UpdateEoriController.showConfirmUpdatePage(eoriUpdate.existingEori, eoriUpdate.dateOfEstablishment, eoriUpdate.newEori))
     )
   }
 
-  def showConfirmPage(oldEoriNumber: String, establishmentDate: String, newEoriNumber: String) = auth.async { implicit request =>
+  def showConfirmUpdatePage(oldEoriNumber: String, establishmentDate: String, newEoriNumber: String) = auth.async { implicit request =>
     enrolmentService.getEnrolments(Eori(oldEoriNumber), stringToLocalDate(establishmentDate))
       .map(enrolments => {
         val enrolmentList = enrolments.filter(_._2).map(_._1).toList

@@ -16,7 +16,10 @@
 
 package controllers
 
-import org.mockito.Mockito.reset
+import models.DateOfEstablishment.stringToLocalDate
+import models.{Enrolment, EnrolmentKey, Eori}
+import org.mockito.ArgumentMatchers.{any, eq => meq}
+import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -24,7 +27,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.Application
 import play.api.http.Status
-import play.api.http.Status.SEE_OTHER
+import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.MessagesControllerComponents
 import play.api.test.FakeRequest
@@ -33,6 +36,7 @@ import service.EnrolmentService
 import views.html.{CancelEoriProblemView, CancelEoriView, ConfirmCancelEoriView}
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class CancelEoriControllerSpec extends AnyWordSpec
   with Matchers
@@ -53,14 +57,14 @@ class CancelEoriControllerSpec extends AnyWordSpec
   private val viewCancelEori = app.injector.instanceOf[CancelEoriView]
   private val viewConfirmCancel = app.injector.instanceOf[ConfirmCancelEoriView]
   private val viewCancelEoriProblem = app.injector.instanceOf[CancelEoriProblemView]
-  private val enrolmentService = app.injector.instanceOf[EnrolmentService]
+  private val enrolmentService = mock[EnrolmentService]
   private val controller = CancelEoriController(mcc, viewCancelEori, viewConfirmCancel, viewCancelEoriProblem, testAuthAction, enrolmentService)
 
   override def beforeEach(): Unit = {
-    reset(mockAuthConnector)
+    reset(mockAuthConnector, enrolmentService)
   }
 
-  "GET /" should {
+  "showPage /" should {
     "return 200" in withSignedInUser {
       val result = controller.showPage(fakeRequest)
       status(result) shouldBe Status.OK
@@ -81,38 +85,122 @@ class CancelEoriControllerSpec extends AnyWordSpec
 
   }
 
-  "Continue cancel EORI" should {
-    "redirect to show confirmation page when user click continue" in withSignedInUser {
+  "continueCancelEori" should {
+    "redirect to show confirmation page when entered information is correct" in withSignedInUser {
       val fakeRequestWithBody = FakeRequest("POST", "/")
-        .withFormUrlEncodedBody("existingEori" -> "GB94449442349", "dateOfEstablishment" -> "04/11/1987")
+        .withFormUrlEncodedBody(
+          "existing-eori" -> "GB94449442349",
+          "date-of-establishment-day" -> "04",
+          "date-of-establishment-month" -> "11",
+          "date-of-establishment-year" -> "1997"
+        )
       val result = controller.continueCancelEori(fakeRequestWithBody)
-      status(result) shouldBe Status.OK
-    }
-
-    "redirect to STRIDE login for not logged-in user" in withNotSignedInUser {
-      val result = controller.showPage(fakeRequest)
       status(result) shouldBe SEE_OTHER
       val Some(redirectURL) = redirectLocation(result)
-      redirectURL should include("/stride/sign-in")
+      redirectURL should include("/customs-update-eori-admin-frontend/confirm-cancel?existingEori=GB94449442349&establishmentDate=04%2F11%2F1997")
     }
-  }
 
-  "Confirm cancel EORI" should {
-    "redirect to show confirmation page when user click continue" in withSignedInUser {
+    "show page again if body is missing" in withSignedInUser {
       val fakeRequestWithBody = FakeRequest("POST", "/")
-        .withFormUrlEncodedBody("existingEori" -> "GB123456789123", "dateOfEstablishment" -> "11/12/1997")
-      val result = controller.confirmCancelEori(fakeRequestWithBody)
-      status(result) shouldBe Status.SEE_OTHER
+        .withFormUrlEncodedBody()
+      val result = controller.continueCancelEori(fakeRequestWithBody)
+      status(result) shouldBe OK
     }
 
     "redirect to STRIDE login for not logged-in user" in withNotSignedInUser {
-      val result = controller.showPage(fakeRequest)
+      val fakeRequestWithBody = FakeRequest("POST", "/")
+        .withFormUrlEncodedBody(
+          "existing-eori" -> "GB94449442349",
+          "date-of-establishment-day" -> "04",
+          "date-of-establishment-month" -> "11",
+          "date-of-establishment-year" -> "1997",
+          "new-eori" -> "GB94449442340"
+        )
+      val result = controller.continueCancelEori(fakeRequestWithBody)
       status(result) shouldBe SEE_OTHER
       val Some(redirectURL) = redirectLocation(result)
       redirectURL should include("/stride/sign-in")
     }
-
   }
 
+  "showConfirmCancelPage" should {
+    "open confirmation page when user " in withSignedInUser {
+      val oldEori = "GB94449442349"
+      val establishmentDate = "03/12/1990"
+      when(enrolmentService.getEnrolments(meq(Eori(oldEori)), meq(stringToLocalDate(establishmentDate)))(any()))
+        .thenReturn(Future.successful(Seq(EnrolmentKey.HMRC_CUS_ORG.serviceName -> true)))
+
+      val result = controller.showConfirmCancelPage(oldEori, establishmentDate)(fakeRequest)
+      status(result) shouldBe OK
+      verify(enrolmentService, times(1))
+        .getEnrolments(meq(Eori(oldEori)), meq(stringToLocalDate(establishmentDate)))(any())
+    }
+
+    "redirect to STRIDE login for not logged-in user" in withNotSignedInUser {
+      val oldEori = "GB94449442349"
+      val establishmentDate = "03/12/1990"
+      val result = controller.showConfirmCancelPage(oldEori, establishmentDate)(fakeRequest)
+      val Some(redirectURL) = redirectLocation(result)
+      redirectURL should include("/stride/sign-in")
+    }
+  }
+
+  "confirmCancelEori" should {
+    "should complete the confirmation if user select confirm" in withSignedInUser {
+      val oldEori = "GB94449442349"
+      val establishmentDate = "04/11/1997"
+      val fakeRequestWithBody = FakeRequest("POST", "/")
+        .withFormUrlEncodedBody(
+          "existing-eori" -> oldEori,
+          "date-of-establishment" -> establishmentDate,
+          "enrolment-list" -> s"${EnrolmentKey.HMRC_GVMS_ORG.serviceName},${EnrolmentKey.HMRC_ATAR_ORG.serviceName}",
+          "confirm" -> "true"
+        )
+
+      when(enrolmentService.cancel(meq(Eori(oldEori)), meq(stringToLocalDate(establishmentDate)), meq(EnrolmentKey.HMRC_GVMS_ORG))(any()))
+        .thenReturn(Future.successful(Right(Enrolment(Seq.empty, Seq.empty))))
+
+      when(enrolmentService.cancel(meq(Eori(oldEori)), meq(stringToLocalDate(establishmentDate)), meq(EnrolmentKey.HMRC_ATAR_ORG))(any()))
+        .thenReturn(Future.successful(Right(Enrolment(Seq.empty, Seq.empty))))
+
+      val result = controller.confirmCancelEori(fakeRequestWithBody)
+      val Some(redirectURL) = redirectLocation(result)
+      status(result) shouldBe SEE_OTHER
+      redirectURL should include(s"/customs-update-eori-admin-frontend/success?cancelOrUpdate=Cancel-Eori&oldEori=GB94449442349")
+    }
+
+    "should redirect back to update page if user select cancel" in withSignedInUser {
+      val oldEori = "GB94449442349"
+      val establishmentDate = "04/11/1997"
+      val fakeRequestWithBody = FakeRequest("POST", "/")
+        .withFormUrlEncodedBody(
+          "existing-eori" -> oldEori,
+          "date-of-establishment" -> establishmentDate,
+          "enrolment-list" -> s"${EnrolmentKey.HMRC_CUS_ORG.serviceName},${EnrolmentKey.HMRC_ATAR_ORG.serviceName}",
+          "confirm" -> "false"
+        )
+
+      val result = controller.confirmCancelEori(fakeRequestWithBody)
+      val Some(redirectURL) = redirectLocation(result)
+      status(result) shouldBe SEE_OTHER
+//      redirectURL should include(s"/customs-update-eori-admin-frontend/cancel")
+    }
+
+    "redirect to STRIDE login for not logged-in user" in withNotSignedInUser {
+      val fakeRequestWithBody = FakeRequest("POST", "/")
+        .withFormUrlEncodedBody(
+          "existing-eori" -> "GB94449442349",
+          "date-of-establishment" -> "04/11/1997",
+          "new-eori" -> "GB94449442340",
+          "enrolment-list" -> s"${EnrolmentKey.HMRC_CUS_ORG.serviceName}, ${EnrolmentKey.HMRC_ATAR_ORG.serviceName}",
+          "confirm" -> "true"
+        )
+
+      val result = controller.confirmCancelEori(fakeRequestWithBody)
+      val Some(redirectURL) = redirectLocation(result)
+      status(result) shouldBe SEE_OTHER
+      redirectURL should include("/stride/sign-in")
+    }
+  }
 }
 

@@ -42,13 +42,13 @@ class CustomsDataStoreConnector @Inject()(httpClient: HttpClient, config: AppCon
         auditResponse(response, config.customsDataStoreUrl)
         response.status match {
           case NO_CONTENT =>
-            logger.info(s"[CDS] No content for EORI: ${newEori.getMaskedValue()}")
+            logger.info(s"[CDS] No content for EORI: $newEori")
             Right(NO_CONTENT)
           case NOT_FOUND =>
-            logger.info(s"[CDS] Not found notification for EORI: ${newEori.getMaskedValue()}")
+            logger.info(s"[CDS] Not found notification for EORI: $newEori")
             Right(NOT_FOUND)
           case failStatus =>
-            logger.error(s"Notification failed with HTTP status: $failStatus for EORI: ${newEori.getMaskedValue()}")
+            logger.error(s"Notification failed with HTTP status: $failStatus for EORI: $newEori")
             Left(ErrorMessage(s"Notification failed with HTTP status: $failStatus"))
         }
       }
