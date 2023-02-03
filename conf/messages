@@ -4,7 +4,6 @@ service.text = This is your new service
 
 # Common messages
 eori.replaceExistingEori=Replace an existing EORI number
-eori.cancelExistingEori=Cancel a company's subscriptions to HMRC services
 eori.companyEstablishedDay=Day
 eori.companyEstablishedMonth=Month
 eori.companyEstablishedYear=Year
