@@ -14,85 +14,90 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 @import views.html.Layout
+@import uk.gov.hmrc.govukfrontend.views.html.components.{ErrorMessage => Err, _}
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
 
 @this(
         layout: Layout,
         formHelper: FormWithCSRF,
+        govukInput: GovukInput,
+        govukDateInput: GovukDateInput,
+        govukErrorSummary: GovukErrorSummary,
+        submitButton: GovukButton,
 )
 
 @(form: Form[_])(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = Some("EORI number management service"), backLinkUrl = Some(controllers.routes.EoriActionController.showPage.toString())) {
+@layout(pageTitle = Some("EORI number management service")) {
     @formHelper(action = controllers.routes.CancelEoriController.continueCancelEori) {
 
         <div class="govuk-width-container">
             <main class="govuk-main-wrapper govuk-!-padding-0" id="main-content" role="main">
-                <h1 class="govuk-heading-l">
-                @messages("eori.cancelExistingEori")
-                </h1>
 
-                <div class="govuk-form-group">
-                    <label class="govuk-label govuk-label--m" for="txtCurrentEoriNumber">
-                    @messages("eori.currentEoriNumberQuestion")
-                    </label>
-                    <div id="txtCurrentEoriNumber" class="govuk-hint">
-                    @messages("eori.accountNumberHint")
-                    </div>
-                    <input class="govuk-input govuk-input--width-20" id="existing-eori" name="existing-eori" type="text" required>
-                </div>
+                @if(form.errors.nonEmpty) {
+                    @govukErrorSummary(
+                        ErrorSummary(
+                            errorList = form.errors.map(error => {
+                                FormError(error.key, error.message, error.args)
+                            }).asTextErrorLinks,
+                            title = Text(messages("eori.validation.summary.heading"))
+                        )
+                    )
+                }
 
-                <div class="govuk-form-group">
-                    <fieldset class="govuk-fieldset" role="group">
-                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-                        @messages("eori.companyEstablishedDateQuestion")
-                        </legend>
+                <h1 class="govuk-heading-l">@messages("eori.cancelExistingEori")</h1>
 
-                        <div class="govuk-date-input" id="date-of-establishment">
+                @govukInput(Input(
+                    id = form("existing-eori").name,
+                    name = form("existing-eori").name,
+                    value = form("existing-eori").value,
+                    classes = "govuk-input govuk-input--width-20",
+                    hint = Some(Hint(
+                        content = Text(messages("eori.accountNumberHint"))
+                    )),
+                    label = Label(
+                        classes = "govuk-label govuk-label--m",
+                        content = Text(messages("eori.currentEoriNumberQuestion"))
+                    ),
+                    errorMessage = form.errors("existing-eori").headOption.map(formError => Err(
+                        content = Text(messages(formError.message)))
+                    )
+                ))
 
-                            <div class="govuk-date-input__item">
-                                <div class="govuk-form-group">
-                                    <label class="govuk-label govuk-date-input__label" for="txtDateOfEstablishmentDay">
-                                    @messages("eori.companyEstablishedDay")
-                                    </label>
-                                    <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="txtDateOfEstablishmentDay" name="date-of-establishment-day" type="text" inputmode="numeric" required>
-                                </div>
-                            </div>
+                @govukDateInput(DateInput(
+                    id = "enrolment-date",
+                    fieldset = Some(Fieldset(
+                        legend = Some(Legend(
+                            content = Text(messages("eori.companyEstablishedDateQuestion")),
+                            classes = "govuk-fieldset__legend--m",
+                            isPageHeading = true
+                        ))
+                    )),
+                    items = Seq(
+                        InputItem(
+                            name = "date-of-establishment.day",
+                            id = "txtDateOfEstablishmentDay",
+                            label = Some(messages("eori.companyEstablishedDay")),
+                            classes = "govuk-input--width-2"
+                        ),
+                        InputItem(
+                            name = "date-of-establishment.month",
+                            id = "txtDateOfEstablishmentMonth",
+                            label = Some(messages("eori.companyEstablishedMonth")),
+                            classes = "govuk-input govuk-date-input__input govuk-input--width-2"
+                        ),
+                        InputItem(
+                            name = "date-of-establishment.year",
+                            id = "txtDateOfEstablishmentYear",
+                            label = Some(messages("eori.companyEstablishedYear")),
+                            classes = "govuk-input govuk-date-input__input govuk-input--width-4"
+                        )
+                    )
+                ).withFormField(form("date-of-establishment")))
 
-                            <div class="govuk-date-input__item">
-                                <div class="govuk-form-group">
-                                    <label class="govuk-label govuk-date-input__label" for="txtDateOfEstablishmentMonth">
-                                    @messages("eori.companyEstablishedMonth")
-                                    </label>
-
-                                    <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="txtDateOfEstablishmentMonth" name="date-of-establishment-month" type="text" inputmode="numeric" required>
-                                </div>
-                            </div>
-
-                            <div class="govuk-date-input__item">
-                                <div class="govuk-form-group">
-                                    <label class="govuk-label govuk-date-input__label" for="txtDateOfEstablishmentYear">
-                                    @messages("eori.companyEstablishedYear")
-                                    </label>
-                                    <input class="govuk-input govuk-date-input__input govuk-input--width-4" id="txtDateOfEstablishmentYear" name="date-of-establishment-year" type="text" inputmode="numeric" required>
-                                </div>
-                            </div>
-                        </div>
-                    </fieldset>
-                </div>
-                <!--<div class="govuk-form-group">
-                    <label class="govuk-label govuk-label&#45;&#45;m" for="new-eori">
-                    @messages("eori.newEoriNumberQuestion")
-                    </label>
-                    <div id="account-number-hint" class="govuk-hint">
-                    @messages("eori.accountNumberHint")
-                    </div>
-                    <input class="govuk-input govuk-input&#45;&#45;width-20" id="new-eori" name="new-eori" type="text" required>
-                </div>-->
-                <button class="govuk-button" data-module="govuk-button" id="submit-button" type="submit">
-                @messages("eori.continueButton")
-                </button>
+                @submitButton(Button(content = Text(messages("eori.continueButton"))))
 
             </main>
         </div>

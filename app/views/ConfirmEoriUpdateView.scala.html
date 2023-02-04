@@ -23,7 +23,7 @@
 )
 @(form: Form[_], enrolmentList: List[String])(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = Some("EORI number management service"), backLinkUrl = Some(controllers.routes.UpdateEoriController.showPage.toString)) {
+@layout(pageTitle = Some("EORI number management service")) {
     @formHelper(action = controllers.routes.UpdateEoriController.confirmUpdateEori) {
         <div class="govuk-width-container ">
             <main class="govuk-main-wrapper govuk-!-padding-0" id="main-content" role="main">

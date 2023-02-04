@@ -32,4 +32,6 @@
 
 package models
 
-case class ConfirmEoriCancel(existingEori: String, dateOfEstablishment: String, enrolmentList: String, isConfirmed: Boolean)
+import java.time.LocalDate
+
+case class ConfirmEoriCancel(existingEori: String, dateOfEstablishment: LocalDate, enrolmentList: String, isConfirmed: Boolean)

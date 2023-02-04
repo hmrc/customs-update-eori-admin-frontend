@@ -16,9 +16,9 @@
 
 package controllers
 
-import models.DateOfEstablishment.stringToLocalDate
-import models.{ConfirmEoriUpdate, EnrolmentKey, Eori, EoriAction, EoriUpdate}
-import play.api.data.Form
+import mappings.Mappings
+import models._
+import play.api.data.{Form, Forms}
 import play.api.data.Forms._
 import play.api.i18n.I18nSupport
 import play.api.mvc._
@@ -26,6 +26,8 @@ import service.EnrolmentService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.{ConfirmEoriUpdateView, UpdateEoriProblemView, UpdateEoriView}
 
+import models.LocalDateBinder._
+import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -37,22 +39,32 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
                                           auth: AuthAction,
                                           enrolmentService: EnrolmentService
                                          )(implicit ec: ExecutionContext)
-  extends FrontendController(mcc)
+  extends FrontendController(mcc) with Mappings
     with I18nSupport {
 
   val formEoriUpdate = Form(
     mapping(
-      "existing-eori" -> text(),
-      "date-of-establishment-day" -> text(),
-      "date-of-establishment-month" -> text(),
-      "date-of-establishment-year" -> text(),
-      "new-eori" -> text()
+      "existing-eori" -> eoriNumber(
+        "eori.validation.existingEori.required",
+        "eori.validation.existingEori.format"
+      ),
+      "date-of-establishment" -> localDate(
+        invalidKey = "eori.validation.establishmentDate.invalid",
+        threeDateComponentsMissingKey = "eori.validation.establishmentDate.required.all",
+        twoDateComponentsMissingKey = "eori.validation.establishmentDate.required.two",
+        oneDateComponentMissingKey = "eori.validation.establishmentDate.required.one",
+        mustBeInPastKey = "eori.validation.establishmentDate.mustBeInPast",
+      ),
+      "new-eori" -> eoriNumber(
+        "eori.validation.newEori.required",
+        "eori.validation.newEori.format"
+      ),
     )(EoriUpdate.apply)(EoriUpdate.unapply))
 
   val formEoriUpdateConfirmation = Form(
     mapping(
       "existing-eori" -> text(),
-      "date-of-establishment" -> text(),
+      "date-of-establishment" -> Forms.localDate(LocalDateBinder.dateTimePattern),
       "new-eori" -> text(),
       "enrolment-list" -> text(),
       "confirm" -> boolean
@@ -64,14 +76,14 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
 
   def continueUpdateEori = auth { implicit request =>
     formEoriUpdate.bindFromRequest.fold(
-      _ => Ok(viewUpdateEori(formEoriUpdate)),
+      formWithError => BadRequest(viewUpdateEori(formWithError)),
       eoriUpdate =>
         Redirect(controllers.routes.UpdateEoriController.showConfirmUpdatePage(eoriUpdate.existingEori, eoriUpdate.dateOfEstablishment, eoriUpdate.newEori))
     )
   }
 
-  def showConfirmUpdatePage(oldEoriNumber: String, establishmentDate: String, newEoriNumber: String) = auth.async { implicit request =>
-    enrolmentService.getEnrolments(Eori(oldEoriNumber), stringToLocalDate(establishmentDate))
+  def showConfirmUpdatePage(oldEoriNumber: String, establishmentDate: LocalDate, newEoriNumber: String) = auth.async { implicit request =>
+    enrolmentService.getEnrolments(Eori(oldEoriNumber), establishmentDate)
       .map(enrolments => {
         val enrolmentList = enrolments.filter(_._2).map(_._1).toList
         Ok(viewConfirmUpdate(
@@ -95,7 +107,7 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
               .map(enrolment =>
                 enrolmentService.update(
                   Eori(confirmEoriUpdate.existingEori),
-                  stringToLocalDate(confirmEoriUpdate.dateOfEstablishment),
+                  confirmEoriUpdate.dateOfEstablishment,
                   Eori(confirmEoriUpdate.newEori),
                   enrolment
                 ).map(enrolment.serviceName -> _)
@@ -106,7 +118,7 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
             if (status.exists(_._2 == false)) {
               Ok(viewUpdateEoriProblem(status.filter(_._2 == true).keys.toList, status.filter(_._2 == false).keys.toList, confirmEoriUpdate.newEori))
             } else {
-              Redirect(controllers.routes.EoriActionController.showPageOnSuccess(EoriAction.UPDATE_EORI.toString , confirmEoriUpdate.existingEori, confirmEoriUpdate.newEori))
+              Redirect(controllers.routes.EoriActionController.showPageOnSuccess(EoriAction.UPDATE_EORI.toString, confirmEoriUpdate.existingEori, confirmEoriUpdate.newEori))
             }
           }
           }

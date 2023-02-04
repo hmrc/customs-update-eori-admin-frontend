@@ -16,4 +16,6 @@
 
 package models
 
-case class ConfirmEoriUpdate(existingEori: String, dateOfEstablishment: String, newEori: String, enrolmentList: String, isConfirmed: Boolean)
+import java.time.LocalDate
+
+case class ConfirmEoriUpdate(existingEori: String, dateOfEstablishment: LocalDate, newEori: String, enrolmentList: String, isConfirmed: Boolean)

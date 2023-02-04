@@ -16,7 +16,7 @@
 
 package controllers
 
-import models.DateOfEstablishment.stringToLocalDate
+import models.LocalDateBinder.stringToLocalDate
 import models.{Enrolment, EnrolmentKey, Eori}
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito.{reset, times, verify, when}
@@ -27,7 +27,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.Application
 import play.api.http.Status
-import play.api.http.Status.{OK, SEE_OTHER}
+import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.MessagesControllerComponents
 import play.api.test.FakeRequest
@@ -89,31 +89,55 @@ class CancelEoriControllerSpec extends AnyWordSpec
     "redirect to show confirmation page when entered information is correct" in withSignedInUser {
       val fakeRequestWithBody = FakeRequest("POST", "/")
         .withFormUrlEncodedBody(
-          "existing-eori" -> "GB94449442349",
-          "date-of-establishment-day" -> "04",
-          "date-of-establishment-month" -> "11",
-          "date-of-establishment-year" -> "1997"
+          "existing-eori" -> "GB123456789012",
+          "date-of-establishment.day" -> "04",
+          "date-of-establishment.month" -> "11",
+          "date-of-establishment.year" -> "1997"
         )
       val result = controller.continueCancelEori(fakeRequestWithBody)
       status(result) shouldBe SEE_OTHER
       val Some(redirectURL) = redirectLocation(result)
-      redirectURL should include("/customs-update-eori-admin-frontend/confirm-cancel?existingEori=GB94449442349&establishmentDate=04%2F11%2F1997")
+      redirectURL should include("/customs-update-eori-admin-frontend/confirm-cancel?existingEori=GB123456789012&establishmentDate=04%2F11%2F1997")
     }
 
-    "show page again if body is missing" in withSignedInUser {
+    "show page again with error if EORI number is wrong" in withSignedInUser {
+      val fakeRequestWithBody = FakeRequest("POST", "/")
+        .withFormUrlEncodedBody(
+          "existing-eori" -> "GB9444944234",
+          "date-of-establishment.day" -> "04",
+          "date-of-establishment.month" -> "11",
+          "date-of-establishment.year" -> "1997",
+        )
+      val result = controller.continueCancelEori(fakeRequestWithBody)
+      status(result) shouldBe BAD_REQUEST
+    }
+
+    "show page again with error if date is wrong" in withSignedInUser {
+      val fakeRequestWithBody = FakeRequest("POST", "/")
+        .withFormUrlEncodedBody(
+          "existing-eori" -> "GB944494423491",
+          "date-of-establishment.day" -> "04",
+          "date-of-establishment.year" -> "1997",
+          "new-eori" -> "GB944494423492"
+        )
+      val result = controller.continueCancelEori(fakeRequestWithBody)
+      status(result) shouldBe BAD_REQUEST
+    }
+
+    "show page again with error if body is missing with bad request status" in withSignedInUser {
       val fakeRequestWithBody = FakeRequest("POST", "/")
         .withFormUrlEncodedBody()
       val result = controller.continueCancelEori(fakeRequestWithBody)
-      status(result) shouldBe OK
+      status(result) shouldBe BAD_REQUEST
     }
 
     "redirect to STRIDE login for not logged-in user" in withNotSignedInUser {
       val fakeRequestWithBody = FakeRequest("POST", "/")
         .withFormUrlEncodedBody(
           "existing-eori" -> "GB94449442349",
-          "date-of-establishment-day" -> "04",
-          "date-of-establishment-month" -> "11",
-          "date-of-establishment-year" -> "1997",
+          "date-of-establishment.day" -> "04",
+          "date-of-establishment.month" -> "11",
+          "date-of-establishment.year" -> "1997",
           "new-eori" -> "GB94449442340"
         )
       val result = controller.continueCancelEori(fakeRequestWithBody)

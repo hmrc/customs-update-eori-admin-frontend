@@ -24,7 +24,7 @@
 
 @(form: Form[_], cancelableEnrolments: List[String], notCancelableEnrolments: List[String])(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = Some("EORI number management service"), backLinkUrl = Some(controllers.routes.CancelEoriController.showPage.toString())) {
+@layout(pageTitle = Some("EORI number management service")) {
     @formHelper(action = controllers.routes.CancelEoriController.confirmCancelEori) {
 
         <div class="govuk-width-container ">

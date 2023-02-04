@@ -16,8 +16,8 @@
 
 package controllers
 
-import models.DateOfEstablishment.stringToLocalDate
 import models.{Enrolment, EnrolmentKey, Eori}
+import models.LocalDateBinder.stringToLocalDate
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.BeforeAndAfterEach
@@ -86,25 +86,65 @@ class UpdateEoriControllerSpec
 
   "continueUpdateEori" should {
     "redirect to show confirmation page when entered information is correct" in withSignedInUser {
+      val existingEori = "GB944494423491"
+      val newEori = "GB944494423492"
       val fakeRequestWithBody = FakeRequest("POST", "/")
         .withFormUrlEncodedBody(
-          "existing-eori" -> "GB94449442349",
-          "date-of-establishment-day" -> "04",
-          "date-of-establishment-month" -> "11",
-          "date-of-establishment-year" -> "1997",
-          "new-eori" -> "GB94449442340"
+          "existing-eori" -> existingEori,
+          "date-of-establishment.day" -> "04",
+          "date-of-establishment.month" -> "11",
+          "date-of-establishment.year" -> "1997",
+          "new-eori" -> newEori
         )
       val result = controller.continueUpdateEori(fakeRequestWithBody)
       status(result) shouldBe SEE_OTHER
       val Some(redirectURL) = redirectLocation(result)
-      redirectURL should include("/customs-update-eori-admin-frontend/confirm-update?oldEoriNumber=GB94449442349&establishmentDate=04%2F11%2F1997&newEoriNumber=GB94449442340")
+      redirectURL should include(s"/customs-update-eori-admin-frontend/confirm-update?oldEoriNumber=$existingEori&establishmentDate=04%2F11%2F1997&newEoriNumber=$newEori")
     }
 
-    "show page again if body is missing" in withSignedInUser {
+    "show page again with error if existing EORI number is wrong" in withSignedInUser {
+      val fakeRequestWithBody = FakeRequest("POST", "/")
+        .withFormUrlEncodedBody(
+          "existing-eori" -> "GB944",
+          "date-of-establishment.day" -> "04",
+          "date-of-establishment.month" -> "11",
+          "date-of-establishment.year" -> "1997",
+          "new-eori" -> "GB944494423492"
+        )
+      val result = controller.continueUpdateEori(fakeRequestWithBody)
+      status(result) shouldBe BAD_REQUEST
+    }
+
+    "show page again with error if new EORI number is wrong" in withSignedInUser {
+      val fakeRequestWithBody = FakeRequest("POST", "/")
+        .withFormUrlEncodedBody(
+          "existing-eori" -> "GB944494423491",
+          "date-of-establishment.day" -> "04",
+          "date-of-establishment.month" -> "11",
+          "date-of-establishment.year" -> "1997",
+          "new-eori" -> "GB9444"
+        )
+      val result = controller.continueUpdateEori(fakeRequestWithBody)
+      status(result) shouldBe BAD_REQUEST
+    }
+
+    "show page again with error if date is wrong" in withSignedInUser {
+      val fakeRequestWithBody = FakeRequest("POST", "/")
+        .withFormUrlEncodedBody(
+          "existing-eori" -> "GB944494423491",
+          "date-of-establishment.day" -> "04",
+          "date-of-establishment.year" -> "1997",
+          "new-eori" -> "GB944494423492"
+        )
+      val result = controller.continueUpdateEori(fakeRequestWithBody)
+      status(result) shouldBe BAD_REQUEST
+    }
+
+    "show page again with error if body is missing with bad request status" in withSignedInUser {
       val fakeRequestWithBody = FakeRequest("POST", "/")
         .withFormUrlEncodedBody()
       val result = controller.continueUpdateEori(fakeRequestWithBody)
-      status(result) shouldBe OK
+      status(result) shouldBe BAD_REQUEST
     }
 
     "redirect to STRIDE login for not logged-in user" in withNotSignedInUser {
@@ -134,7 +174,7 @@ class UpdateEoriControllerSpec
       val result = controller.showConfirmUpdatePage(oldEori, establishmentDate, newEori)(fakeRequest)
       status(result) shouldBe OK
       verify(enrolmentService, times(1))
-        .getEnrolments(meq(Eori(oldEori)),meq(stringToLocalDate(establishmentDate)))(any())
+        .getEnrolments(meq(Eori(oldEori)), meq(stringToLocalDate(establishmentDate)))(any())
     }
 
 

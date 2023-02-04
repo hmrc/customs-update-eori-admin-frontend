@@ -17,7 +17,7 @@
 package connector
 
 import config.AppConfig
-import models.DateOfEstablishment.stringToLocalDate
+import models.LocalDateBinder.stringToLocalDate
 import models.EnrolmentKey.EnrolmentKeyType
 import models._
 import play.api.Logging

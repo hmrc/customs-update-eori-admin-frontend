@@ -52,3 +52,17 @@ eoriCancelConfirm.confirmQ=Are you sure you want to cancel ’s subscriptions?
 eoriCancelConfirm.confirmQ=Are you sure you want to cancel ’s subscriptions?
 eoriAction.successBannerEoriCancelHeading=Subscriptions cancelled for {0}.
 eoriAction.successBannerEoriCancelContent=You should email the company confirming that EORI number {0} subscriptions have been cancelled for:
+
+# Validation Messages
+eori.validation.summary.heading=There is a problem
+
+eori.validation.existingEori.required=Enter the company’s current EORI number
+eori.validation.existingEori.format=The company’s current EORI number must start with the letters GB , followed by 12 digits
+eori.validation.newEori.required=Enter the company’s new EORI number
+eori.validation.newEori.format=The company’s new EORI number must start with the letters GB , followed by 12 digits
+
+eori.validation.establishmentDate.required.all = Enter the date the company was established
+eori.validation.establishmentDate.required.two = The date the company was established must be a real date. Provide {0} and {1}
+eori.validation.establishmentDate.required.one = The date the company was established must be a real date. Provide a {0}
+eori.validation.establishmentDate.invalid = The date the company was established must be a real date
+eori.validation.establishmentDate.mustBeInPast = The date the company was established must be in the past
