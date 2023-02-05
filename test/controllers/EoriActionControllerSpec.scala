@@ -78,6 +78,34 @@ class EoriActionControllerSpec
     }
   }
 
+  "Show Page On Success" should {
+    "return HTML for update success" in withSignedInUser {
+      val oldEoriNumber = "GB123456789011"
+      val newEoriNumber = "GB123456789012"
+      val result = controller.showPageOnSuccess(EoriAction.UPDATE_EORI.toString, oldEoriNumber, newEoriNumber)(fakeRequest)
+      status(result) shouldBe OK
+      contentType(result) shouldBe Some("text/html")
+      charset(result) shouldBe Some("utf-8")
+      contentAsString(result) should include(s"EORI number $oldEoriNumber has been replaced with $newEoriNumber.")
+    }
+
+    "return HTML for cancel success" in withSignedInUser {
+      val eoriNumber = "GB123456789011"
+      val result = controller.showPageOnSuccess(EoriAction.CANCEL_EORI.toString, eoriNumber, null)(fakeRequest)
+      status(result) shouldBe OK
+      contentType(result) shouldBe Some("text/html")
+      charset(result) shouldBe Some("utf-8")
+      contentAsString(result) should include(s"Subscriptions cancelled for $eoriNumber")
+    }
+
+    "redirect to STRIDE login for not logged-in user" in withNotSignedInUser {
+      val result = controller.showPageOnSuccess(EoriAction.UPDATE_EORI.toString, "GB123456789011", "GB123456789012")(fakeRequest)
+      status(result) shouldBe SEE_OTHER
+      val Some(redirectURL) = redirectLocation(result)
+      redirectURL should include("/stride/sign-in")
+    }
+  }
+
   "Continue action" should {
     "redirect to update page when user select update Eori number" in withSignedInUser {
       val fakeRequestWithBody = FakeRequest("POST", "/")

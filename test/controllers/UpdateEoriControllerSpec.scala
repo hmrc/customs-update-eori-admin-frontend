@@ -34,6 +34,7 @@ import play.api.test.Helpers._
 import service.EnrolmentService
 import views.html.{ConfirmEoriUpdateView, UpdateEoriProblemView, UpdateEoriView}
 
+import java.time.LocalDate
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -102,6 +103,20 @@ class UpdateEoriControllerSpec
       redirectURL should include(s"/customs-update-eori-admin-frontend/confirm-update?oldEoriNumber=$existingEori&establishmentDate=04%2F11%2F1997&newEoriNumber=$newEori")
     }
 
+    "show page again with error if existing EORI number is not entered" in withSignedInUser {
+      val fakeRequestWithBody = FakeRequest("POST", "/")
+        .withFormUrlEncodedBody(
+          "existing-eori" -> "",
+          "date-of-establishment.day" -> "04",
+          "date-of-establishment.month" -> "11",
+          "date-of-establishment.year" -> "1997",
+          "new-eori" -> "GB944494423492"
+        )
+      val result = controller.continueUpdateEori(fakeRequestWithBody)
+      status(result) shouldBe BAD_REQUEST
+      contentAsString(result) should include(s"Enter the company’s current EORI number")
+    }
+
     "show page again with error if existing EORI number is wrong" in withSignedInUser {
       val fakeRequestWithBody = FakeRequest("POST", "/")
         .withFormUrlEncodedBody(
@@ -113,6 +128,21 @@ class UpdateEoriControllerSpec
         )
       val result = controller.continueUpdateEori(fakeRequestWithBody)
       status(result) shouldBe BAD_REQUEST
+      contentAsString(result) should include(s"The company’s current EORI number must start with the letters GB , followed by 12 digits")
+    }
+
+    "show page again with error if new EORI number is empty" in withSignedInUser {
+      val fakeRequestWithBody = FakeRequest("POST", "/")
+        .withFormUrlEncodedBody(
+          "existing-eori" -> "GB944494423491",
+          "date-of-establishment.day" -> "04",
+          "date-of-establishment.month" -> "11",
+          "date-of-establishment.year" -> "1997",
+          "new-eori" -> ""
+        )
+      val result = controller.continueUpdateEori(fakeRequestWithBody)
+      status(result) shouldBe BAD_REQUEST
+      contentAsString(result) should include(s"Enter the company’s new EORI number")
     }
 
     "show page again with error if new EORI number is wrong" in withSignedInUser {
@@ -126,9 +156,23 @@ class UpdateEoriControllerSpec
         )
       val result = controller.continueUpdateEori(fakeRequestWithBody)
       status(result) shouldBe BAD_REQUEST
+      contentAsString(result) should include(s"The company’s new EORI number must start with the letters GB , followed by 12 digits")
     }
 
-    "show page again with error if date is wrong" in withSignedInUser {
+    "show page again with error if day of DOE is not entered" in withSignedInUser {
+      val fakeRequestWithBody = FakeRequest("POST", "/")
+        .withFormUrlEncodedBody(
+          "existing-eori" -> "GB944494423491",
+          "date-of-establishment.month" -> "04",
+          "date-of-establishment.year" -> "1997",
+          "new-eori" -> "GB944494423492"
+        )
+      val result = controller.continueUpdateEori(fakeRequestWithBody)
+      status(result) shouldBe BAD_REQUEST
+      contentAsString(result) should include(s"The date the company was established must be a real date. Provide a day")
+    }
+
+    "show page again with error if month of DOE is not entered" in withSignedInUser {
       val fakeRequestWithBody = FakeRequest("POST", "/")
         .withFormUrlEncodedBody(
           "existing-eori" -> "GB944494423491",
@@ -138,22 +182,91 @@ class UpdateEoriControllerSpec
         )
       val result = controller.continueUpdateEori(fakeRequestWithBody)
       status(result) shouldBe BAD_REQUEST
+      contentAsString(result) should include(s"The date the company was established must be a real date. Provide a month")
     }
 
-    "show page again with error if body is missing with bad request status" in withSignedInUser {
+    "show page again with error if year of DOE is not entered" in withSignedInUser {
+      val fakeRequestWithBody = FakeRequest("POST", "/")
+        .withFormUrlEncodedBody(
+          "existing-eori" -> "GB944494423491",
+          "date-of-establishment.day" -> "04",
+          "date-of-establishment.month" -> "11",
+          "new-eori" -> "GB944494423492"
+        )
+      val result = controller.continueUpdateEori(fakeRequestWithBody)
+      status(result) shouldBe BAD_REQUEST
+      contentAsString(result) should include(s"The date the company was established must be a real date. Provide a year")
+    }
+
+    "show page again with error if day and month of DOE is not entered" in withSignedInUser {
+      val fakeRequestWithBody = FakeRequest("POST", "/")
+        .withFormUrlEncodedBody(
+          "existing-eori" -> "GB944494423491",
+          "date-of-establishment.year" -> "2000",
+          "new-eori" -> "GB944494423492"
+        )
+      val result = controller.continueUpdateEori(fakeRequestWithBody)
+      status(result) shouldBe BAD_REQUEST
+      contentAsString(result) should include(s"The date the company was established must be a real date. Provide day and month")
+    }
+
+    "show page again with error if DOE is not entered" in withSignedInUser {
+      val fakeRequestWithBody = FakeRequest("POST", "/")
+        .withFormUrlEncodedBody(
+          "existing-eori" -> "GB944494423491",
+          "new-eori" -> "GB944494423492"
+        )
+      val result = controller.continueUpdateEori(fakeRequestWithBody)
+      status(result) shouldBe BAD_REQUEST
+      contentAsString(result) should include(s"Enter the date the company was established")
+    }
+
+    "show page again with error if DOE is wrong" in withSignedInUser {
+      val fakeRequestWithBody = FakeRequest("POST", "/")
+        .withFormUrlEncodedBody(
+          "existing-eori" -> "GB944494423491",
+          "date-of-establishment.day" -> "04",
+          "date-of-establishment.month" -> "AA",
+          "date-of-establishment.year" -> "YEAR",
+          "new-eori" -> "GB944494423492"
+        )
+      val result = controller.continueUpdateEori(fakeRequestWithBody)
+      status(result) shouldBe BAD_REQUEST
+      contentAsString(result) should include(s"The date the company was established must be a real date")
+    }
+
+    "show page again with error if DOE entered as future date" in withSignedInUser {
+      val futureDate = LocalDate.now().plusDays(2)
+      val fakeRequestWithBody = FakeRequest("POST", "/")
+        .withFormUrlEncodedBody(
+          "existing-eori" -> "GB944494423491",
+          "date-of-establishment.day" -> futureDate.getDayOfMonth.toString,
+          "date-of-establishment.month" -> futureDate.getMonthValue.toString,
+          "date-of-establishment.year" -> futureDate.getYear.toString,
+          "new-eori" -> "GB944494423492"
+        )
+      val result = controller.continueUpdateEori(fakeRequestWithBody)
+      status(result) shouldBe BAD_REQUEST
+      contentAsString(result) should include(s"The date the company was established must be in the past")
+    }
+
+    "show page again with multiple errors and with bad request status" in withSignedInUser {
       val fakeRequestWithBody = FakeRequest("POST", "/")
         .withFormUrlEncodedBody()
       val result = controller.continueUpdateEori(fakeRequestWithBody)
       status(result) shouldBe BAD_REQUEST
+      contentAsString(result) should include(s"Enter the company’s current EORI number")
+      contentAsString(result) should include(s"Enter the company’s new EORI number")
+      contentAsString(result) should include(s"Enter the date the company was established")
     }
 
     "redirect to STRIDE login for not logged-in user" in withNotSignedInUser {
       val fakeRequestWithBody = FakeRequest("POST", "/")
         .withFormUrlEncodedBody(
           "existing-eori" -> "GB94449442349",
-          "date-of-establishment-day" -> "04",
-          "date-of-establishment-month" -> "11",
-          "date-of-establishment-year" -> "1997",
+          "date-of-establishment.day" -> "04",
+          "date-of-establishment.month" -> "11",
+          "date-of-establishment.year" -> "1997",
           "new-eori" -> "GB94449442340"
         )
       val result = controller.continueUpdateEori(fakeRequestWithBody)
