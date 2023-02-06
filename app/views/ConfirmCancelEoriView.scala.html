@@ -33,7 +33,7 @@
             <main class="govuk-main-wrapper govuk-!-padding-0" id="main-content" role="main">
                 <h1 class="govuk-heading-l">@messages("eoriCancelConfirm.heading", form.data.get("existing-eori").getOrElse("ERROR"))</h1>
 
-                @if(cancelableEnrolments.isEmpty && notCancelableEnrolments.isEmpty) {
+                @if(cancelableEnrolments.isEmpty) {
                     <p class="govuk-body">@messages("eoriCancel.noEnrolmentExist", form("existing-eori").value.getOrElse("ERROR"))</p>
                     <span class="govuk-body">@messages("eoriCancel.goBack")</span>
                     <a href="/customs-update-eori-admin-frontend" class="govuk-link">@messages("eoriCancel.replaceCancelHomePageLink")</a>
