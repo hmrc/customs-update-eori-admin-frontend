@@ -43,13 +43,15 @@ eoriUpdate.problem.section4.phrase2=replace an existing EORI number or cancel su
 eoriUpdate.problem.section4.phrase3=Go back to
 eoriUpdate.problem.homePageLink=Replace another EORI number or cancel subscriptions to HMRC services.
 
-
 # Cancel EORI
 eoriCancel.heading=Cancel a company’s subscriptions to HMRC services
 eoriCancelConfirm.heading=Cancel subscriptions for {0}
 eoriCancelConfirm.section1=You can cancel {0}’s subscriptions for:
 eoriCancelConfirm.section2=You will not be able to cancel {0}’s subscriptions for:
 eoriCancelConfirm.confirmQuestion=Are you sure you want to cancel {0}’s subscriptions?
+eoriCancel.noEnrolmentExist=The EORI number {0} does not have any subscriptions.
+eoriCancel.goBack=Go back to
+eoriCancel.replaceCancelHomePageLink=replace an existing EORI number or cancel subscriptions to HMRC services.
 
 # Validation Messages
 eori.validation.summary.heading=There is a problem
