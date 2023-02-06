@@ -87,7 +87,7 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
       .map(enrolments => {
         val enrolmentList = enrolments.filter(_._2).map(_._1).toList
         Ok(viewConfirmUpdate(
-          formEoriUpdateConfirmation.fill(ConfirmEoriUpdate(oldEoriNumber, establishmentDate, newEoriNumber, enrolmentList.mkString(","), false)),
+          formEoriUpdateConfirmation.fill(ConfirmEoriUpdate(oldEoriNumber, establishmentDate, newEoriNumber, enrolmentList.mkString(","), true)),
           enrolmentList
         ))
       })
@@ -118,7 +118,11 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
             if (status.exists(_._2 == false)) {
               Ok(viewUpdateEoriProblem(status.filter(_._2 == true).keys.toList, status.filter(_._2 == false).keys.toList, confirmEoriUpdate.newEori))
             } else {
-              Redirect(controllers.routes.EoriActionController.showPageOnSuccess(EoriAction.UPDATE_EORI.toString, confirmEoriUpdate.existingEori, confirmEoriUpdate.newEori))
+              Redirect(controllers.routes.EoriActionController.showPageOnSuccess(
+                cancelOrUpdate = Some(EoriActionEnum.UPDATE_EORI.toString),
+                oldEoriNumber = Some(confirmEoriUpdate.existingEori),
+                newEoriNumber = Some(confirmEoriUpdate.newEori))
+              )
             }
           }
           }

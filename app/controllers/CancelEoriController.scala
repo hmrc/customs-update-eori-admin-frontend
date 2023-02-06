@@ -84,7 +84,7 @@ case class CancelEoriController @Inject()(mcc: MessagesControllerComponents,
         val cancelableEnrolments = enrolmentList.filter(e => CancelableEnrolments.values.contains(e))
         val notCancelableEnrolments = enrolmentList.filter(e => !CancelableEnrolments.values.contains(e))
         Ok(viewConfirmCancelEori(
-          formConfirmCancelEori.fill(ConfirmEoriCancel(existingEori, establishmentDate, cancelableEnrolments.mkString(","), false)),
+          formConfirmCancelEori.fill(ConfirmEoriCancel(existingEori, establishmentDate, cancelableEnrolments.mkString(","), true)),
           cancelableEnrolments,
           notCancelableEnrolments
         ))
@@ -97,7 +97,11 @@ case class CancelEoriController @Inject()(mcc: MessagesControllerComponents,
         Future(Redirect(controllers.routes.CancelEoriController.showPage))
       },
       confirmEoriCancel => {
-        Future(Redirect(controllers.routes.EoriActionController.showPageOnSuccess(EoriAction.CANCEL_EORI.toString, confirmEoriCancel.existingEori, "")))
+        Future(Redirect(controllers.routes.EoriActionController.showPageOnSuccess(
+          cancelOrUpdate = Some(EoriActionEnum.CANCEL_EORI.toString),
+          oldEoriNumber = Some(confirmEoriCancel.existingEori),
+          cancelledEnrolments = Some(confirmEoriCancel.enrolmentList)
+        )))
         /* if (confirmEoriCancel.isConfirmed) {
            val updateAllEnrolments = Future.sequence(
              confirmEoriCancel.enrolmentList.split(",")

@@ -60,5 +60,5 @@ object EnrolmentKeySubLists {
 }
 
 object CancelableEnrolments {
-    val values = List(HMRC_ATAR_ORG, HMRC_GVMS_ORG, HMRC_SS_ORG, HMRC_ESC_ORG).map(e => e.serviceName)
+    val values = List(HMRC_ATAR_ORG, HMRC_GVMS_ORG, HMRC_SS_ORG).map(e => e.serviceName)
 }
