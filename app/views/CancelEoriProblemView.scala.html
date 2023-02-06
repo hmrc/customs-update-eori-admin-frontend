@@ -23,7 +23,7 @@
 
 @(successfulUpdateList: List[String], failedUpdateList: List[String])(implicit request: Request[_], messages: Messages)
 
-    @layout(pageTitle = Some("EORI number management service")) {
+    @layout(pageTitle = Some("EORI number management service"), showBackLink = false) {
         <div class="govuk-width-container ">
             <main class="govuk-main-wrapper govuk-!-padding-0" id="main-content" role="main">
                 <div class="govuk-grid-row">

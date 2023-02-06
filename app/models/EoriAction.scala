@@ -16,9 +16,9 @@
 
 package models
 
-case class EoriAction(cancelOrUpdate: String, oldEori: Option[String], newEori: Option[String])
+case class EoriAction(cancelOrUpdate: String)
 
-object EoriAction extends Enumeration {
+object EoriActionEnum extends Enumeration {
   val UPDATE_EORI = Value("Update-Eori")
   val CANCEL_EORI = Value("Cancel-Eori")
 }

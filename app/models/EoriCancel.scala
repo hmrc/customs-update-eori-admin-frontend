@@ -16,21 +16,6 @@
 
 package models
 
-case class EoriCancel(existingEori: String, dateOfEstablishment: String)
+import java.time.LocalDate
 
-object EoriCancel {
-  def apply(existingEori: String,
-            dateOfEstablishmentDay: String,
-            dateOfEstablishmentMonth: String,
-            dateOfEstablishmentYear: String): EoriCancel =
-    new EoriCancel(
-      existingEori,
-      s"$dateOfEstablishmentDay/$dateOfEstablishmentMonth/$dateOfEstablishmentYear"
-    )
-
-  def unapply(eoriCancel: EoriCancel): Option[(String, String, String, String)] = {
-    //simple argument extractor
-    val parts = eoriCancel.dateOfEstablishment.split("/")
-    if (parts.length == 3) Some(eoriCancel.existingEori, parts(0), parts(1), parts(2)) else None
-  }
-}
+case class EoriCancel(existingEori: String, dateOfEstablishment: LocalDate)

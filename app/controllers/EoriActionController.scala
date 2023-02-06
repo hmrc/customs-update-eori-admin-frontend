@@ -16,7 +16,7 @@
 
 package controllers
 
-import models.EoriAction
+import models.{EoriAction, EoriActionEnum}
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.i18n.I18nSupport
@@ -33,27 +33,31 @@ case class EoriActionController @Inject()(mcc: MessagesControllerComponents,
   extends FrontendController(mcc) with I18nSupport {
 
   val form: Form[EoriAction] = Form(mapping(
-    "update-or-cancel-eori" -> text(),
-    "existing-eori" -> optional(text()),
-    "new-eori" -> optional(text())
+    "update-or-cancel-eori" -> text()
   )(EoriAction.apply)(EoriAction.unapply))
 
 
   def showPage = auth { implicit request =>
-    Ok(viewEoriAction(form))
+    Ok(viewEoriAction(form.fill(EoriAction(EoriActionEnum.UPDATE_EORI.toString))))
   }
 
-  def showPageOnSuccess(cancelOrUpdate: String, oldEori: String, newEori: String) = auth { implicit request =>
-    Ok(viewEoriAction(form.fill(EoriAction(cancelOrUpdate, Some(oldEori), Some(newEori)))))
+  def showPageOnSuccess(cancelOrUpdate: Option[String], oldEoriNumber: Option[String], newEoriNumber: Option[String], cancelledEnrolments: Option[String]) = auth { implicit request =>
+    Ok(viewEoriAction(
+      form.fill(EoriAction(EoriActionEnum.UPDATE_EORI.toString)),
+      cancelOrUpdate = cancelOrUpdate,
+      oldEoriNumber = oldEoriNumber,
+      newEoriNumber = newEoriNumber,
+      cancelledEnrolments = cancelledEnrolments
+    ))
   }
 
   def continueAction = auth { implicit request =>
     form.bindFromRequest.fold (
       _ => Redirect(controllers.routes.EoriActionController.showPage),
       {
-        case EoriAction(cancelOrUpdate, _, _) if EoriAction.withName(cancelOrUpdate) == EoriAction.UPDATE_EORI =>
+        case EoriAction(cancelOrUpdate) if EoriActionEnum.withName(cancelOrUpdate) == EoriActionEnum.UPDATE_EORI =>
           Redirect(controllers.routes.UpdateEoriController.showPage)
-        case EoriAction(cancelOrUpdate, _, _) if EoriAction.withName(cancelOrUpdate) == EoriAction.CANCEL_EORI =>
+        case EoriAction(cancelOrUpdate) if EoriActionEnum.withName(cancelOrUpdate) == EoriActionEnum.CANCEL_EORI =>
           Redirect(controllers.routes.CancelEoriController.showPage)
         case _ => Redirect(controllers.routes.EoriActionController.showPage)
       }

@@ -16,20 +16,43 @@
 
 package models
 
-import org.scalatest.matchers.should.Matchers
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
+import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import org.scalatestplus.mockito.MockitoSugar
+import play.api.mvc.PathBindable
 
-class DateOfEstablishmentSpec
+import java.time.LocalDate
+
+class LocalDateBinderSpec
   extends AnyWordSpec
-  with Matchers {
+    with MockitoSugar
+    with Matchers {
 
-  "Date of establishment" should {
-    "return the correct date for a string" in {
-      val strDate = "12/02/2000"
-      val result = DateOfEstablishment.stringToLocalDate(strDate)
-      result.getYear shouldBe 2000
-      result.getMonthValue shouldBe 2
-      result.getDayOfMonth shouldBe 12
+  private val mockStringBinder = mock[PathBindable[String]]
+  private val localDateBinder = LocalDateBinder.datePathBindable(mockStringBinder)
+  private val localDate = LocalDate.of(2020, 1, 12)
+
+  "LocalDateBinder" when {
+
+    "on bind" must {
+      "bind a valid string to date" in {
+        when(mockStringBinder.bind(any(), any())).thenReturn(Right("12/01/2020"))
+        localDateBinder.bind("date", "30/01/2020") mustBe Right(localDate)
+      }
+
+      "return LocalDate binding failed if not able to bind" in {
+        when(mockStringBinder.bind(any(), any())).thenReturn(Left("error"))
+        localDateBinder.bind("date", "invalid") mustBe Left("LocalDate binding failed")
+      }
+    }
+
+    "on unbind" must {
+      "unbind a valid date to string" in {
+        when(mockStringBinder.unbind(any(), any())).thenReturn("2020-01-12")
+        localDateBinder.unbind("date", localDate) mustBe "2020-01-12"
+      }
     }
   }
 }

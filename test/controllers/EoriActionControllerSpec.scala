@@ -16,8 +16,7 @@
 
 package controllers
 
-import controllers.{AuthenticationBehaviours, EoriActionController}
-import models.EoriAction
+import models.EoriActionEnum
 import org.mockito.Mockito.reset
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
@@ -78,10 +77,38 @@ class EoriActionControllerSpec
     }
   }
 
+  "Show Page On Success" should {
+    "return HTML for update success" in withSignedInUser {
+      val oldEoriNumber = "GB123456789011"
+      val newEoriNumber = "GB123456789012"
+      val result = controller.showPageOnSuccess(Some(EoriActionEnum.UPDATE_EORI.toString), Some(oldEoriNumber), Some(newEoriNumber), None)(fakeRequest)
+      status(result) shouldBe OK
+      contentType(result) shouldBe Some("text/html")
+      charset(result) shouldBe Some("utf-8")
+      contentAsString(result) should include(s"EORI number $oldEoriNumber has been replaced with $newEoriNumber.")
+    }
+
+    "return HTML for cancel success" in withSignedInUser {
+      val eoriNumber = "GB123456789011"
+      val result = controller.showPageOnSuccess(Some(EoriActionEnum.CANCEL_EORI.toString), Some(eoriNumber), None, Some(""))(fakeRequest)
+      status(result) shouldBe OK
+      contentType(result) shouldBe Some("text/html")
+      charset(result) shouldBe Some("utf-8")
+      contentAsString(result) should include(s"Subscriptions cancelled for $eoriNumber")
+    }
+
+    "redirect to STRIDE login for not logged-in user" in withNotSignedInUser {
+      val result = controller.showPageOnSuccess(Some(EoriActionEnum.UPDATE_EORI.toString), Some("GB123456789011"), Some("GB123456789012"), None)(fakeRequest)
+      status(result) shouldBe SEE_OTHER
+      val Some(redirectURL) = redirectLocation(result)
+      redirectURL should include("/stride/sign-in")
+    }
+  }
+
   "Continue action" should {
     "redirect to update page when user select update Eori number" in withSignedInUser {
       val fakeRequestWithBody = FakeRequest("POST", "/")
-        .withFormUrlEncodedBody("update-or-cancel-eori" -> EoriAction.UPDATE_EORI.toString)
+        .withFormUrlEncodedBody("update-or-cancel-eori" -> EoriActionEnum.UPDATE_EORI.toString)
       val result = controller.continueAction(fakeRequestWithBody)
       status(result) shouldBe SEE_OTHER
       val Some(redirectURL) = redirectLocation(result)
@@ -90,7 +117,7 @@ class EoriActionControllerSpec
 
     "redirect to cancel page when user select update Eori number" in withSignedInUser {
       val fakeRequestWithBody = FakeRequest("POST", "/")
-        .withFormUrlEncodedBody("update-or-cancel-eori" -> EoriAction.CANCEL_EORI.toString)
+        .withFormUrlEncodedBody("update-or-cancel-eori" -> EoriActionEnum.CANCEL_EORI.toString)
       val result = controller.continueAction(fakeRequestWithBody)
       status(result) shouldBe SEE_OTHER
       val Some(redirectURL) = redirectLocation(result)

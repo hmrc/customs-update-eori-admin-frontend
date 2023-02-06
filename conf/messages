@@ -18,8 +18,10 @@ eori.radioButtonYes=Yes
 eori.radioButtonNo=No
 
 # Eori Action
-eoriAction.successBannerEoriUpdateMessage=You should email the company confirming that their EORI number has been replaced.
 eoriAction.successBannerEoriUpdateContent=EORI number {0} has been replaced with {1}.
+eoriAction.successBannerEoriUpdateMessage=You should email the company confirming that their EORI number has been replaced.
+eoriAction.successBannerEoriCancelHeading=Subscriptions cancelled for {0}.
+eoriAction.successBannerEoriCancelContent=You should email the company confirming that EORI number {0} subscriptions have been cancelled for:
 eoriAction.cancelSubscriptions=Cancel subscriptions to HMRC services
 eoriAction.questionForReplaceOrCancel=Do you want to replace an existing EORI number or cancel subscriptions to HMRC services?
 
@@ -44,10 +46,21 @@ eoriUpdate.problem.homePageLink=Replace another EORI number or cancel subscripti
 
 # Cancel EORI
 eoriCancel.heading=Cancel a company’s subscriptions to HMRC services
-eoriCancelConfirm.heading=Cancel subscriptions for
-eoriCancelConfirm.section1=You can cancel ’s subscriptions for:
-eoriCancelConfirm.section2=You will not be able to cancel ’s subscriptions for:
-eoriCancelConfirm.confirmQ=Are you sure you want to cancel ’s subscriptions?
-eoriCancelConfirm.confirmQ=Are you sure you want to cancel ’s subscriptions?
-eoriAction.successBannerEoriCancelHeading=Subscriptions cancelled for {0}.
-eoriAction.successBannerEoriCancelContent=You should email the company confirming that EORI number {0} subscriptions have been cancelled for:
+eoriCancelConfirm.heading=Cancel subscriptions for {0}
+eoriCancelConfirm.section1=You can cancel {0}’s subscriptions for:
+eoriCancelConfirm.section2=You will not be able to cancel {0}’s subscriptions for:
+eoriCancelConfirm.confirmQuestion=Are you sure you want to cancel {0}’s subscriptions?
+
+# Validation Messages
+eori.validation.summary.heading=There is a problem
+
+eori.validation.existingEori.required=Enter the company’s current EORI number
+eori.validation.existingEori.format=The company’s current EORI number must start with the letters GB , followed by 12 digits
+eori.validation.newEori.required=Enter the company’s new EORI number
+eori.validation.newEori.format=The company’s new EORI number must start with the letters GB , followed by 12 digits
+
+eori.validation.establishmentDate.required.all = Enter the date the company was established
+eori.validation.establishmentDate.required.two = The date the company was established must be a real date. Provide {0} and {1}
+eori.validation.establishmentDate.required.one = The date the company was established must be a real date. Provide a {0}
+eori.validation.establishmentDate.invalid = The date the company was established must be a real date
+eori.validation.establishmentDate.mustBeInPast = The date the company was established must be in the past

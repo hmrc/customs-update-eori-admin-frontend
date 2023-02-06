@@ -82,7 +82,6 @@ class EnrolmentService @Inject()(groupsConnector: QueryGroupsConnector,
    * @param hc
    * @return
    */
-
   def cancel(existingEori: Eori, date: LocalDate, enrolmentKey: EnrolmentKeyType)
             (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Enrolment]] = {
     val queryGroups = groupsConnector.query(existingEori, enrolmentKey)
