@@ -302,7 +302,7 @@ class UpdateEoriControllerSpec
   }
 
   "confirmUpdateEori" should {
-    "should complete the confirmation if user select confirm" in withSignedInUser {
+    "complete the confirmation if user select confirm" in withSignedInUser {
       val oldEori = "GB94449442349"
       val newEori = "GB94449442340"
       val establishmentDate = "04/11/1997"
@@ -324,7 +324,7 @@ class UpdateEoriControllerSpec
       val result = controller.confirmUpdateEori(fakeRequestWithBody)
       val Some(redirectURL) = redirectLocation(result)
       status(result) shouldBe SEE_OTHER
-      redirectURL should include(s"/customs-update-eori-admin-frontend/success?cancelOrUpdate=Update-Eori&oldEori=$oldEori&newEori=$newEori")
+      redirectURL should include(s"/customs-update-eori-admin-frontend/success?cancelOrUpdate=Update-Eori&oldEoriNumber=$oldEori&newEoriNumber=$newEori")
     }
 
     "should redirect back to update page if user select cancel" in withSignedInUser {

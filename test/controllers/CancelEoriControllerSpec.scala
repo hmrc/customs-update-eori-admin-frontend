@@ -259,7 +259,7 @@ class CancelEoriControllerSpec extends AnyWordSpec
   }
 
   "confirmCancelEori" should {
-    "should complete the confirmation if user select confirm" in withSignedInUser {
+    "complete the confirmation if user select confirm" in withSignedInUser {
       val oldEori = "GB94449442349"
       val establishmentDate = "04/11/1997"
       val fakeRequestWithBody = FakeRequest("POST", "/")
@@ -279,7 +279,7 @@ class CancelEoriControllerSpec extends AnyWordSpec
       val result = controller.confirmCancelEori(fakeRequestWithBody)
       val Some(redirectURL) = redirectLocation(result)
       status(result) shouldBe SEE_OTHER
-      redirectURL should include(s"/customs-update-eori-admin-frontend/success?cancelOrUpdate=Cancel-Eori&oldEori=GB94449442349")
+      redirectURL should include(s"/customs-update-eori-admin-frontend/success?cancelOrUpdate=Cancel-Eori&oldEoriNumber=GB94449442349&cancelledEnrolments=HMRC-GVMS-ORG%2CHMRC-ATAR-ORG")
     }
 
     "should redirect back to update page if user select cancel" in withSignedInUser {
