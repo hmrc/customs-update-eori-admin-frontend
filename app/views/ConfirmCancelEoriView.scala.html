@@ -29,28 +29,18 @@
 @layout(pageTitle = Some("EORI number management service")) {
     @formHelper(action = controllers.routes.CancelEoriController.confirmCancelEori) {
 
-        <div class="govuk-width-container ">
+        <div class="govuk-width-container">
             <main class="govuk-main-wrapper govuk-!-padding-0" id="main-content" role="main">
-
                 <h1 class="govuk-heading-l">@messages("eoriCancelConfirm.heading", form.data.get("existing-eori").getOrElse("ERROR"))</h1>
 
-                <p class="govuk-body">@messages("eoriCancelConfirm.section1", form.data.get("existing-eori").getOrElse("ERROR"))</p>
-                <ul class="govuk-list govuk-list--bullet">
-                @for(enrolment <- cancelableEnrolments) {
-                    @if(enrolment.equals("HMRC-CTS-ORG")) {
-                        @for(cts <- EnrolmentKeySubLists.ctsList) {
-                            <li>@cts</li>
-                        }
-                    } else {
-                        <li>@EnrolmentKey.getDescription(enrolment).getOrElse(enrolment)</li>
-                    }
-                }
-                </ul>
-
-                @if(notCancelableEnrolments.nonEmpty) {
-                    <p class="govuk-body">@messages("eoriCancelConfirm.section2", form.data.get("existing-eori").getOrElse("ERROR"))</p>
+                @if(cancelableEnrolments.isEmpty && notCancelableEnrolments.isEmpty) {
+                    <p class="govuk-body">@messages("eoriCancel.noEnrolmentExist", form("existing-eori").value.getOrElse("ERROR"))</p>
+                    <span class="govuk-body">@messages("eoriCancel.goBack")</span>
+                    <a href="/customs-update-eori-admin-frontend" class="govuk-link">@messages("eoriCancel.replaceCancelHomePageLink")</a>
+                } else {
+                    <p class="govuk-body">@messages("eoriCancelConfirm.section1", form.data.get("existing-eori").getOrElse("ERROR"))</p>
                     <ul class="govuk-list govuk-list--bullet">
-                    @for(enrolment <- notCancelableEnrolments) {
+                    @for(enrolment <- cancelableEnrolments) {
                         @if(enrolment.equals("HMRC-CTS-ORG")) {
                             @for(cts <- EnrolmentKeySubLists.ctsList) {
                                 <li>@cts</li>
@@ -60,36 +50,50 @@
                         }
                     }
                     </ul>
-                }
 
-                <input type="hidden" id="existing-eori" name="existing-eori" value="@form.data.get("existing-eori")"/>
-                <input type="hidden" id="date-of-establishment" name="date-of-establishment" value="@form.data.get("date-of-establishment")"/>
-                <input type="hidden" id="enrolment-list" name="enrolment-list" value="@form.data.get("enrolment-list")"/>
-                @govukRadios(Radios(
-                    fieldset = Some(Fieldset(
-                        legend = Some(Legend(
-                            content = Text(messages("eoriCancelConfirm.confirmQuestion", form.data.get("existing-eori").getOrElse("ERROR"))),
-                            classes = "govuk-fieldset__legend--m",
-                            isPageHeading = true
-                        ))
-                    )),
-                    name = "confirm",
-                    items = Seq(
-                        RadioItem(
-                            content = Text(messages("eori.radioButtonYes")),
-                            value = Some("true"),
-                            checked = form.data.get("confirm").exists(_.eq("true"))
+                    @if(notCancelableEnrolments.nonEmpty) {
+                        <p class="govuk-body">@messages("eoriCancelConfirm.section2", form.data.get("existing-eori").getOrElse("ERROR"))</p>
+                        <ul class="govuk-list govuk-list--bullet">
+                        @for(enrolment <- notCancelableEnrolments) {
+                            @if(enrolment.equals("HMRC-CTS-ORG")) {
+                                @for(cts <- EnrolmentKeySubLists.ctsList) {
+                                    <li>@cts</li>
+                                }
+                            } else {
+                                <li>@EnrolmentKey.getDescription(enrolment).getOrElse(enrolment)</li>
+                            }
+                        }
+                        </ul>
+                    }
+                    <input type="hidden" id="existing-eori" name="existing-eori" value='@form.data.get("existing-eori")'/>
+                    <input type="hidden" id="date-of-establishment" name="date-of-establishment" value='@form.data.get("date-of-establishment")'/>
+                    <input type="hidden" id="enrolment-list" name="enrolment-list" value='@form.data.get("enrolment-list")'/>
+                    @govukRadios(Radios(
+                        fieldset = Some(Fieldset(
+                            legend = Some(Legend(
+                                content = Text(messages("eoriCancelConfirm.confirmQuestion", form.data.get("existing-eori").getOrElse("ERROR"))),
+                                classes = "govuk-fieldset__legend--m",
+                                isPageHeading = true
+                            ))
+                        )),
+                        name = "confirm",
+                        items = Seq(
+                            RadioItem(
+                                content = Text(messages("eori.radioButtonYes")),
+                                value = Some("true"),
+                                checked = form.data.get("confirm").exists(_.eq("true"))
+                            ),
+                            RadioItem(
+                                content = Text(messages("eori.radioButtonNo")),
+                                value = Some("false"),
+                                checked = form.data.get("confirm").exists(_.eq("false"))
+                            )
                         ),
-                        RadioItem(
-                            content = Text(messages("eori.radioButtonNo")),
-                            value = Some("false"),
-                            checked = form.data.get("confirm").exists(_.eq("false"))
-                        )
-                    ),
-                    classes = "govuk-radios--inline"
-                ))
+                        classes = "govuk-radios--inline"
+                    ))
 
-                @submitButton(Button(content = Text(messages("eori.confirmButton"))))
+                    @submitButton(Button(content = Text(messages("eori.confirmButton"))))
+                }
             </main>
         </div>
     }
