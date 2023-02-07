@@ -28,7 +28,7 @@
             <main class="govuk-main-wrapper govuk-!-padding-0" id="main-content" role="main">
                 <div class="govuk-grid-row">
                     <div class="govuk-grid-column-full">
-                        <h1 class="govuk-heading-l">@messages("eoriUpdate.problem.heading")</h1>
+                        <h1 class="govuk-heading-l">@messages("eoriCancel.problem.heading")</h1>
                         <ul class="govuk-list govuk-list--bullet">
                         @for(enrolment <- failedUpdateList) {
                             @if(enrolment.equals("HMRC-CTS-ORG")) {
@@ -44,7 +44,7 @@
                         <p class="govuk-body">@messages("eoriUpdate.problem.section2.phrase1")  <a href='@messages("eoriUpdate.problem.section2.phrase2.serviceNowUrl")' class="govuk-link" target="_blank" rel="noopener noreferrer">@messages("eoriUpdate.problem.section2.phrase3")</a> @messages("eoriUpdate.problem.section2.phrase4")</p>
 
                         @if(successfulUpdateList.nonEmpty) {
-                            <p class="govuk-body">@messages("eoriUpdate.problem.section3")</p>
+                            <p class="govuk-body">@messages("eoriCancel.problem.section1")</p>
 
                             <ul class="govuk-list govuk-list--bullet">
                             @for(enrolment <- successfulUpdateList) {
