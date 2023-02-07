@@ -169,7 +169,7 @@ class UpdateEoriControllerSpec
         )
       val result = controller.continueUpdateEori(fakeRequestWithBody)
       status(result) shouldBe BAD_REQUEST
-      contentAsString(result) should include(s"The date the company was established must be a real date. Provide a day")
+      contentAsString(result) should include(s"The date the company was established must be a real date. Enter a day")
     }
 
     "show page again with error if month of DOE is not entered" in withSignedInUser {
@@ -182,7 +182,7 @@ class UpdateEoriControllerSpec
         )
       val result = controller.continueUpdateEori(fakeRequestWithBody)
       status(result) shouldBe BAD_REQUEST
-      contentAsString(result) should include(s"The date the company was established must be a real date. Provide a month")
+      contentAsString(result) should include(s"The date the company was established must be a real date. Enter a month")
     }
 
     "show page again with error if year of DOE is not entered" in withSignedInUser {
@@ -195,7 +195,7 @@ class UpdateEoriControllerSpec
         )
       val result = controller.continueUpdateEori(fakeRequestWithBody)
       status(result) shouldBe BAD_REQUEST
-      contentAsString(result) should include(s"The date the company was established must be a real date. Provide a year")
+      contentAsString(result) should include(s"The date the company was established must be a real date. Enter a year")
     }
 
     "show page again with error if day and month of DOE is not entered" in withSignedInUser {
@@ -207,7 +207,7 @@ class UpdateEoriControllerSpec
         )
       val result = controller.continueUpdateEori(fakeRequestWithBody)
       status(result) shouldBe BAD_REQUEST
-      contentAsString(result) should include(s"The date the company was established must be a real date. Provide day and month")
+      contentAsString(result) should include(s"The date the company was established must be a real date. Enter a day and a month")
     }
 
     "show page again with error if DOE is not entered" in withSignedInUser {

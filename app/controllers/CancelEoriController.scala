@@ -105,7 +105,7 @@ case class CancelEoriController @Inject()(mcc: MessagesControllerComponents,
                .map(enrolment =>
                  enrolmentService.cancel(
                    Eori(confirmEoriCancel.existingEori),
-                   stringToLocalDate(confirmEoriCancel.dateOfEstablishment),
+                   confirmEoriCancel.dateOfEstablishment,
                    enrolment
                  ).map(enrolment.serviceName -> _)
                )

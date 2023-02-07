@@ -64,7 +64,7 @@ eori.validation.newEori.required=Enter the company’s new EORI number
 eori.validation.newEori.format=The company’s new EORI number must start with the letters GB , followed by 12 digits
 
 eori.validation.establishmentDate.required.all = Enter the date the company was established
-eori.validation.establishmentDate.required.two = The date the company was established must be a real date. Provide {0} and {1}
-eori.validation.establishmentDate.required.one = The date the company was established must be a real date. Provide a {0}
+eori.validation.establishmentDate.required.two = The date the company was established must be a real date. Enter a {0} and a {1}
+eori.validation.establishmentDate.required.one = The date the company was established must be a real date. Enter a {0}
 eori.validation.establishmentDate.invalid = The date the company was established must be a real date
 eori.validation.establishmentDate.mustBeInPast = The date the company was established must be in the past
