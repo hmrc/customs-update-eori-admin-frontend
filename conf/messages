@@ -52,6 +52,8 @@ eoriCancelConfirm.confirmQuestion=Are you sure you want to cancel {0}’s subscr
 eoriCancel.noEnrolmentExist=The EORI number {0} does not have any subscriptions.
 eoriCancel.goBack=Go back to
 eoriCancel.replaceCancelHomePageLink=replace an existing EORI number or cancel subscriptions to HMRC services.
+eoriCancel.problem.heading=There was a problem cancelling subscriptions for
+eoriCancel.problem.section1=Subscriptions have been successfully cancelled for:
 
 # Validation Messages
 eori.validation.summary.heading=There is a problem
