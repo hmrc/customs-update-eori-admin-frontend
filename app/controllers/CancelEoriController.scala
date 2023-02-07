@@ -97,12 +97,7 @@ case class CancelEoriController @Inject()(mcc: MessagesControllerComponents,
         Future(Redirect(controllers.routes.CancelEoriController.showPage))
       },
       confirmEoriCancel => {
-        Future(Redirect(controllers.routes.EoriActionController.showPageOnSuccess(
-          cancelOrUpdate = Some(EoriActionEnum.CANCEL_EORI.toString),
-          oldEoriNumber = Some(confirmEoriCancel.existingEori),
-          cancelledEnrolments = Some(confirmEoriCancel.enrolmentList)
-        )))
-        /* if (confirmEoriCancel.isConfirmed) {
+        if (confirmEoriCancel.isConfirmed) {
            val updateAllEnrolments = Future.sequence(
              confirmEoriCancel.enrolmentList.split(",")
                .toList
@@ -120,13 +115,13 @@ case class CancelEoriController @Inject()(mcc: MessagesControllerComponents,
              if (status.exists(_._2 == false)) {
                Ok(cancelEoriProblemView(status.filter(_._2 == true).keys.toList, status.filter(_._2 == false).keys.toList))
              } else {
-               Redirect(controllers.routes.EoriActionController.showPageOnSuccess("", confirmEoriCancel.existingEori, confirmEoriCancel.existingEori))
+               Redirect(controllers.routes.EoriActionController.showPageOnSuccess(cancelOrUpdate = Some(EoriActionEnum.CANCEL_EORI.toString),oldEoriNumber = Some(confirmEoriCancel.existingEori),cancelledEnrolments = Some(confirmEoriCancel.enrolmentList)))
              }
            }
            }
          } else {
            Future(Redirect(controllers.routes.CancelEoriController.showPage))
-         }*/
+         }
       }
     )
   }
