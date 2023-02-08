@@ -1,7 +1,6 @@
 service.name = customs-update-eori-admin-frontend
 service.text = This is your new service
 
-
 # Common messages
 eori.replaceExistingEori=Replace an existing EORI number
 eori.companyEstablishedDay=Day
@@ -16,6 +15,10 @@ eori.accountNumberHint=The first two letters are GB, followed by 12 digits. For 
 eori.backLinkText=Back
 eori.radioButtonYes=Yes
 eori.radioButtonNo=No
+eori.noEnrolment=The EORI number {0} does not have any subscriptions.
+eori.noEnrolment.goBack=Go back to
+eori.noEnrolment.replaceCancelHomePageLink=replace an existing EORI number or cancel subscriptions to HMRC services
+eori.problem.homePageLink=Replace another EORI number or cancel subscriptions to HMRC services.
 
 # Eori Action
 eoriAction.successBannerEoriUpdateContent=EORI number {0} has been replaced with {1}.
@@ -38,10 +41,6 @@ eoriUpdate.problem.section2.phrase2.serviceNowUrl=https://ukrc.service-now.com/e
 eoriUpdate.problem.section2.phrase3=create a live service ticket on ServiceNow
 eoriUpdate.problem.section2.phrase4=to fix the problem.
 eoriUpdate.problem.section3=The new EORI number has been successfully subscribed to:
-eoriUpdate.problem.section4.phrase1=The EORI number {0} does not have any subscriptions.
-eoriUpdate.problem.section4.phrase2=replace an existing EORI number or cancel subscriptions to HMRC services.
-eoriUpdate.problem.section4.phrase3=Go back to
-eoriUpdate.problem.homePageLink=Replace another EORI number or cancel subscriptions to HMRC services.
 
 # Cancel EORI
 eoriCancel.heading=Cancel a company’s subscriptions to HMRC services
@@ -49,9 +48,6 @@ eoriCancelConfirm.heading=Cancel subscriptions for {0}
 eoriCancelConfirm.section1=You can cancel {0}’s subscriptions for:
 eoriCancelConfirm.section2=You will not be able to cancel {0}’s subscriptions for:
 eoriCancelConfirm.confirmQuestion=Are you sure you want to cancel {0}’s subscriptions?
-eoriCancel.noEnrolmentExist=The EORI number {0} does not have any subscriptions.
-eoriCancel.goBack=Go back to
-eoriCancel.replaceCancelHomePageLink=replace an existing EORI number or cancel subscriptions to HMRC services.
 eoriCancel.problem.heading=There was a problem cancelling subscriptions for
 eoriCancel.problem.section1=Subscriptions have been successfully cancelled for:
 
