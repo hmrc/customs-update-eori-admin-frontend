@@ -18,7 +18,7 @@ eori.radioButtonNo=No
 eori.noEnrolment=The EORI number {0} does not have any subscriptions.
 eori.noEnrolment.goBack=Go back to
 eori.noEnrolment.replaceCancelHomePageLink=replace an existing EORI number or cancel subscriptions to HMRC services
-eori.problem.homePageLink=Replace another EORI number or cancel subscriptions to HMRC services.
+eori.problem.homePageLink=Replace another EORI number or cancel subscriptions to HMRC services
 
 # Eori Action
 eoriAction.successBannerEoriUpdateContent=EORI number {0} has been replaced with {1}.
