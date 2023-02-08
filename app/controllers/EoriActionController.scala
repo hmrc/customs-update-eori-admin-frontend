@@ -52,7 +52,7 @@ case class EoriActionController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def continueAction = auth { implicit request =>
-    form.bindFromRequest.fold (
+    form.bindFromRequest().fold (
       _ => Redirect(controllers.routes.EoriActionController.showPage),
       {
         case EoriAction(cancelOrUpdate) if EoriActionEnum.withName(cancelOrUpdate) == EoriActionEnum.UPDATE_EORI =>

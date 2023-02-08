@@ -22,6 +22,7 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 @Singleton
 class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig) {
+  lazy val isShuttered: Boolean = config.get[Boolean]("shuttered")
   val enrolmentStoreProxyServiceUrl: String = s"${servicesConfig.baseUrl("enrolment-store-proxy")}/enrolment-store-proxy"
   val taxEnrolmentsServiceUrl: String = s"${servicesConfig.baseUrl("tax-enrolments")}/tax-enrolments"
   val customsDataStoreUrl: String = s"${servicesConfig.baseUrl("customs-data-store")}/customs-data-store/update-eori-history"
