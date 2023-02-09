@@ -39,11 +39,11 @@ class DeAllocateGroupConnector @Inject()(httpClient: HttpClient, config: AppConf
    */
   def deAllocateGroup(eori: Eori, enrolmentKey: EnrolmentKeyType, groupId: GroupId)(implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
     val url = s"${config.taxEnrolmentsServiceUrl}/groups/$groupId/enrolments/${enrolmentKey.getEnrolmentKey(eori)}"
-    httpClient.DELETE[HttpResponse](url) map {
-      _.status match {
+    httpClient.DELETE[HttpResponse](url) map { resp =>
+      resp.status match {
         case NO_CONTENT => Right(NO_CONTENT)
         case failStatus => {
-          logger.error(s"Delete enrolment failed with HTTP status: $failStatus for existing EORI: $eori")
+          logger.error(s"Delete enrolment failed with HTTP status: $failStatus for existing EORI: $eori. Response: ${resp.body}")
           Left(ErrorMessage(s"Delete enrolment failed with HTTP status: $failStatus"))
         }
       }

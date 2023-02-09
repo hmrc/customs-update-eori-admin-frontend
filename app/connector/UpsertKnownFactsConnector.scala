@@ -52,10 +52,10 @@ class UpsertKnownFactsConnector @Inject()(httpClient: HttpClient, config: AppCon
                     (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
     val url = s"${config.taxEnrolmentsServiceUrl}/enrolments/${enrolmentKey.getEnrolmentKey(eori)}"
     httpClient.PUT[UpsertKnownFactsRequest, HttpResponse](url, UpsertKnownFactsRequest(enrolment)) map {
-      _.status match {
+      resp => resp.status match {
         case NO_CONTENT => Right(NO_CONTENT)
         case failStatus => {
-          logger.error(s"Upsert failed with HTTP status: $failStatus for existing EORI: $eori")
+          logger.error(s"Upsert failed with HTTP status: $failStatus for existing EORI: $eori. Response: ${resp.body}")
           Left(ErrorMessage(s"Upsert failed with HTTP status: $failStatus"))
         }
       }

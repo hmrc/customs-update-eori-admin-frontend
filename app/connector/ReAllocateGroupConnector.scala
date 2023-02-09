@@ -47,7 +47,7 @@ class ReAllocateGroupConnector @Inject()(httpClient: HttpClient, config: AppConf
       resp.status match {
         case CREATED => Right(CREATED)
         case failStatus =>{
-          logger.error(s"Allocate group failed with HTTP status: $failStatus for existing EORI: $eori")
+          logger.error(s"Allocate group failed with HTTP status: $failStatus for existing EORI: $eori. Result: ${resp.body}")
           Left(ErrorMessage(s"Allocate group failed with HTTP status: $failStatus (${resp.body})"))
         }
       }
