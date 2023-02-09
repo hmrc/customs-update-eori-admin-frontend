@@ -20,6 +20,11 @@ eori.noEnrolment.goBack=Go back to
 eori.noEnrolment.replaceCancelHomePageLink=replace an existing EORI number or cancel subscriptions to HMRC services
 eori.problem.homePageLink=Replace another EORI number or cancel subscriptions to HMRC services
 
+# Shutter View
+eori.shutter.title = Service not available
+eori.shutter.heading = Service not available
+eori.shutter.message = Eori toolkit service is under maintenance. The service will be available soon.
+
 # Eori Action
 eoriAction.successBannerEoriUpdateContent=EORI number {0} has been replaced with {1}.
 eoriAction.successBannerEoriUpdateMessage=You should email the company confirming that their EORI number has been replaced.

@@ -20,3 +20,7 @@ GET       /cancel                      controllers.CancelEoriController.showPage
 POST      /cancel                      controllers.CancelEoriController.continueCancelEori
 GET       /confirm-cancel              controllers.CancelEoriController.showConfirmCancelPage(existingEori: String, establishmentDate: String)
 POST      /confirm-cancel              controllers.CancelEoriController.confirmCancelEori
+
+
+# Maintenance
+GET       /maintenance                 controllers.MaintenanceController.get

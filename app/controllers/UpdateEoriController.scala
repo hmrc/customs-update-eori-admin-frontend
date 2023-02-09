@@ -75,7 +75,7 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def continueUpdateEori = auth { implicit request =>
-    formEoriUpdate.bindFromRequest.fold(
+    formEoriUpdate.bindFromRequest().fold(
       formWithError => BadRequest(viewUpdateEori(formWithError)),
       eoriUpdate =>
         Redirect(controllers.routes.UpdateEoriController.showConfirmUpdatePage(eoriUpdate.existingEori, eoriUpdate.dateOfEstablishment, eoriUpdate.newEori))
@@ -94,7 +94,7 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def confirmUpdateEori = auth.async { implicit request =>
-    formEoriUpdateConfirmation.bindFromRequest.fold(
+    formEoriUpdateConfirmation.bindFromRequest().fold(
       _ => {
         Future(Redirect(controllers.routes.UpdateEoriController.showPage))
       },

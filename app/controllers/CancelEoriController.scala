@@ -71,7 +71,7 @@ case class CancelEoriController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def continueCancelEori = auth { implicit request =>
-    formCancelEori.bindFromRequest.fold(
+    formCancelEori.bindFromRequest().fold(
       formWithError => BadRequest(cancelEoriView(formWithError)),
       eoriCancel => Redirect(controllers.routes.CancelEoriController.showConfirmCancelPage(eoriCancel.existingEori, eoriCancel.dateOfEstablishment))
     )
@@ -92,7 +92,7 @@ case class CancelEoriController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def confirmCancelEori = auth.async { implicit request =>
-    formConfirmCancelEori.bindFromRequest.fold(
+    formConfirmCancelEori.bindFromRequest().fold(
       _ => {
         Future(Redirect(controllers.routes.CancelEoriController.showPage))
       },
