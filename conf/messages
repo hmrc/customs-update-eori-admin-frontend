@@ -55,6 +55,7 @@ eoriCancelConfirm.section2=You will not be able to cancel {0}’s subscriptions 
 eoriCancelConfirm.confirmQuestion=Are you sure you want to cancel {0}’s subscriptions?
 eoriCancel.problem.heading=There was a problem cancelling subscriptions for
 eoriCancel.problem.section1=Subscriptions have been successfully cancelled for:
+eoriCancel.problemPageMsg=The subscription has not been cancelled for:
 
 # Validation Messages
 eori.validation.summary.heading=There is a problem
