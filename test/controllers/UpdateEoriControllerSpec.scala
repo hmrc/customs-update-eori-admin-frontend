@@ -218,7 +218,7 @@ class UpdateEoriControllerSpec
         )
       val result = controller.continueUpdateEori(fakeRequestWithBody)
       status(result) shouldBe BAD_REQUEST
-      contentAsString(result) should include(s"Enter the date the company was established")
+      contentAsString(result) should include(s"Enter the date that the company was established")
     }
 
     "show page again with error if DOE is wrong" in withSignedInUser {
@@ -257,7 +257,7 @@ class UpdateEoriControllerSpec
       status(result) shouldBe BAD_REQUEST
       contentAsString(result) should include(s"Enter the company’s current EORI number")
       contentAsString(result) should include(s"Enter the company’s new EORI number")
-      contentAsString(result) should include(s"Enter the date the company was established")
+      contentAsString(result) should include(s"Enter the date that the company was established")
     }
 
     "redirect to STRIDE login for not logged-in user" in withNotSignedInUser {
