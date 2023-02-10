@@ -632,6 +632,27 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       result shouldBe Right(mockData);
     }
 
+    "cancel ATAR enrolments if existing EORI is found by the enrolment service" in {
+      val oldEori = Eori("GB123456789006")
+      val dateOfEstablishment = "03/11/1997"
+
+      val mockData: Enrolment = Enrolment(Seq(KeyValue("EORINumber", oldEori.toString)), Seq(KeyValue("DateOfEstablishment", dateOfEstablishment)));
+
+      when(mockQueryKnownFacts.query(meq(oldEori), meq(HMRC_ATAR_ORG), meq(LocalDate.of(1997, 11, 3)))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(mockData)))
+      when(mockQueryGroups.query(meq(oldEori), meq(HMRC_ATAR_ORG))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(GroupId("90ccf333-65d2-4bf2-a008-abc23783"))))
+
+      when(mockDeAllocateGroup.deAllocateGroup(meq(oldEori), meq(HMRC_ATAR_ORG), meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783")))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(NO_CONTENT)))
+
+      when(mockRemoveKnownFacts.remove(meq(oldEori), meq(HMRC_ATAR_ORG))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(NO_CONTENT)))
+
+      val result = service.cancel(oldEori, LocalDate.of(1997, 11, 3), HMRC_ATAR_ORG).futureValue
+      result shouldBe Right(mockData);
+    }
+
     "return Error Message if there is no group Id" in {
       val oldEori = Eori("GB123456789006")
       val dateOfEstablishment = "03/11/1997"
