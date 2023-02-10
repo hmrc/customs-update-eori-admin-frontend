@@ -32,11 +32,11 @@ class RemoveKnownFactsConnector @Inject()(httpClient: HttpClient, config: AppCon
   def remove(eori: Eori, enrolmentKey: EnrolmentKeyType)
             (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
     val url = s"${config.taxEnrolmentsServiceUrl}/enrolments/${enrolmentKey.getEnrolmentKey(eori)}"
-    httpClient.DELETE[HttpResponse](url) map {
-      _.status match {
+    httpClient.DELETE[HttpResponse](url) map { resp =>
+      resp.status match {
         case NO_CONTENT => Right(NO_CONTENT)
         case failStatus => {
-          logger.error(s"Remove known facts failed with HTTP status: $failStatus for existing EORI: $eori")
+          logger.error(s"Remove known facts failed with HTTP status: $failStatus for existing EORI: $eori. Response: ${resp.body}")
           Left(ErrorMessage(s"Remove known facts failed with HTTP status: $failStatus"))
         }
 
