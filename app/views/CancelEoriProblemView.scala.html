@@ -29,6 +29,8 @@
                 <div class="govuk-grid-row">
                     <div class="govuk-grid-column-full">
                         <h1 class="govuk-heading-l">@messages("eoriCancel.problem.heading")</h1>
+                        <p class="govuk-body">@messages("eoriCancel.problemPageMsg")</p>
+
                         <ul class="govuk-list govuk-list--bullet">
                         @for(enrolment <- failedUpdateList) {
                             @if(enrolment.equals("HMRC-CTS-ORG")) {
