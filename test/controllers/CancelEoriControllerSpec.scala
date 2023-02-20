@@ -136,7 +136,7 @@ class CancelEoriControllerSpec extends AnyWordSpec
         )
       val result = controller.continueCancelEori(fakeRequestWithBody)
       status(result) shouldBe BAD_REQUEST
-      contentAsString(result) should include(s"The date the company was established must be a real date. Enter a day")
+      contentAsString(result) should include(s"The date the company was established must include a day")
     }
 
     "show page again with error if month of DOE is not entered" in withSignedInUser {
@@ -148,7 +148,7 @@ class CancelEoriControllerSpec extends AnyWordSpec
         )
       val result = controller.continueCancelEori(fakeRequestWithBody)
       status(result) shouldBe BAD_REQUEST
-      contentAsString(result) should include(s"The date the company was established must be a real date. Enter a month")
+      contentAsString(result) should include(s"The date the company was established must include a month")
     }
 
     "show page again with error if year of DOE is not entered" in withSignedInUser {
@@ -160,7 +160,7 @@ class CancelEoriControllerSpec extends AnyWordSpec
         )
       val result = controller.continueCancelEori(fakeRequestWithBody)
       status(result) shouldBe BAD_REQUEST
-      contentAsString(result) should include(s"The date the company was established must be a real date. Enter a year")
+      contentAsString(result) should include(s"The date the company was established must include a year")
     }
 
     "show page again with error if day and month of DOE is not entered" in withSignedInUser {
