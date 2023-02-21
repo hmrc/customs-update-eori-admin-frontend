@@ -211,6 +211,20 @@ class CancelEoriControllerSpec extends AnyWordSpec
       contentAsString(result) should include(s"The date the company was established must be in the past")
     }
 
+    "show page again with error if year of DOE is less than four digit" in withSignedInUser {
+      val fakeRequestWithBody = FakeRequest("POST", "/")
+        .withFormUrlEncodedBody(
+          "existing-eori" -> "GB944494423491",
+          "date-of-establishment.day" -> "04",
+          "date-of-establishment.month" -> "11",
+          "date-of-establishment.year" -> "123",
+          "new-eori" -> "GB944494423492"
+        )
+      val result = controller.continueCancelEori(fakeRequestWithBody)
+      status(result) shouldBe BAD_REQUEST
+      contentAsString(result) should include(s"The date the company was established must be a real date")
+    }
+
     "show page again with multiple errors and with bad request status" in withSignedInUser {
       val fakeRequestWithBody = FakeRequest("POST", "/")
         .withFormUrlEncodedBody()
