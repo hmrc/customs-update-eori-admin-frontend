@@ -32,13 +32,18 @@ private[mappings] class LocalDateFormatter(invalidKey: String,
 
   private val fieldKeys: List[String] = List("day", "month", "year")
 
-  private def toDate(key: String, day: Int, month: Int, year: Int): Either[Seq[FormError], LocalDate] =
-    Try(LocalDate.of(year, month, day)) match {
-      case Success(date) =>
-        Right(date)
-      case Failure(_) =>
-        Left(Seq(FormError(key, invalidKey, args)))
+  private def toDate(key: String, day: Int, month: Int, year: Int): Either[Seq[FormError], LocalDate] = {
+    if(year/1 == 4) {
+      Try(LocalDate.of(year, month, day)) match {
+        case Success(date) =>
+          Right(date)
+        case Failure(_) =>
+          Left(Seq(FormError(key, invalidKey, args)))
+      }
+    } else {
+      Left(Seq(FormError(key, invalidKey, args)))
     }
+  }
 
   private def formatDate(key: String, data: Map[String, String]): Either[Seq[FormError], LocalDate] = {
 
