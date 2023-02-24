@@ -70,11 +70,11 @@
                     <input type="hidden" id="existing-eori" name="existing-eori" value='@form.data.get("existing-eori")'/>
                     <input type="hidden" id="date-of-establishment" name="date-of-establishment" value='@form.data.get("date-of-establishment")'/>
                     <input type="hidden" id="enrolment-list" name="enrolment-list" value='@form.data.get("enrolment-list")'/>
-                    @govukRadios(Radios(
+                    <!--@govukRadios(Radios(
                         fieldset = Some(Fieldset(
                             legend = Some(Legend(
                                 content = Text(messages("eoriCancelConfirm.confirmQuestion", form.data.get("existing-eori").getOrElse("ERROR"))),
-                                classes = "govuk-fieldset__legend--m",
+                                classes = "govuk-fieldset__legend&#45;&#45;m",
                                 isPageHeading = true
                             ))
                         )),
@@ -91,10 +91,12 @@
                                 checked = form.data.get("confirm").exists(_.eq("false"))
                             )
                         ),
-                        classes = "govuk-radios--inline"
-                    ))
+                        classes = "govuk-radios&#45;&#45;inline"
+                    ))-->
 
-                    @submitButton(Button(content = Text(messages("eori.confirmButton"))))
+                    @submitButton(Button(content = Text(messages("eori.confirmChanges"))))
+
+                    @submitButton(Button(content = Text(messages("eori.cancelButton"))))
                 }
             </main>
         </div>
