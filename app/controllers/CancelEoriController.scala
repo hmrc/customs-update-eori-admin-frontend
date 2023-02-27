@@ -62,8 +62,7 @@ case class CancelEoriController @Inject()(mcc: MessagesControllerComponents,
     mapping(
       "existing-eori" -> text(),
       "date-of-establishment" -> Forms.localDate(LocalDateBinder.dateTimePattern),
-      "enrolment-list" -> text(),
-      "confirm" -> boolean
+      "enrolment-list" -> text()
     )(ConfirmEoriCancel.apply)(ConfirmEoriCancel.unapply))
 
   def showPage = auth { implicit request =>
@@ -84,7 +83,7 @@ case class CancelEoriController @Inject()(mcc: MessagesControllerComponents,
         val cancelableEnrolments = enrolmentList.filter(e => CancelableEnrolments.values.contains(e))
         val notCancelableEnrolments = enrolmentList.filter(e => !CancelableEnrolments.values.contains(e))
         Ok(viewConfirmCancelEori(
-          formConfirmCancelEori.fill(ConfirmEoriCancel(existingEori, establishmentDate, cancelableEnrolments.mkString(","), true)),
+          formConfirmCancelEori.fill(ConfirmEoriCancel(existingEori, establishmentDate, cancelableEnrolments.mkString(","))),
           cancelableEnrolments,
           notCancelableEnrolments
         ))
@@ -97,8 +96,7 @@ case class CancelEoriController @Inject()(mcc: MessagesControllerComponents,
         Future(Redirect(controllers.routes.CancelEoriController.showPage))
       },
       confirmEoriCancel => {
-        if (confirmEoriCancel.isConfirmed) {
-           val updateAllEnrolments = Future.sequence(
+            val updateAllEnrolments = Future.sequence(
              confirmEoriCancel.enrolmentList.split(",")
                .toList
                .map(EnrolmentKey.getEnrolmentKey(_).get)
@@ -119,9 +117,7 @@ case class CancelEoriController @Inject()(mcc: MessagesControllerComponents,
              }
            }
            }
-         } else {
-           Future(Redirect(controllers.routes.CancelEoriController.showPage))
-         }
+
       }
     )
   }
