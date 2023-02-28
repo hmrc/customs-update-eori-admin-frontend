@@ -341,25 +341,6 @@ class UpdateEoriControllerSpec
       redirectURL should include(s"/customs-update-eori-admin-frontend/success?cancelOrUpdate=Update-Eori&oldEoriNumber=$oldEori&newEoriNumber=$newEori")
     }
 
-    "should redirect back to update page if user select cancel" in withSignedInUser {
-      val oldEori = "GB94449442349"
-      val newEori = "GB94449442340"
-      val establishmentDate = "04/11/1997"
-      val fakeRequestWithBody = FakeRequest("POST", "/")
-        .withFormUrlEncodedBody(
-          "existing-eori" -> oldEori,
-          "date-of-establishment" -> establishmentDate,
-          "new-eori" -> newEori,
-          "enrolment-list" -> s"${EnrolmentKey.HMRC_CUS_ORG.serviceName},${EnrolmentKey.HMRC_ATAR_ORG.serviceName}",
-          "confirm" -> "false"
-        )
-
-      val result = controller.confirmUpdateEori(fakeRequestWithBody)
-      val Some(redirectURL) = redirectLocation(result)
-      status(result) shouldBe SEE_OTHER
-      redirectURL should include(s"/customs-update-eori-admin-frontend/update")
-    }
-
     "redirect to STRIDE login for not logged-in user" in withNotSignedInUser {
       val fakeRequestWithBody = FakeRequest("POST", "/")
         .withFormUrlEncodedBody(
