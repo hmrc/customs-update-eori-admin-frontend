@@ -29,9 +29,9 @@ eori.shutter.message = Eori toolkit service is under maintenance. The service wi
 
 # Eori Action
 eoriAction.successBannerEoriUpdateContent = EORI number {0} has been replaced with {1}.
-eoriAction.successBannerEoriUpdateMessage = You should email the company confirming that their EORI number has been replaced.
+eoriAction.successBannerEoriUpdateMessage = You should email the trader confirming that their EORI number has been replaced.
 eoriAction.successBannerEoriCancelHeading = Subscriptions cancelled for {0}.
-eoriAction.successBannerEoriCancelContent = You should email the company confirming that EORI number {0} subscriptions have been cancelled for:
+eoriAction.successBannerEoriCancelContent = You should email the trader confirming that EORI number {0} subscriptions have been cancelled for:
 eoriAction.cancelSubscriptions = Cancel subscriptions to HMRC services
 eoriAction.questionForReplaceOrCancel = Do you want to replace an existing EORI number or cancel subscriptions to HMRC services?
 
@@ -50,7 +50,7 @@ eoriUpdate.problem.section2.phrase4 = to fix the problem.
 eoriUpdate.problem.section3 = The new EORI number has been successfully subscribed to:
 
 # Cancel EORI
-eoriCancel.heading = Cancel a company’s subscriptions to HMRC services
+eoriCancel.heading = Cancel a trader’s subscriptions to HMRC services
 eoriCancelConfirm.heading = Cancel subscriptions for {0}
 eoriCancelConfirm.section1 = You can cancel {0}’s subscriptions for:
 eoriCancelConfirm.section2 = You will not be able to cancel {0}’s subscriptions for:
