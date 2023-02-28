@@ -111,7 +111,7 @@ class CancelEoriControllerSpec extends AnyWordSpec
         )
       val result = controller.continueCancelEori(fakeRequestWithBody)
       status(result) shouldBe BAD_REQUEST
-      contentAsString(result) should include(s"Enter the company’s current EORI number")
+      contentAsString(result) should include(s"Enter the trader’s current EORI number")
     }
 
     "show page again with error if existing EORI number is wrong" in withSignedInUser {
@@ -124,7 +124,7 @@ class CancelEoriControllerSpec extends AnyWordSpec
         )
       val result = controller.continueCancelEori(fakeRequestWithBody)
       status(result) shouldBe BAD_REQUEST
-      contentAsString(result) should include(s"The company’s current EORI number must start with the letters GB , followed by 12 digits")
+      contentAsString(result) should include(s"The trader’s current EORI number must start with the letters GB , followed by 12 digits")
     }
 
     "show page again with error if day of DOE is not entered" in withSignedInUser {
@@ -136,7 +136,7 @@ class CancelEoriControllerSpec extends AnyWordSpec
         )
       val result = controller.continueCancelEori(fakeRequestWithBody)
       status(result) shouldBe BAD_REQUEST
-      contentAsString(result) should include(s"The date the company was established must include a day")
+      contentAsString(result) should include(s"The date the trader was established must include a day")
     }
 
     "show page again with error if month of DOE is not entered" in withSignedInUser {
@@ -148,7 +148,7 @@ class CancelEoriControllerSpec extends AnyWordSpec
         )
       val result = controller.continueCancelEori(fakeRequestWithBody)
       status(result) shouldBe BAD_REQUEST
-      contentAsString(result) should include(s"The date the company was established must include a month")
+      contentAsString(result) should include(s"The date the trader was established must include a month")
     }
 
     "show page again with error if year of DOE is not entered" in withSignedInUser {
@@ -160,7 +160,7 @@ class CancelEoriControllerSpec extends AnyWordSpec
         )
       val result = controller.continueCancelEori(fakeRequestWithBody)
       status(result) shouldBe BAD_REQUEST
-      contentAsString(result) should include(s"The date the company was established must include a year")
+      contentAsString(result) should include(s"The date the trader was established must include a year")
     }
 
     "show page again with error if day and month of DOE is not entered" in withSignedInUser {
@@ -171,7 +171,7 @@ class CancelEoriControllerSpec extends AnyWordSpec
         )
       val result = controller.continueCancelEori(fakeRequestWithBody)
       status(result) shouldBe BAD_REQUEST
-      contentAsString(result) should include(s"The date the company was established must be a real date. Enter a day and a month")
+      contentAsString(result) should include(s"The date the trader was established must be a real date. Enter a day and a month")
     }
 
     "show page again with error if DOE is not entered" in withSignedInUser {
@@ -181,7 +181,7 @@ class CancelEoriControllerSpec extends AnyWordSpec
         )
       val result = controller.continueCancelEori(fakeRequestWithBody)
       status(result) shouldBe BAD_REQUEST
-      contentAsString(result) should include(s"Enter the date that the company was established")
+      contentAsString(result) should include(s"Enter the date that the trader was established")
     }
 
     "show page again with error if DOE is wrong" in withSignedInUser {
@@ -194,7 +194,7 @@ class CancelEoriControllerSpec extends AnyWordSpec
         )
       val result = controller.continueCancelEori(fakeRequestWithBody)
       status(result) shouldBe BAD_REQUEST
-      contentAsString(result) should include(s"The date the company was established must be a real date")
+      contentAsString(result) should include(s"The date the trader was established must be a real date")
     }
 
     "show page again with error if DOE entered as future date" in withSignedInUser {
@@ -208,7 +208,7 @@ class CancelEoriControllerSpec extends AnyWordSpec
         )
       val result = controller.continueCancelEori(fakeRequestWithBody)
       status(result) shouldBe BAD_REQUEST
-      contentAsString(result) should include(s"The date the company was established must be in the past")
+      contentAsString(result) should include(s"The date the trader was established must be in the past")
     }
 
     "show page again with error if year of DOE is less than four digit" in withSignedInUser {
@@ -222,7 +222,7 @@ class CancelEoriControllerSpec extends AnyWordSpec
         )
       val result = controller.continueCancelEori(fakeRequestWithBody)
       status(result) shouldBe BAD_REQUEST
-      contentAsString(result) should include(s"The date the company was established must be a real date")
+      contentAsString(result) should include(s"The date the trader was established must be a real date")
     }
 
     "show page again with multiple errors and with bad request status" in withSignedInUser {
@@ -230,8 +230,8 @@ class CancelEoriControllerSpec extends AnyWordSpec
         .withFormUrlEncodedBody()
       val result = controller.continueCancelEori(fakeRequestWithBody)
       status(result) shouldBe BAD_REQUEST
-      contentAsString(result) should include(s"Enter the company’s current EORI number")
-      contentAsString(result) should include(s"Enter the date that the company was established")
+      contentAsString(result) should include(s"Enter the trader’s current EORI number")
+      contentAsString(result) should include(s"Enter the date that the trader was established")
     }
 
     "redirect to STRIDE login for not logged-in user" in withNotSignedInUser {
