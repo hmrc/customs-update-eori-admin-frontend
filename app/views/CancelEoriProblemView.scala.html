@@ -29,8 +29,28 @@
                 <div class="govuk-grid-row">
                     <div class="govuk-grid-column-full">
                         <h1 class="govuk-heading-l">@messages("eoriCancel.problem.heading")</h1>
-                        <p class="govuk-body">@messages("eoriCancel.problemPageMsg")</p>
 
+                        <!-- Cancellation successfully -->
+
+                        @if(successfulUpdateList.nonEmpty) {
+                        <p class="govuk-body">@messages("eoriCancel.problem.section1")</p>
+
+                        <ul class="govuk-list govuk-list--bullet">
+                            @for(enrolment <- successfulUpdateList) {
+                            @if(enrolment.equals("HMRC-CTS-ORG")) {
+                            @for(cts <- EnrolmentKeySubLists.ctsList) {
+                            <li>@cts</li>
+                            }
+                            } else {
+                            <li>@EnrolmentKey.getDescription(enrolment).getOrElse(enrolment)</li>
+                            }
+                            }
+                        </ul>
+                        }
+                        
+
+                        <!-- Cancellation failed -->
+                        <p class="govuk-body">@messages("eoriCancel.problemPageMsg")</p>
                         <ul class="govuk-list govuk-list--bullet">
                         @for(enrolment <- failedUpdateList) {
                             @if(enrolment.equals("HMRC-CTS-ORG")) {
@@ -43,27 +63,23 @@
                         }
                         </ul>
 
-                        <p class="govuk-body">@messages("eoriUpdate.problem.section2.phrase1")  <a href='@messages("eoriUpdate.problem.section2.phrase2.serviceNowUrl")' class="govuk-link" target="_blank" rel="noopener noreferrer">@messages("eoriUpdate.problem.section2.phrase3")</a> @messages("eoriUpdate.problem.section2.phrase4")</p>
+                        <p class="govuk-body">@messages("eoriUpdate.problem.section4")</p>
 
-                        @if(successfulUpdateList.nonEmpty) {
-                            <p class="govuk-body">@messages("eoriCancel.problem.section1")</p>
+                        <p class="govuk-body">@messages("eoriUpdate.problem.section5")</p>
 
-                            <ul class="govuk-list govuk-list--bullet">
-                            @for(enrolment <- successfulUpdateList) {
-                                @if(enrolment.equals("HMRC-CTS-ORG")) {
-                                    @for(cts <- EnrolmentKeySubLists.ctsList) {
-                                        <li>@cts</li>
-                                    }
-                                } else {
-                                    <li>@EnrolmentKey.getDescription(enrolment).getOrElse(enrolment)</li>
-                                }
-                            }
-                            </ul>
-                        }
+                        <p class="govuk-heading-m">@messages("eoriUpdate.problem.section6")</p>
 
-                        <p class="govuk-body">
-                            <a href="@controllers.routes.EoriActionController.showPage" class="govuk-link">@messages("eori.problem.homePageLink")</a>.
+                        <p class="govuk-body">@messages("eoriUpdate.problem.section2.phrase1")
+                            <a href='@messages("eoriUpdate.problem.section2.phrase2.serviceNowUrl")' class="govuk-link" target="_blank" rel="noopener noreferrer">@messages("eoriUpdate.problem.section2.phrase3")
+                            </a> @messages("eoriUpdate.problem.section2.phrase4")
                         </p>
+
+                        <p class="govuk-body">@messages("eoriUpdate.problem.section7")</p>
+
+                        <a class="govuk-button" href='@controllers.routes.EoriActionController.showPage'>
+                            @messages("eori.startAgainButton")
+                        </a>
+
                     </div>
                 </div>
             </main>
