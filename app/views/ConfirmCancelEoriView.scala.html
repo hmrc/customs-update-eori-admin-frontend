@@ -70,31 +70,13 @@
                     <input type="hidden" id="existing-eori" name="existing-eori" value='@form.data.get("existing-eori")'/>
                     <input type="hidden" id="date-of-establishment" name="date-of-establishment" value='@form.data.get("date-of-establishment")'/>
                     <input type="hidden" id="enrolment-list" name="enrolment-list" value='@form.data.get("enrolment-list")'/>
-                    @govukRadios(Radios(
-                        fieldset = Some(Fieldset(
-                            legend = Some(Legend(
-                                content = Text(messages("eoriCancelConfirm.confirmQuestion", form.data.get("existing-eori").getOrElse("ERROR"))),
-                                classes = "govuk-fieldset__legend--m",
-                                isPageHeading = true
-                            ))
-                        )),
-                        name = "confirm",
-                        items = Seq(
-                            RadioItem(
-                                content = Text(messages("eori.radioButtonYes")),
-                                value = Some("true"),
-                                checked = form.data.get("confirm").exists(_.eq("true"))
-                            ),
-                            RadioItem(
-                                content = Text(messages("eori.radioButtonNo")),
-                                value = Some("false"),
-                                checked = form.data.get("confirm").exists(_.eq("false"))
-                            )
-                        ),
-                        classes = "govuk-radios--inline"
-                    ))
 
-                    @submitButton(Button(content = Text(messages("eori.confirmButton"))))
+                    <div class="govuk-button-group">
+                        @submitButton(Button(content = Text(messages("eori.confirmButton"))))
+                        <a class="govuk-button govuk-button--secondary" href='@controllers.routes.CancelEoriController.showPage'>
+                            @messages("eori.cancelButton")
+                        </a>
+                    </div>
                 }
             </main>
         </div>

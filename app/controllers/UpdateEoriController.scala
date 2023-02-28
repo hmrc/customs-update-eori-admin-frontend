@@ -66,8 +66,7 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
       "existing-eori" -> text(),
       "date-of-establishment" -> Forms.localDate(LocalDateBinder.dateTimePattern),
       "new-eori" -> text(),
-      "enrolment-list" -> text(),
-      "confirm" -> boolean
+      "enrolment-list" -> text()
     )(ConfirmEoriUpdate.apply)(ConfirmEoriUpdate.unapply))
 
   def showPage = auth { implicit request =>
@@ -87,7 +86,7 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
       .map(enrolments => {
         val enrolmentList = enrolments.filter(_._2).map(_._1).toList
         Ok(viewConfirmUpdate(
-          formEoriUpdateConfirmation.fill(ConfirmEoriUpdate(oldEoriNumber, establishmentDate, newEoriNumber, enrolmentList.mkString(","), true)),
+          formEoriUpdateConfirmation.fill(ConfirmEoriUpdate(oldEoriNumber, establishmentDate, newEoriNumber, enrolmentList.mkString(","))),
           enrolmentList
         ))
       })
@@ -99,7 +98,6 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
         Future(Redirect(controllers.routes.UpdateEoriController.showPage))
       },
       confirmEoriUpdate => {
-        if (confirmEoriUpdate.isConfirmed) {
           val updateAllEnrolments = Future.sequence(
             confirmEoriUpdate.enrolmentList.split(",")
               .toList
@@ -126,9 +124,6 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
             }
           }
           }
-        } else {
-          Future(Redirect(controllers.routes.UpdateEoriController.showPage))
-        }
       }
     )
   }
