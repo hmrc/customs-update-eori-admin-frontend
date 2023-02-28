@@ -2,25 +2,25 @@ service.name = customs-update-eori-admin-frontend
 service.text = This is your new service
 
 # Common messages
-eori.replaceExistingEori=Replace an existing EORI number
-eori.companyEstablishedDay=Day
-eori.companyEstablishedMonth=Month
-eori.companyEstablishedYear=Year
-eori.continueButton=Continue
-eori.confirmButton=Confirm
-eori.cancelButton=Cancel
-eori.confirmChanges=Confirm Changes
-eori.companyEstablishedDateQuestion=What date the trader was established?
-eori.currentEoriNumberQuestion=What is the trader’s current EORI number?
-eori.newEoriNumberQuestion=What is the trader’s new EORI number?
-eori.accountNumberHint=The first two letters are GB, followed by 12 digits. For example, GB123456123456.
-eori.backLinkText=Back
-eori.radioButtonYes=Yes
-eori.radioButtonNo=No
-eori.noEnrolment=The EORI number {0} does not have any subscriptions.
-eori.noEnrolment.goBack=Go back to
-eori.noEnrolment.replaceCancelHomePageLink=replace an existing EORI number or cancel subscriptions to HMRC services
-eori.problem.homePageLink=Replace another EORI number or cancel subscriptions to HMRC services
+eori.replaceExistingEori = Replace an existing EORI number
+eori.companyEstablishedDay = Day
+eori.companyEstablishedMonth = Month
+eori.companyEstablishedYear = Year
+eori.continueButton = Continue
+eori.confirmButton = Confirm
+eori.cancelButton = Cancel
+eori.confirmChanges = Confirm Changes
+eori.companyEstablishedDateQuestion = What date the trader was established?
+eori.currentEoriNumberQuestion = What is the trader’s current EORI number?
+eori.newEoriNumberQuestion = What is the trader’s new EORI number?
+eori.accountNumberHint = The first two letters are GB, followed by 12 digits. For example, GB123456123456.
+eori.backLinkText = Back
+eori.radioButtonYes = Yes
+eori.radioButtonNo = No
+eori.noEnrolment = The EORI number {0} does not have any subscriptions.
+eori.noEnrolment.goBack = Go back to
+eori.noEnrolment.replaceCancelHomePageLink = replace an existing EORI number or cancel subscriptions to HMRC services
+eori.problem.homePageLink = Replace another EORI number or cancel subscriptions to HMRC services
 
 # Shutter View
 eori.shutter.title = Service not available
@@ -28,47 +28,47 @@ eori.shutter.heading = Service not available
 eori.shutter.message = Eori toolkit service is under maintenance. The service will be available soon.
 
 # Eori Action
-eoriAction.successBannerEoriUpdateContent=EORI number {0} has been replaced with {1}.
-eoriAction.successBannerEoriUpdateMessage=You should email the company confirming that their EORI number has been replaced.
-eoriAction.successBannerEoriCancelHeading=Subscriptions cancelled for {0}.
-eoriAction.successBannerEoriCancelContent=You should email the company confirming that EORI number {0} subscriptions have been cancelled for:
-eoriAction.cancelSubscriptions=Cancel subscriptions to HMRC services
-eoriAction.questionForReplaceOrCancel=Do you want to replace an existing EORI number or cancel subscriptions to HMRC services?
+eoriAction.successBannerEoriUpdateContent = EORI number {0} has been replaced with {1}.
+eoriAction.successBannerEoriUpdateMessage = You should email the company confirming that their EORI number has been replaced.
+eoriAction.successBannerEoriCancelHeading = Subscriptions cancelled for {0}.
+eoriAction.successBannerEoriCancelContent = You should email the company confirming that EORI number {0} subscriptions have been cancelled for:
+eoriAction.cancelSubscriptions = Cancel subscriptions to HMRC services
+eoriAction.questionForReplaceOrCancel = Do you want to replace an existing EORI number or cancel subscriptions to HMRC services?
 
 # Eori Update Confirm
-eoriUpdate.confirm.title=Replacing EORI number {0}
-eoriUpdate.confirm.details=EORI number {0} is currently subscribed to:
-eoriUpdate.confirm.replaceWith=Are you sure you want to replace the current EORI number with {0}?
+eoriUpdate.confirm.title = Replacing EORI number {0}
+eoriUpdate.confirm.details = EORI number {0} is currently subscribed to:
+eoriUpdate.confirm.replaceWith = Are you sure you want to replace the current EORI number with {0}?
 
 # Update Eori Problem
-eoriUpdate.problem.heading=There was a problem replacing the EORI number
-eoriUpdate.problem.section1=The new EORI number {0} has not been subscribed to:
-eoriUpdate.problem.section2.phrase1=You need to
-eoriUpdate.problem.section2.phrase2.serviceNowUrl=https://ukrc.service-now.com/esc
-eoriUpdate.problem.section2.phrase3=create a live service ticket on ServiceNow
-eoriUpdate.problem.section2.phrase4=to fix the problem.
-eoriUpdate.problem.section3=The new EORI number has been successfully subscribed to:
+eoriUpdate.problem.heading = There was a problem replacing the EORI number
+eoriUpdate.problem.section1 = The new EORI number {0} has not been subscribed to:
+eoriUpdate.problem.section2.phrase1 = You need to
+eoriUpdate.problem.section2.phrase2.serviceNowUrl = https://ukrc.service-now.com/esc
+eoriUpdate.problem.section2.phrase3 = create a live service ticket on ServiceNow
+eoriUpdate.problem.section2.phrase4 = to fix the problem.
+eoriUpdate.problem.section3 = The new EORI number has been successfully subscribed to:
 
 # Cancel EORI
-eoriCancel.heading=Cancel a company’s subscriptions to HMRC services
-eoriCancelConfirm.heading=Cancel subscriptions for {0}
-eoriCancelConfirm.section1=You can cancel {0}’s subscriptions for:
-eoriCancelConfirm.section2=You will not be able to cancel {0}’s subscriptions for:
-eoriCancelConfirm.confirmQuestion=Are you sure you want to cancel {0}’s subscriptions?
-eoriCancel.problem.heading=There was a problem cancelling subscriptions for
-eoriCancel.problem.section1=Subscriptions have been successfully cancelled for:
-eoriCancel.problemPageMsg=The subscription has not been cancelled for:
+eoriCancel.heading = Cancel a company’s subscriptions to HMRC services
+eoriCancelConfirm.heading = Cancel subscriptions for {0}
+eoriCancelConfirm.section1 = You can cancel {0}’s subscriptions for:
+eoriCancelConfirm.section2 = You will not be able to cancel {0}’s subscriptions for:
+eoriCancelConfirm.confirmQuestion = Are you sure you want to cancel {0}’s subscriptions?
+eoriCancel.problem.heading = There was a problem cancelling subscriptions for
+eoriCancel.problem.section1 = Subscriptions have been successfully cancelled for:
+eoriCancel.problemPageMsg = The subscription has not been cancelled for:
 
 # Validation Messages
-eori.validation.summary.heading=There is a problem
+eori.validation.summary.heading = There is a problem
 
-eori.validation.existingEori.required=Enter the company’s current EORI number
-eori.validation.existingEori.format=The company’s current EORI number must start with the letters GB , followed by 12 digits
-eori.validation.newEori.required=Enter the company’s new EORI number
-eori.validation.newEori.format=The company’s new EORI number must start with the letters GB , followed by 12 digits
+eori.validation.existingEori.required = Enter the trader’s current EORI number
+eori.validation.existingEori.format = The trader’s current EORI number must start with the letters GB , followed by 12 digits
+eori.validation.newEori.required = Enter the trader’s new EORI number
+eori.validation.newEori.format = The trader’s new EORI number must start with the letters GB , followed by 12 digits
 
-eori.validation.establishmentDate.required.all = Enter the date that the company was established
-eori.validation.establishmentDate.required.two = The date the company was established must be a real date. Enter a {0} and a {1}
-eori.validation.establishmentDate.required.one = The date the company was established must include a {0}
-eori.validation.establishmentDate.invalid = The date the company was established must be a real date
-eori.validation.establishmentDate.mustBeInPast = The date the company was established must be in the past
+eori.validation.establishmentDate.required.all = Enter the date that the trader was established
+eori.validation.establishmentDate.required.two = The date the trader was established must be a real date. Enter a {0} and a {1}
+eori.validation.establishmentDate.required.one = The date the trader was established must include a {0}
+eori.validation.establishmentDate.invalid = The date the trader was established must be a real date
+eori.validation.establishmentDate.mustBeInPast = The date the trader was established must be in the past
