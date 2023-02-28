@@ -10,6 +10,7 @@ eori.continueButton = Continue
 eori.confirmButton = Confirm
 eori.cancelButton = Cancel
 eori.confirmChanges = Confirm Changes
+eori.startAgainButton = Start again
 eori.companyEstablishedDateQuestion = What date the trader was established?
 eori.currentEoriNumberQuestion = What is the trader’s current EORI number?
 eori.newEoriNumberQuestion = What is the trader’s new EORI number?
@@ -45,9 +46,14 @@ eoriUpdate.problem.heading = There was a problem replacing the EORI number
 eoriUpdate.problem.section1 = The new EORI number {0} has not been subscribed to:
 eoriUpdate.problem.section2.phrase1 = You need to
 eoriUpdate.problem.section2.phrase2.serviceNowUrl = https://ukrc.service-now.com/esc
-eoriUpdate.problem.section2.phrase3 = create a live service ticket on ServiceNow
+eoriUpdate.problem.section2.phrase3 = create a live service ticket on ServiceNow (opens in new tab)
 eoriUpdate.problem.section2.phrase4 = to fix the problem.
 eoriUpdate.problem.section3 = The new EORI number has been successfully subscribed to:
+eoriUpdate.problem.section4 = You should email the trader confirming that which subscriptions have been cancelled and which have not been cancelled.
+eoriUpdate.problem.section5 = You can get help with your email in the guidance.
+eoriUpdate.problem.section6 = Help with your ServiceNow ticket
+eoriUpdate.problem.section7 = You can get help with your ServiceNow ticket in the guidance.
+
 
 # Cancel EORI
 eoriCancel.heading = Cancel a company’s subscriptions to HMRC services
@@ -57,7 +63,7 @@ eoriCancelConfirm.section2 = You will not be able to cancel {0}’s subscription
 eoriCancelConfirm.confirmQuestion = Are you sure you want to cancel {0}’s subscriptions?
 eoriCancel.problem.heading = There was a problem cancelling subscriptions for
 eoriCancel.problem.section1 = Subscriptions have been successfully cancelled for:
-eoriCancel.problemPageMsg = The subscription has not been cancelled for:
+eoriCancel.problemPageMsg = The subscriptions for that have not been cancelled:
 
 # Validation Messages
 eori.validation.summary.heading = There is a problem
