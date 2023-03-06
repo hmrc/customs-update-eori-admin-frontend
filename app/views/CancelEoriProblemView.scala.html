@@ -31,37 +31,36 @@
                         <h1 class="govuk-heading-l">@messages("eoriCancel.problem.heading", existingEori)</h1>
 
                         <!-- Cancellation successfully -->
-
                         @if(successfulUpdateList.nonEmpty) {
-                        <p class="govuk-body">@messages("eoriCancel.problem.section1")</p>
-
-                        <ul class="govuk-list govuk-list--bullet">
+                            <p class="govuk-body">@messages("eoriCancel.problem.section1")</p>
+                            <ul class="govuk-list govuk-list--bullet">
                             @for(enrolment <- successfulUpdateList) {
-                            @if(enrolment.equals("HMRC-CTS-ORG")) {
-                            @for(cts <- EnrolmentKeySubLists.ctsList) {
-                            <li>@cts</li>
+                                @if(enrolment.equals("HMRC-CTS-ORG")) {
+                                    @for(cts <- EnrolmentKeySubLists.ctsList) {
+                                        <li>@cts</li>
+                                    }
+                                } else {
+                                    <li>@EnrolmentKey.getDescription(enrolment).getOrElse(enrolment)</li>
+                                }
                             }
-                            } else {
-                            <li>@EnrolmentKey.getDescription(enrolment).getOrElse(enrolment)</li>
-                            }
-                            }
-                        </ul>
+                            </ul>
                         }
-                        
 
                         <!-- Cancellation failed -->
-                        <p class="govuk-body">@messages("eoriCancel.problemPageMsg")</p>
-                        <ul class="govuk-list govuk-list--bullet">
-                        @for(enrolment <- failedUpdateList) {
-                            @if(enrolment.equals("HMRC-CTS-ORG")) {
-                                @for(cts <- EnrolmentKeySubLists.ctsList) {
-                                    <li>@cts</li>
-                                }
-                            } else {
+                        @if(failedUpdateList.nonEmpty) {
+                            <p class="govuk-body">@messages("eoriCancel.problemPageMsg")</p>
+                            <ul class="govuk-list govuk-list--bullet">
+                            @for(enrolment <- failedUpdateList) {
+                                @if(enrolment.equals("HMRC-CTS-ORG")) {
+                                    @for(cts <- EnrolmentKeySubLists.ctsList) {
+                                        <li>@cts</li>
+                                    }
+                                } else {
                                 <li>@EnrolmentKey.getDescription(enrolment).getOrElse(enrolment)</li>
+                                }
                             }
+                            </ul>
                         }
-                        </ul>
 
                         <p class="govuk-heading-m">@messages("eoriCancel.problemPage.whatHappensNext")</p>
                         <p class="govuk-body">@messages("eoriCancel.problemPage.whatHappensNextInfo1")</p>
@@ -70,8 +69,7 @@
                         <p class="govuk-heading-m">@messages("eoriCancel.problemPage.serviceNowSectionHeading")</p>
                         <p class="govuk-body">@messages("eoriCancel.problemPage.serviceNowSectionInfo")</p>
                         <p class="govuk-body">
-                            <a href='@messages("eori.serviceNowUrl")' class="govuk-link" target="_blank" rel="noopener noreferrer">@messages("eoriCancel.problemPage.serviceNowSectionLink")
-                            </a>
+                            <a href='@messages("eori.serviceNowUrl")' class="govuk-link" target="_blank" rel="noopener noreferrer">@messages("eoriCancel.problemPage.serviceNowSectionLink")</a>
                         </p>
 
                         <a class="govuk-button" href='@controllers.routes.EoriActionController.showPage'>
