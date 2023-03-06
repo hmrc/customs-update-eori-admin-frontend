@@ -63,18 +63,16 @@
                         }
                         </ul>
 
-                        <p class="govuk-body">@messages("eoriUpdate.problem.section4")</p>
+                        <p class="govuk-heading-m">@messages("eoriCancel.problemPage.whatHappensNext")</p>
+                        <p class="govuk-body">@messages("eoriCancel.problemPage.whatHappensNextInfo1")</p>
+                        <p class="govuk-heading-m">@messages("eoriCancel.problemPage.whatHappensNextInfo2")</p>
 
-                        <p class="govuk-body">@messages("eoriUpdate.problem.section5")</p>
-
-                        <p class="govuk-heading-m">@messages("eoriUpdate.problem.section6")</p>
-
-                        <p class="govuk-body">@messages("eoriUpdate.problem.section2.phrase1")
-                            <a href='@messages("eoriUpdate.problem.section2.phrase2.serviceNowUrl")' class="govuk-link" target="_blank" rel="noopener noreferrer">@messages("eoriUpdate.problem.section2.phrase3")
-                            </a> @messages("eoriUpdate.problem.section2.phrase4")
+                        <p class="govuk-heading-m">@messages("eoriCancel.problemPage.serviceNowSectionHeading")</p>
+                        <p class="govuk-body">@messages("eoriCancel.problemPage.serviceNowSectionInfo")</p>
+                        <p class="govuk-body">
+                            <a href='@messages("eori.serviceNowUrl")' class="govuk-link" target="_blank" rel="noopener noreferrer">@messages("eoriCancel.problemPage.serviceNowSectionLink")
+                            </a>
                         </p>
-
-                        <p class="govuk-body">@messages("eoriUpdate.problem.section7")</p>
 
                         <a class="govuk-button" href='@controllers.routes.EoriActionController.showPage'>
                             @messages("eori.startAgainButton")

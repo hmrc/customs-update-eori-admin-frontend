@@ -22,6 +22,8 @@ eori.noEnrolment = The EORI number {0} does not have any subscriptions.
 eori.noEnrolment.goBack = Go back to
 eori.noEnrolment.replaceCancelHomePageLink = replace an existing EORI number or cancel subscriptions to HMRC services
 eori.problem.homePageLink = Replace another EORI number or cancel subscriptions to HMRC services
+eori.serviceNowUrl = https://ukrc.service-now.com/esc
+
 
 # Shutter View
 eori.shutter.title = Service not available
@@ -63,7 +65,14 @@ eoriCancelConfirm.section2 = You will not be able to cancel {0}’s subscription
 eoriCancelConfirm.confirmQuestion = Are you sure you want to cancel {0}’s subscriptions?
 eoriCancel.problem.heading = There was a problem cancelling subscriptions for
 eoriCancel.problem.section1 = Subscriptions have been successfully cancelled for:
-eoriCancel.problemPageMsg = The subscriptions for that have not been cancelled:
+eoriCancel.problemPageMsg = Subscriptions that have not been cancelled:
+eoriCancel.problemPage.whatHappensNext = What happens next?
+eoriCancel.problemPage.whatHappensNextInfo1 = You will need to email the trader confirming which subscriptions have been successfully cancelled and which subscriptions have not been cancelled.
+eoriCancel.problemPage.whatHappensNextInfo2 = You will then need to raise a ServiceNow ticket for the subscriptions that have not been cancelled.
+eoriCancel.problemPage.serviceNowInfoPart1 = You can get help with your ServiceNow ticket in the guidance
+eoriCancel.problemPage.serviceNowSectionHeading = Help with your ServiceNow ticket
+eoriCancel.problemPage.serviceNowSectionInfo = You can get help with your ServiceNow ticket in the guidance.
+eoriCancel.problemPage.serviceNowSectionLink = Create a live service ticket on ServiceNow (opens in new tab).
 
 # Validation Messages
 eori.validation.summary.heading = There is a problem
