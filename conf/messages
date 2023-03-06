@@ -29,7 +29,7 @@ eori.shutter.heading = Service not available
 eori.shutter.message = Eori toolkit service is under maintenance. The service will be available soon.
 
 # Eori Action
-eoriAction.successBannerEoriUpdateContent = EORI number {0} has been replaced with {1}.
+eoriAction.successBannerEoriUpdateContent = EORI number {0} has been replaced with {1}
 eoriAction.successBannerEoriUpdateMessage = You should email the trader confirming that their EORI number has been replaced.
 eoriAction.successBannerEoriCancelHeading = Subscriptions cancelled for {0}.
 eoriAction.successBannerEoriCancelContent = You should email the trader confirming that EORI number {0} subscriptions have been cancelled for:
