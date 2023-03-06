@@ -21,14 +21,14 @@
         govukButton: GovukButton
 )
 
-@(successfulUpdateList: List[String], failedUpdateList: List[String])(implicit request: Request[_], messages: Messages)
+@(successfulUpdateList: List[String], failedUpdateList: List[String], existingEori: String)(implicit request: Request[_], messages: Messages)
 
     @layout(pageTitle = Some("EORI number management service"), showBackLink = false) {
         <div class="govuk-width-container ">
             <main class="govuk-main-wrapper govuk-!-padding-0" id="main-content" role="main">
                 <div class="govuk-grid-row">
                     <div class="govuk-grid-column-full">
-                        <h1 class="govuk-heading-l">@messages("eoriCancel.problem.heading")</h1>
+                        <h1 class="govuk-heading-l">@messages("eoriCancel.problem.heading", existingEori)</h1>
 
                         <!-- Cancellation successfully -->
 
@@ -65,7 +65,7 @@
 
                         <p class="govuk-heading-m">@messages("eoriCancel.problemPage.whatHappensNext")</p>
                         <p class="govuk-body">@messages("eoriCancel.problemPage.whatHappensNextInfo1")</p>
-                        <p class="govuk-heading-m">@messages("eoriCancel.problemPage.whatHappensNextInfo2")</p>
+                        <p class="govuk-body">@messages("eoriCancel.problemPage.whatHappensNextInfo2")</p>
 
                         <p class="govuk-heading-m">@messages("eoriCancel.problemPage.serviceNowSectionHeading")</p>
                         <p class="govuk-body">@messages("eoriCancel.problemPage.serviceNowSectionInfo")</p>
