@@ -37,8 +37,8 @@ eoriAction.cancelSubscriptions = Cancel subscriptions to HMRC services
 eoriAction.questionForReplaceOrCancel = Do you want to replace an existing EORI number or cancel subscriptions to HMRC services?
 
 # Eori Update Confirm
-eoriUpdate.confirm.title = Replacing EORI number {0}
-eoriUpdate.confirm.details = EORI number {0} is currently subscribed to:
+eoriUpdate.confirm.title = Replacing existing EORI number {0} with {1}
+eoriUpdate.confirm.details = Existing EORI number {0} will be replaced with {1} for the following subscriptions:
 eoriUpdate.confirm.replaceWith = Are you sure you want to replace the current EORI number with {0}?
 
 # Update Eori Problem
