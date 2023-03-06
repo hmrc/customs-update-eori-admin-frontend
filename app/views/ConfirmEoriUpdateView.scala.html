@@ -31,7 +31,7 @@
                 <main class="govuk-main-wrapper govuk-!-padding-0" id="main-content" role="main">
 
 
-                    <h1 class="govuk-heading-l">@messages("eoriUpdate.confirm.title", form("existing-eori").value.getOrElse("ERROR"))</h1>
+                    <h1 class="govuk-heading-l">@messages("eoriUpdate.confirm.title", form("existing-eori").value.getOrElse("ERROR"), form("new-eori").value.getOrElse("ERROR"))</h1>
 
                     @if(enrolmentList.isEmpty) {
                         <p class="govuk-body">@messages("eori.noEnrolment", form("existing-eori").value.getOrElse("ERROR"))</p>
@@ -41,7 +41,7 @@
                         </p>
 
                     } else {
-                        <p class="govuk-body">@messages("eoriUpdate.confirm.details", form("existing-eori").value.getOrElse("ERROR"))</p>
+                        <p class="govuk-body">@messages("eoriUpdate.confirm.details", form("existing-eori").value.getOrElse("ERROR"), form("new-eori").value.getOrElse("ERROR"))</p>
 
                         <ul class="govuk-list govuk-list--bullet">
                         @for(enrolment <- enrolmentList) {
