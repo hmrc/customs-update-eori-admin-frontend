@@ -29,7 +29,7 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.MessagesControllerComponents
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import views.html.EoriActionView
+import views.html.{EoriActionView, EoriOperationSuccessfulView}
 
 class EoriActionControllerSpec
   extends AnyWordSpec
@@ -50,8 +50,9 @@ class EoriActionControllerSpec
 
   private val mcc = app.injector.instanceOf[MessagesControllerComponents]
   private val view = app.injector.instanceOf[EoriActionView]
+  private val eoriOpView = app.injector.instanceOf[EoriOperationSuccessfulView]
 
-  private val controller = EoriActionController(mcc, view, testAuthAction)
+  private val controller = EoriActionController(mcc, view,eoriOpView, testAuthAction)
 
   override def beforeEach(): Unit = {
     reset(mockAuthConnector)
@@ -81,16 +82,16 @@ class EoriActionControllerSpec
     "return HTML for update success" in withSignedInUser {
       val oldEoriNumber = "GB123456789011"
       val newEoriNumber = "GB123456789012"
-      val result = controller.showPageOnSuccess(Some(EoriActionEnum.UPDATE_EORI.toString), Some(oldEoriNumber), Some(newEoriNumber), None)(fakeRequest)
+      val result = controller.showPageOnSuccess(Some(EoriActionEnum.UPDATE_EORI.toString), Some(oldEoriNumber), Some(newEoriNumber), None,Some(newEoriNumber))(fakeRequest)
       status(result) shouldBe OK
       contentType(result) shouldBe Some("text/html")
       charset(result) shouldBe Some("utf-8")
-      contentAsString(result) should include(s"EORI number $oldEoriNumber has been replaced with $newEoriNumber.")
+      contentAsString(result) should include(s"EORI number $oldEoriNumber has been replaced with $newEoriNumber")
     }
 
     "return HTML for cancel success" in withSignedInUser {
       val eoriNumber = "GB123456789011"
-      val result = controller.showPageOnSuccess(Some(EoriActionEnum.CANCEL_EORI.toString), Some(eoriNumber), None, Some(""))(fakeRequest)
+      val result = controller.showPageOnSuccess(Some(EoriActionEnum.CANCEL_EORI.toString), Some(eoriNumber), None, Some(""),None)(fakeRequest)
       status(result) shouldBe OK
       contentType(result) shouldBe Some("text/html")
       charset(result) shouldBe Some("utf-8")
@@ -98,7 +99,7 @@ class EoriActionControllerSpec
     }
 
     "redirect to STRIDE login for not logged-in user" in withNotSignedInUser {
-      val result = controller.showPageOnSuccess(Some(EoriActionEnum.UPDATE_EORI.toString), Some("GB123456789011"), Some("GB123456789012"), None)(fakeRequest)
+      val result = controller.showPageOnSuccess(Some(EoriActionEnum.UPDATE_EORI.toString), Some("GB123456789011"), Some("GB123456789012"), None,None)(fakeRequest)
       status(result) shouldBe SEE_OTHER
       val Some(redirectURL) = redirectLocation(result)
       redirectURL should include("/stride/sign-in")
