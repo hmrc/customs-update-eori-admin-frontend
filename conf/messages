@@ -73,7 +73,7 @@ eoriCancel.problemPage.whatHappensNextInfo2 = You will then need to raise a Serv
 eoriCancel.problemPage.serviceNowInfoPart1 = You can get help with your ServiceNow ticket in the guidance
 eoriCancel.problemPage.serviceNowSectionHeading = Help with your ServiceNow ticket
 eoriCancel.problemPage.serviceNowSectionInfo = You can get help with your ServiceNow ticket in the guidance.
-eoriCancel.problemPage.serviceNowSectionLink = Create a live service ticket on ServiceNow (opens in new tab).
+eoriCancel.problemPage.serviceNowSectionLink = Create a live service ticket on ServiceNow (opens in new tab)
 
 # Validation Messages
 eori.validation.summary.heading = There is a problem
