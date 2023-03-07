@@ -1,0 +1,96 @@
+@*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import views.html.Layout
+
+@this(
+        layout: Layout,
+        formHelper: FormWithCSRF,
+        govukRadios: GovukRadios,
+        govukNotificationBanner: GovukNotificationBanner,
+        submitButton: GovukButton
+)
+@(
+        form: Form[_],
+        cancelOrUpdate: Option[String] = None,
+        oldEoriNumber: Option[String] = None,
+        newEoriNumber: Option[String] = None,
+        cancelledEnrolments: Option[String] = None,
+        subscribedEnrolments: Option[String] = None
+)(implicit request: Request[_], messages: Messages)
+
+@bannerContentForUpdate(paramExistingEoriNumber: String, paramNewEoriNumber: String) = {
+    <h3 class="govuk-notification-banner__heading">
+    @messages("eoriAction.successBannerEoriUpdateContent", paramExistingEoriNumber, paramNewEoriNumber)
+    </h3>
+}
+
+
+@bannerContentForCancel(paramExistingEoriNumber: String, paramCancelledEnrolments: String) = {
+    <h3 class="govuk-notification-banner__heading">
+        @messages("eoriAction.successBannerEoriCancelHeading", paramExistingEoriNumber)
+    </h3>
+    <p class="govuk-body">@messages("eoriAction.successBannerEoriCancelContent", paramExistingEoriNumber)</p>
+    <ul class="govuk-list govuk-list--bullet">
+        @for(enrolment <- paramCancelledEnrolments.filterNot(_.isWhitespace).split(",")) {
+            <li>@EnrolmentKey.getDescription(enrolment).getOrElse(enrolment)</li>
+        }
+    </ul>
+}
+
+@layout(pageTitle = Some("EORI number management service"), showBackLink = false) {
+    @formHelper(action = controllers.routes.EoriActionController.continueAction) {
+
+        <!--Update Content-->
+        @if(cancelOrUpdate.getOrElse("NO_CONTENT").equalsIgnoreCase(EoriActionEnum.UPDATE_EORI.toString) && oldEoriNumber.isDefined && newEoriNumber.isDefined) {
+            @govukNotificationBanner(
+                NotificationBanner(
+                    bannerType = Some("success"),
+                    content = HtmlContent(bannerContentForUpdate(oldEoriNumber.get, newEoriNumber.get))
+                )
+            )
+
+            <p class="govuk-body">@messages("eoriUpdate.success.section1",newEoriNumber.get)</p>
+
+            <ul class="govuk-list govuk-list--bullet">
+                @for(enrolment <- subscribedEnrolments.get.filterNot(_.isWhitespace).split(",")) {
+                <li>@EnrolmentKey.getDescription(enrolment).getOrElse(enrolment)</li>
+                }
+            </ul>
+
+
+            <p class="govuk-heading-m">@messages("eoriUpdate.success.section2")</p>
+            <p class="govuk-body">@messages("eoriUpdate.success.section3")</p>
+            <p class="govuk-body">@messages("eoriUpdate.success.section4")</p>
+        }
+
+
+
+
+        <!--Cancel Content-->
+        @if(cancelOrUpdate.getOrElse("NO_CONTENT").equalsIgnoreCase(EoriActionEnum.CANCEL_EORI.toString) && oldEoriNumber.isDefined && cancelledEnrolments.isDefined) {
+            @govukNotificationBanner(
+                NotificationBanner(
+                    bannerType = Some("success"),
+                    content = HtmlContent(bannerContentForCancel(oldEoriNumber.get, cancelledEnrolments.get))
+                )
+            )
+        }
+
+        @submitButton(Button(content = Text(messages("eori.startAgainButton"))))
+    }
+}
