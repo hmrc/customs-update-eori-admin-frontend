@@ -119,7 +119,8 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
               Redirect(controllers.routes.EoriActionController.showPageOnSuccess(
                 cancelOrUpdate = Some(EoriActionEnum.UPDATE_EORI.toString),
                 oldEoriNumber = Some(confirmEoriUpdate.existingEori),
-                newEoriNumber = Some(confirmEoriUpdate.newEori))
+                newEoriNumber = Some(confirmEoriUpdate.newEori),
+                subscribedEnrolments = Some(confirmEoriUpdate.enrolmentList))
               )
             }
           }

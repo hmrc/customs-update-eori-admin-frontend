@@ -23,12 +23,14 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.MessagesControllerComponents
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.EoriActionView
+import views.html.EoriOperationSuccessfulView
 
 import javax.inject.{Inject, Singleton}
 
 @Singleton
 case class EoriActionController @Inject()(mcc: MessagesControllerComponents,
                                           viewEoriAction: EoriActionView,
+                                          eoriOperationSuccessfulView: EoriOperationSuccessfulView,
                                           auth: AuthAction)
   extends FrontendController(mcc) with I18nSupport {
 
@@ -41,13 +43,14 @@ case class EoriActionController @Inject()(mcc: MessagesControllerComponents,
     Ok(viewEoriAction(form.fill(EoriAction(EoriActionEnum.UPDATE_EORI.toString))))
   }
 
-  def showPageOnSuccess(cancelOrUpdate: Option[String], oldEoriNumber: Option[String], newEoriNumber: Option[String], cancelledEnrolments: Option[String]) = auth { implicit request =>
-    Ok(viewEoriAction(
+  def showPageOnSuccess(cancelOrUpdate: Option[String], oldEoriNumber: Option[String], newEoriNumber: Option[String], cancelledEnrolments: Option[String],subscribedEnrolments: Option[String]) = auth { implicit request =>
+    Ok(eoriOperationSuccessfulView(
       form.fill(EoriAction(EoriActionEnum.UPDATE_EORI.toString)),
       cancelOrUpdate = cancelOrUpdate,
       oldEoriNumber = oldEoriNumber,
       newEoriNumber = newEoriNumber,
-      cancelledEnrolments = cancelledEnrolments
+      cancelledEnrolments = cancelledEnrolments,
+      subscribedEnrolments = subscribedEnrolments
     ))
   }
 
