@@ -44,12 +44,6 @@
     <h3 class="govuk-notification-banner__heading">
         @messages("eoriAction.successBannerEoriCancelHeading", paramExistingEoriNumber)
     </h3>
-    <p class="govuk-body">@messages("eoriAction.successBannerEoriCancelContent", paramExistingEoriNumber)</p>
-    <ul class="govuk-list govuk-list--bullet">
-        @for(enrolment <- paramCancelledEnrolments.filterNot(_.isWhitespace).split(",")) {
-            <li>@EnrolmentKey.getDescription(enrolment).getOrElse(enrolment)</li>
-        }
-    </ul>
 }
 
 @layout(pageTitle = Some("EORI number management service"), showBackLink = false) {
@@ -89,6 +83,24 @@
                     content = HtmlContent(bannerContentForCancel(oldEoriNumber.get, cancelledEnrolments.get))
                 )
             )
+
+            <p class="govuk-body">@messages("eoriCancel.success.section1", oldEoriNumber.get)</p>
+            <ul class="govuk-list govuk-list--bullet">
+                @for(enrolment <- cancelledEnrolments.get.filterNot(_.isWhitespace).split(",")) {
+                <li>@EnrolmentKey.getDescription(enrolment).getOrElse(enrolment)</li>
+                }
+            </ul>
+
+            <p class="govuk-body">@messages("eoriCancel.success.section2", oldEoriNumber.get)</p>
+            <ul class="govuk-list govuk-list--bullet">
+                @for(enrolment <- cancelledEnrolments.get.filterNot(_.isWhitespace).split(",")) {
+                <li>@EnrolmentKey.getDescription(enrolment).getOrElse(enrolment)</li>
+                }
+            </ul>
+
+            <p class="govuk-heading-m">@messages("eoriCancel.success.section3")</p>
+            <p class="govuk-body">@messages("eoriCancel.success.section4",oldEoriNumber.get)</p>
+            <p class="govuk-body">@messages("eoriCancel.success.section5")</p>
         }
 
         @submitButton(Button(content = Text(messages("eori.startAgainButton"))))

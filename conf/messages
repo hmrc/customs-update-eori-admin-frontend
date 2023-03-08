@@ -79,6 +79,11 @@ eoriCancel.problemPage.serviceNowInfoPart1 = You can get help with your ServiceN
 eoriCancel.problemPage.serviceNowSectionHeading = Help with your ServiceNow ticket
 eoriCancel.problemPage.serviceNowSectionInfo = You can get help with your ServiceNow ticket in the guidance.
 eoriCancel.problemPage.serviceNowSectionLink = Create a live service ticket on ServiceNow (opens in new tab)
+eoriCancel.success.section1 = EORI number {0} subscriptions have been successfully cancelled for:
+eoriCancel.success.section2 = EORI number {0} remains subscribed to and cannot be cancelled for:
+eoriCancel.success.section3 = What happens next
+eoriCancel.success.section4 = You will need to email the trader confirming that EORI number {0} subscriptions have been successfully cancelled.
+eoriCancel.success.section5 = You can get help with your email in the guidance.
 
 # Validation Messages
 eori.validation.summary.heading = There is a problem
