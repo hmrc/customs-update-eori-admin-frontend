@@ -105,8 +105,11 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       when(mockQueryKnownFacts.query(meq(oldEori), meq(HMRC_ESC_ORG), meq(LocalDate.of(1997, 11, 3)))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Right(mockData)))
 
+      when(mockQueryKnownFacts.query(meq(oldEori), meq(HMRC_CTC_ORG), meq(LocalDate.of(1997, 11, 3)))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Right(mockData)))
+
       val result = service.getEnrolments(oldEori, LocalDate.of(1997, 11, 3)).futureValue
-      result.count(_._2) shouldBe 6
+      result.count(_._2) shouldBe 7
     }
 
     "return only ATAR if Eori enrolled only to ATAR" in {
@@ -137,6 +140,9 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
       when(mockQueryKnownFacts.query(meq(oldEori), meq(HMRC_ESC_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
+
+      when(mockQueryKnownFacts.query(meq(oldEori), meq(HMRC_CTC_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
       val result = service.getEnrolments(oldEori, LocalDate.of(1998, 11, 3)).futureValue
@@ -180,6 +186,9 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       when(mockQueryKnownFacts.query(meq(oldEori), meq(HMRC_ESC_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
+      when(mockQueryKnownFacts.query(meq(oldEori), meq(HMRC_CTC_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
+
       val result = service.getEnrolments(oldEori, LocalDate.of(1998, 11, 3)).futureValue
       result.count(_._2) shouldBe 2
       result.filter(_._2).toList.map(_._1) shouldBe List(HMRC_GVMS_ORG.serviceName, HMRC_SS_ORG.serviceName)
@@ -213,6 +222,9 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
       when(mockQueryKnownFacts.query(meq(oldEori), meq(HMRC_ESC_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
+
+      when(mockQueryKnownFacts.query(meq(oldEori), meq(HMRC_CTC_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
       val result = service.getEnrolments(oldEori, LocalDate.of(1998, 11, 3)).futureValue
@@ -256,6 +268,9 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       when(mockQueryKnownFacts.query(meq(oldEori), meq(HMRC_ESC_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
+      when(mockQueryKnownFacts.query(meq(oldEori), meq(HMRC_CTC_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
+
       val result = service.getEnrolments(oldEori, LocalDate.of(1998, 11, 3)).futureValue
       result.count(_._2) shouldBe 1
       result.filter(_._2).toList.map(_._1) shouldBe List(HMRC_CTS_ORG.serviceName)
@@ -295,6 +310,9 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
           .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Group for existing EORI: ${oldEori.toString}"))))
 
       when(mockQueryKnownFacts.query(meq(oldEori), meq(HMRC_ESC_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
+
+      when(mockQueryKnownFacts.query(meq(oldEori), meq(HMRC_CTC_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
       val result = service.getEnrolments(oldEori, LocalDate.of(1998, 11, 3)).futureValue
@@ -338,6 +356,9 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       when(mockQueryKnownFacts.query(meq(oldEori), meq(HMRC_ESC_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
+      when(mockQueryKnownFacts.query(meq(oldEori), meq(HMRC_CTC_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
+
       val result = service.getEnrolments(oldEori, LocalDate.of(1998, 11, 3)).futureValue
       result.count(_._2) shouldBe 2
       result.filter(_._2).toList.map(_._1) shouldBe List(HMRC_CUS_ORG.serviceName, HMRC_CTS_ORG.serviceName)
@@ -362,6 +383,9 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
       when(mockQueryKnownFacts.query(meq(oldEori), meq(HMRC_ESC_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
+
+      when(mockQueryKnownFacts.query(meq(oldEori), meq(HMRC_CTC_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
       val result = service.getEnrolments(oldEori, LocalDate.of(1998, 11, 3)).futureValue

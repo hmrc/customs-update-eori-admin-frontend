@@ -326,6 +326,7 @@ class UpdateEoriControllerSpec
           "date-of-establishment" -> establishmentDate,
           "new-eori" -> newEori,
           "enrolment-list" -> s"${EnrolmentKey.HMRC_CUS_ORG.serviceName},${EnrolmentKey.HMRC_ATAR_ORG.serviceName}",
+          "not-updatable-enrolment-list" -> "",
           "confirm" -> "true"
         )
 

@@ -281,7 +281,7 @@ class CancelEoriControllerSpec extends AnyWordSpec
           "existing-eori" -> oldEori,
           "date-of-establishment" -> establishmentDate,
           "enrolment-list" -> s"${EnrolmentKey.HMRC_GVMS_ORG.serviceName},${EnrolmentKey.HMRC_ATAR_ORG.serviceName}",
-          "confirm" -> "true"
+          "not-cancellable-enrolment-list" -> "",
         )
 
       when(enrolmentService.cancel(meq(Eori(oldEori)), meq(stringToLocalDate(establishmentDate)), meq(EnrolmentKey.HMRC_GVMS_ORG))(any()))

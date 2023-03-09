@@ -16,7 +16,7 @@
 
 package models
 
-import models.EnrolmentKey.{HMRC_ATAR_ORG, HMRC_GVMS_ORG, HMRC_SS_ORG}
+import models.EnrolmentKey.{HMRC_CUS_ORG, HMRC_ATAR_ORG, HMRC_GVMS_ORG, HMRC_SS_ORG, HMRC_CTS_ORG, HMRC_ESC_ORG}
 
 
 object EnrolmentKey extends Enumeration {
@@ -49,6 +49,9 @@ object EnrolmentKey extends Enumeration {
 
   // HMRC-ESC-ORG -> EU Subsidy Compliance
   val HMRC_ESC_ORG = EnrolmentKeyVal("HMRC-ESC-ORG", "EU Subsidy Compliance")
+
+  // HMRC-CTC-ORG -> Common Transit Convention
+  val HMRC_CTC_ORG = EnrolmentKeyVal("HMRC-CTC-ORG", "Common Transit Convention (CTC)")
 }
 
 object EnrolmentKeySubLists {
@@ -57,6 +60,10 @@ object EnrolmentKeySubLists {
     "National Duty Repayment Centre (NDRC)",
     "C18"
   )
+}
+
+object UpdatableEnrolments {
+  val values = List(HMRC_CUS_ORG, HMRC_ATAR_ORG, HMRC_GVMS_ORG, HMRC_SS_ORG, HMRC_CTS_ORG, HMRC_ESC_ORG).map(e => e.serviceName)
 }
 
 object CancelableEnrolments {

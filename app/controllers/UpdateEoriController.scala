@@ -66,7 +66,8 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
       "existing-eori" -> text(),
       "date-of-establishment" -> Forms.localDate(LocalDateBinder.dateTimePattern),
       "new-eori" -> text(),
-      "enrolment-list" -> text()
+      "enrolment-list" -> text(),
+      "not-updatable-enrolment-list" -> text()
     )(ConfirmEoriUpdate.apply)(ConfirmEoriUpdate.unapply))
 
   def showPage = auth { implicit request =>
@@ -85,9 +86,12 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
     enrolmentService.getEnrolments(Eori(oldEoriNumber), establishmentDate)
       .map(enrolments => {
         val enrolmentList = enrolments.filter(_._2).map(_._1).toList
+        val updatableEnrolments = enrolmentList.filter(e => UpdatableEnrolments.values.contains(e))
+        val notUpdatableEnrolments = enrolmentList.filter(e => !UpdatableEnrolments.values.contains(e))
         Ok(viewConfirmUpdate(
-          formEoriUpdateConfirmation.fill(ConfirmEoriUpdate(oldEoriNumber, establishmentDate, newEoriNumber, enrolmentList.mkString(","))),
-          enrolmentList
+          formEoriUpdateConfirmation.fill(ConfirmEoriUpdate(oldEoriNumber, establishmentDate, newEoriNumber, updatableEnrolments.mkString(","), notUpdatableEnrolments.mkString(","))),
+          updatableEnrolments,
+          notUpdatableEnrolments
         ))
       })
   }
@@ -98,33 +102,33 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
         Future(Redirect(controllers.routes.UpdateEoriController.showPage))
       },
       confirmEoriUpdate => {
-          val updateAllEnrolments = Future.sequence(
-            confirmEoriUpdate.enrolmentList.split(",")
-              .toList
-              .map(EnrolmentKey.getEnrolmentKey(_).get)
-              .map(enrolment =>
-                enrolmentService.update(
-                  Eori(confirmEoriUpdate.existingEori),
-                  confirmEoriUpdate.dateOfEstablishment,
-                  Eori(confirmEoriUpdate.newEori),
-                  enrolment
-                ).map(enrolment.serviceName -> _)
-              )
-          )
-          updateAllEnrolments.map { updates => {
-            val status = updates.map(either => either._1 -> either._2.isRight).toMap
-            if (status.exists(_._2 == false)) {
-              Ok(viewUpdateEoriProblem(status.filter(_._2 == true).keys.toList, status.filter(_._2 == false).keys.toList, confirmEoriUpdate.newEori))
-            } else {
-              Redirect(controllers.routes.EoriActionController.showPageOnSuccess(
-                cancelOrUpdate = Some(EoriActionEnum.UPDATE_EORI.toString),
-                oldEoriNumber = Some(confirmEoriUpdate.existingEori),
-                newEoriNumber = Some(confirmEoriUpdate.newEori),
-                subscribedEnrolments = Some(confirmEoriUpdate.enrolmentList))
-              )
-            }
+        val updateAllEnrolments = Future.sequence(
+          confirmEoriUpdate.enrolmentList.split(",")
+            .toList
+            .map(EnrolmentKey.getEnrolmentKey(_).get)
+            .map(enrolment =>
+              enrolmentService.update(
+                Eori(confirmEoriUpdate.existingEori),
+                confirmEoriUpdate.dateOfEstablishment,
+                Eori(confirmEoriUpdate.newEori),
+                enrolment
+              ).map(enrolment.serviceName -> _)
+            )
+        )
+        updateAllEnrolments.map { updates => {
+          val status = updates.map(either => either._1 -> either._2.isRight).toMap
+          if (status.exists(_._2 == false)) {
+            Ok(viewUpdateEoriProblem(status.filter(_._2 == true).keys.toList, status.filter(_._2 == false).keys.toList, confirmEoriUpdate.newEori))
+          } else {
+            Redirect(controllers.routes.EoriActionController.showPageOnSuccess(
+              cancelOrUpdate = Some(EoriActionEnum.UPDATE_EORI.toString),
+              oldEoriNumber = Some(confirmEoriUpdate.existingEori),
+              newEoriNumber = Some(confirmEoriUpdate.newEori),
+              subscribedEnrolments = Some(confirmEoriUpdate.enrolmentList))
+            )
           }
-          }
+        }
+        }
       }
     )
   }

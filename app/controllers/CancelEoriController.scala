@@ -62,7 +62,8 @@ case class CancelEoriController @Inject()(mcc: MessagesControllerComponents,
     mapping(
       "existing-eori" -> text(),
       "date-of-establishment" -> Forms.localDate(LocalDateBinder.dateTimePattern),
-      "enrolment-list" -> text()
+      "enrolment-list" -> text(),
+      "not-cancellable-enrolment-list" -> text()
     )(ConfirmEoriCancel.apply)(ConfirmEoriCancel.unapply))
 
   def showPage = auth { implicit request =>
@@ -83,7 +84,7 @@ case class CancelEoriController @Inject()(mcc: MessagesControllerComponents,
         val cancelableEnrolments = enrolmentList.filter(e => CancelableEnrolments.values.contains(e))
         val notCancelableEnrolments = enrolmentList.filter(e => !CancelableEnrolments.values.contains(e))
         Ok(viewConfirmCancelEori(
-          formConfirmCancelEori.fill(ConfirmEoriCancel(existingEori, establishmentDate, cancelableEnrolments.mkString(","))),
+          formConfirmCancelEori.fill(ConfirmEoriCancel(existingEori, establishmentDate, cancelableEnrolments.mkString(","), notCancelableEnrolments.mkString(","))),
           cancelableEnrolments,
           notCancelableEnrolments
         ))
