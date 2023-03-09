@@ -57,7 +57,7 @@ eoriUpdate.problem.section6 = Help with your ServiceNow ticket
 eoriUpdate.problem.section7 = You can get help with your ServiceNow ticket in the guidance.
 eoriUpdate.success.section1 = New EORI number {0} is now subscribed to:
 eoriUpdate.success.section2 = What happens next
-eoriUpdate.success.section3 = You will need to email the trader confirming that their EORI number has been replaced.
+eoriUpdate.success.section3 = You will need to email the trader to confirm which subscriptions have been successfully updated with their new EORI number.
 eoriUpdate.success.section4 = You can get help with your email in the guidance.
 
 
