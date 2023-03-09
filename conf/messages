@@ -23,7 +23,7 @@ eori.noEnrolment.goBack = Go back to
 eori.noEnrolment.replaceCancelHomePageLink = replace an existing EORI number or cancel subscriptions to HMRC services
 eori.problem.homePageLink = Replace another EORI number or cancel subscriptions to HMRC services
 eori.serviceNowUrl = https://ukrc.service-now.com/esc
-
+eori.confirmPage.cancelChangesBtn = Cancel changes and start again
 
 # Shutter View
 eori.shutter.title = Service not available
@@ -40,7 +40,7 @@ eoriAction.questionForReplaceOrCancel = Do you want to replace an existing EORI 
 
 # Eori Update Confirm
 eoriUpdate.noEnrolmentPage.title = Replacing existing EORI number {0}
-eoriUpdate.confirmPage.title = Replacing existing EORI number {0} with {1}
+eoriUpdate.confirmPage.title = Review changes before replacing existing EORI number {0} with {1}
 eoriUpdate.confirm.details = Existing EORI number {0} will be replaced with {1} for the following subscriptions:
 eoriUpdate.confirm.replaceWith = Are you sure you want to replace the current EORI number with {0}?
 
@@ -48,7 +48,6 @@ eoriUpdate.confirm.replaceWith = Are you sure you want to replace the current EO
 eoriUpdate.problem.heading = There was a problem replacing the EORI number
 eoriUpdate.problem.section1 = The new EORI number {0} has not been subscribed to:
 eoriUpdate.problem.section2.phrase1 = You need to
-eoriUpdate.problem.section2.phrase2.serviceNowUrl = https://ukrc.service-now.com/esc
 eoriUpdate.problem.section2.phrase3 = create a live service ticket on ServiceNow (opens in new tab)
 eoriUpdate.problem.section2.phrase4 = to fix the problem.
 eoriUpdate.problem.section3 = The new EORI number has been successfully subscribed to:
@@ -65,7 +64,7 @@ eoriUpdate.success.section4 = You can get help with your email in the guidance.
 
 # Cancel EORI
 eoriCancel.heading = Cancel a trader’s subscriptions to HMRC services
-eoriCancelConfirm.heading = Cancel subscriptions for {0}
+eoriCancelConfirm.heading = Review changes before cancelling subscriptions for EORI number {0}
 eoriCancelConfirm.section1 = You can cancel {0}’s subscriptions for:
 eoriCancelConfirm.section2 = You will not be able to cancel {0}’s subscriptions for:
 eoriCancelConfirm.confirmQuestion = Are you sure you want to cancel {0}’s subscriptions?
