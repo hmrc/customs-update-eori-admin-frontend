@@ -17,9 +17,9 @@
 package controllers
 
 import models.LocalDateBinder.stringToLocalDate
-import models.{Enrolment, EnrolmentKey, Eori}
+import models.{Enrolment, EnrolmentKey, Eori, ValidateEori}
 import org.mockito.ArgumentMatchers.{any, eq => meq}
-import org.mockito.Mockito.{reset, times, verify, when}
+import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -95,10 +95,25 @@ class CancelEoriControllerSpec extends AnyWordSpec
           "date-of-establishment.month" -> "11",
           "date-of-establishment.year" -> "1997"
         )
+      when(enrolmentService.getEnrolments(meq(Eori("GB123456789012")), meq(stringToLocalDate("04/11/1997")))(any()))
+        .thenReturn(Future.successful(Seq(("HMRC-GVMS-ORG", ValidateEori.TRUE))))
       val result = controller.continueCancelEori(fakeRequestWithBody)
-      status(result) shouldBe SEE_OTHER
-      val Some(redirectURL) = redirectLocation(result)
-      redirectURL should include("/customs-update-eori-admin-frontend/confirm-cancel?existingEori=GB123456789012&establishmentDate=04%2F11%2F1997")
+      status(result) shouldBe OK
+    }
+
+    "show page again with error if existing EORI number date is not matching with Eori numbers date" in withSignedInUser {
+      val fakeRequestWithBody = FakeRequest("POST", "/")
+        .withFormUrlEncodedBody(
+          "existing-eori" -> "GB123456789012",
+          "date-of-establishment.day" -> "04",
+          "date-of-establishment.month" -> "11",
+          "date-of-establishment.year" -> "1997"
+        )
+      when(enrolmentService.getEnrolments(meq(Eori("GB123456789012")), meq(stringToLocalDate("04/11/1997")))(any()))
+        .thenReturn(Future.successful(Seq(("HMRC-GVMS-ORG", ValidateEori.ESTABLISHMENT_DATE_WRONG))))
+      val result = controller.continueCancelEori(fakeRequestWithBody)
+      status(result) shouldBe BAD_REQUEST
+      contentAsString(result) should include("establishment date must match establishment date of the current EORI number")
     }
 
     "show page again with error if existing EORI number is not entered" in withSignedInUser {
@@ -250,28 +265,6 @@ class CancelEoriControllerSpec extends AnyWordSpec
     }
   }
 
-  "showConfirmCancelPage" should {
-    "open confirmation page when user " in withSignedInUser {
-      val oldEori = "GB94449442349"
-      val establishmentDate = "03/12/1990"
-      when(enrolmentService.getEnrolments(meq(Eori(oldEori)), meq(stringToLocalDate(establishmentDate)))(any()))
-        .thenReturn(Future.successful(Seq(EnrolmentKey.HMRC_CUS_ORG.serviceName -> true)))
-
-      val result = controller.showConfirmCancelPage(oldEori, establishmentDate)(fakeRequest)
-      status(result) shouldBe OK
-      verify(enrolmentService, times(1))
-        .getEnrolments(meq(Eori(oldEori)), meq(stringToLocalDate(establishmentDate)))(any())
-    }
-
-    "redirect to STRIDE login for not logged-in user" in withNotSignedInUser {
-      val oldEori = "GB94449442349"
-      val establishmentDate = "03/12/1990"
-      val result = controller.showConfirmCancelPage(oldEori, establishmentDate)(fakeRequest)
-      val Some(redirectURL) = redirectLocation(result)
-      redirectURL should include("/stride/sign-in")
-    }
-  }
-
   "confirmCancelEori" should {
     "complete the confirmation if user select confirm" in withSignedInUser {
       val oldEori = "GB94449442349"
@@ -281,7 +274,7 @@ class CancelEoriControllerSpec extends AnyWordSpec
           "existing-eori" -> oldEori,
           "date-of-establishment" -> establishmentDate,
           "enrolment-list" -> s"${EnrolmentKey.HMRC_GVMS_ORG.serviceName},${EnrolmentKey.HMRC_ATAR_ORG.serviceName}",
-          "confirm" -> "true"
+          "not-cancellable-enrolment-list" -> "",
         )
 
       when(enrolmentService.cancel(meq(Eori(oldEori)), meq(stringToLocalDate(establishmentDate)), meq(EnrolmentKey.HMRC_GVMS_ORG))(any()))

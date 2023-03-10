@@ -16,6 +16,7 @@
 
 package models
 
-import java.time.LocalDate
-
-case class ConfirmEoriUpdate(existingEori: String, dateOfEstablishment: LocalDate, newEori: String, enrolmentList: String, notUpdatableEnrolmentList: String)
+object ValidateEori extends Enumeration {
+  type ValidateEori = Value
+  val TRUE, ESTABLISHMENT_DATE_WRONG, FALSE = Value
+}

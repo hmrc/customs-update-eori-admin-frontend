@@ -17,17 +17,16 @@
 package controllers
 
 import mappings.Mappings
+import models.ValidateEori.{ESTABLISHMENT_DATE_WRONG, TRUE}
 import models._
-import play.api.data.{Form, Forms}
 import play.api.data.Forms._
-import play.api.i18n.I18nSupport
+import play.api.data.{Form, FormError, Forms}
+import play.api.i18n.{I18nSupport, Lang}
 import play.api.mvc._
 import service.EnrolmentService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.{ConfirmEoriUpdateView, UpdateEoriProblemView, UpdateEoriView}
 
-import models.LocalDateBinder._
-import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -41,6 +40,8 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
                                          )(implicit ec: ExecutionContext)
   extends FrontendController(mcc) with Mappings
     with I18nSupport {
+
+  private val SPLITTER_CHARACTER = ","
 
   val formEoriUpdate = Form(
     mapping(
@@ -66,30 +67,34 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
       "existing-eori" -> text(),
       "date-of-establishment" -> Forms.localDate(LocalDateBinder.dateTimePattern),
       "new-eori" -> text(),
-      "enrolment-list" -> text()
+      "enrolment-list" -> text(),
+      "not-updatable-enrolment-list" -> text()
     )(ConfirmEoriUpdate.apply)(ConfirmEoriUpdate.unapply))
 
   def showPage = auth { implicit request =>
     Ok(viewUpdateEori(formEoriUpdate))
   }
 
-  def continueUpdateEori = auth { implicit request =>
+  def continueUpdateEori = auth.async { implicit request =>
     formEoriUpdate.bindFromRequest().fold(
-      formWithError => BadRequest(viewUpdateEori(formWithError)),
+      formWithError => Future(BadRequest(viewUpdateEori(formWithError))),
       eoriUpdate =>
-        Redirect(controllers.routes.UpdateEoriController.showConfirmUpdatePage(eoriUpdate.existingEori, eoriUpdate.dateOfEstablishment, eoriUpdate.newEori))
+        enrolmentService.getEnrolments(Eori(eoriUpdate.existingEori), eoriUpdate.dateOfEstablishment)
+          .map(enrolments => {
+            if (enrolments.exists(_._2 == ESTABLISHMENT_DATE_WRONG)) {
+              BadRequest(viewUpdateEori(formEoriUpdate.fill(eoriUpdate).withError(FormError("date-of-establishment", mcc.messagesApi.apply("eori.validation.establishmentDate.mustBeMatched")(Lang("en"))))))
+            } else {
+              val enrolmentList = enrolments.filter(_._2 == TRUE).map(_._1).toList
+              val updatableEnrolments = enrolmentList.filter(e => UpdatableEnrolments.values.contains(e))
+              val notUpdatableEnrolments = enrolmentList.filter(e => !UpdatableEnrolments.values.contains(e))
+              Ok(viewConfirmUpdate(
+                formEoriUpdateConfirmation.fill(ConfirmEoriUpdate(eoriUpdate.existingEori, eoriUpdate.dateOfEstablishment, eoriUpdate.newEori, updatableEnrolments.mkString(SPLITTER_CHARACTER), notUpdatableEnrolments.mkString(SPLITTER_CHARACTER))),
+                updatableEnrolments,
+                notUpdatableEnrolments
+              ))
+            }
+          })
     )
-  }
-
-  def showConfirmUpdatePage(oldEoriNumber: String, establishmentDate: LocalDate, newEoriNumber: String) = auth.async { implicit request =>
-    enrolmentService.getEnrolments(Eori(oldEoriNumber), establishmentDate)
-      .map(enrolments => {
-        val enrolmentList = enrolments.filter(_._2).map(_._1).toList
-        Ok(viewConfirmUpdate(
-          formEoriUpdateConfirmation.fill(ConfirmEoriUpdate(oldEoriNumber, establishmentDate, newEoriNumber, enrolmentList.mkString(","))),
-          enrolmentList
-        ))
-      })
   }
 
   def confirmUpdateEori = auth.async { implicit request =>
@@ -98,33 +103,33 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
         Future(Redirect(controllers.routes.UpdateEoriController.showPage))
       },
       confirmEoriUpdate => {
-          val updateAllEnrolments = Future.sequence(
-            confirmEoriUpdate.enrolmentList.split(",")
-              .toList
-              .map(EnrolmentKey.getEnrolmentKey(_).get)
-              .map(enrolment =>
-                enrolmentService.update(
-                  Eori(confirmEoriUpdate.existingEori),
-                  confirmEoriUpdate.dateOfEstablishment,
-                  Eori(confirmEoriUpdate.newEori),
-                  enrolment
-                ).map(enrolment.serviceName -> _)
-              )
-          )
-          updateAllEnrolments.map { updates => {
-            val status = updates.map(either => either._1 -> either._2.isRight).toMap
-            if (status.exists(_._2 == false)) {
-              Ok(viewUpdateEoriProblem(status.filter(_._2 == true).keys.toList, status.filter(_._2 == false).keys.toList, confirmEoriUpdate.newEori))
-            } else {
-              Redirect(controllers.routes.EoriActionController.showPageOnSuccess(
-                cancelOrUpdate = Some(EoriActionEnum.UPDATE_EORI.toString),
-                oldEoriNumber = Some(confirmEoriUpdate.existingEori),
-                newEoriNumber = Some(confirmEoriUpdate.newEori),
-                subscribedEnrolments = Some(confirmEoriUpdate.enrolmentList))
-              )
-            }
+        val updateAllEnrolments = Future.sequence(
+          confirmEoriUpdate.enrolmentList.split(SPLITTER_CHARACTER)
+            .toList
+            .map(EnrolmentKey.getEnrolmentKey(_).get)
+            .map(enrolment =>
+              enrolmentService.update(
+                Eori(confirmEoriUpdate.existingEori),
+                confirmEoriUpdate.dateOfEstablishment,
+                Eori(confirmEoriUpdate.newEori),
+                enrolment
+              ).map(enrolment.serviceName -> _)
+            )
+        )
+        updateAllEnrolments.map { updates => {
+          val status = updates.map(either => either._1 -> either._2.isRight).toMap
+          if (status.exists(_._2 == false)) {
+            Ok(viewUpdateEoriProblem(status.filter(_._2 == true).keys.toList, status.filter(_._2 == false).keys.toList, confirmEoriUpdate.newEori))
+          } else {
+            Redirect(controllers.routes.EoriActionController.showPageOnSuccess(
+              cancelOrUpdate = Some(EoriActionEnum.UPDATE_EORI.toString),
+              oldEoriNumber = Some(confirmEoriUpdate.existingEori),
+              newEoriNumber = Some(confirmEoriUpdate.newEori),
+              subscribedEnrolments = Some(confirmEoriUpdate.enrolmentList))
+            )
           }
-          }
+        }
+        }
       }
     )
   }

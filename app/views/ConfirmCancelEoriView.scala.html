@@ -70,6 +70,7 @@
                     <input type="hidden" id="existing-eori" name="existing-eori" value='@form.data.get("existing-eori")'/>
                     <input type="hidden" id="date-of-establishment" name="date-of-establishment" value='@form.data.get("date-of-establishment")'/>
                     <input type="hidden" id="enrolment-list" name="enrolment-list" value='@form.data.get("enrolment-list")'/>
+                    <input type="hidden" id="not-cancellable-enrolment-list" name="not-cancellable-enrolment-list" value='@form.data.get("not-cancellable-enrolment-list")'/>
 
                     <div class="govuk-button-group">
                         @submitButton(Button(content = Text(messages("eori.confirmChanges"))))

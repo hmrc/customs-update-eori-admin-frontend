@@ -86,6 +86,55 @@ class QueryKnownFactsConnectorSpec extends ConnectorSpecBase {
         KeyValue("DateOfEstablishment", "01/01/2011"))
     }
 
+    "return error for a valid EORI but date not matched" in {
+      val response =
+        """
+          |{
+          |  "service": "HMRC-CUS-ORG",
+          |  "enrolments": [
+          |     {
+          |       "identifiers": [
+          |         {
+          |            "key": "EORINumber",
+          |            "value": "GB1234567890"
+          |         }
+          |       ],
+          |       "verifiers": [
+          |          {
+          |             "key": "NINO",
+          |             "value": "NZ123456A"
+          |          },
+          |          {
+          |             "key": "Postcode",
+          |             "value": "BD99 3LZ"
+          |          },
+          |          {
+          |             "key": "DateOfEstablishment",
+          |             "value": "01/01/2011"
+          |          }
+          |       ]
+          |     }
+          |  ]
+          |}""".stripMargin
+      val request = QueryKnownFactsRequest("HMRC-CUS-ORG", Seq(KeyValue("EORINumber", "GB1234567890")))
+
+      when(
+        mockHttpClient.POST(anyString,
+          meq(request),
+          any[Seq[(String, String)]])(
+          any[Writes[QueryKnownFactsRequest]],
+          any[HttpReads[HttpResponse]],
+          any[HeaderCarrier],
+          any[ExecutionContext]))
+        .thenReturn(Future.successful(HttpResponse(OK, response)))
+
+      val Left(ErrorMessage(error)) = connector
+        .query(Eori("GB1234567890"), HMRC_CUS_ORG, LocalDate.of(2010, 1, 1))
+        .futureValue
+
+      error shouldBe "The date you have entered does not match our records, please try again"
+    }
+
     "return an error message for an invalid EORI" in {
       val request = QueryKnownFactsRequest("HMRC-CUS-ORG", Seq(KeyValue("EORINumber", "GB9999999999")))
 
