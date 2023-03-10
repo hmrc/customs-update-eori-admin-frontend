@@ -16,10 +16,10 @@
 
 package controllers
 
-import models.{Enrolment, EnrolmentKey, Eori}
+import models.{Enrolment, EnrolmentKey, Eori, ValidateEori}
 import models.LocalDateBinder.stringToLocalDate
 import org.mockito.ArgumentMatchers.{any, eq => meq}
-import org.mockito.Mockito.{reset, times, verify, when}
+import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -97,10 +97,28 @@ class UpdateEoriControllerSpec
           "date-of-establishment.year" -> "1997",
           "new-eori" -> newEori
         )
+      when(enrolmentService.getEnrolments(meq(Eori("GB944494423491")), meq(stringToLocalDate("04/11/1997")))(any()))
+        .thenReturn(Future.successful(Seq(("HMRC-GVMS-ORG", ValidateEori.TRUE))))
       val result = controller.continueUpdateEori(fakeRequestWithBody)
-      status(result) shouldBe SEE_OTHER
-      val Some(redirectURL) = redirectLocation(result)
-      redirectURL should include(s"/customs-update-eori-admin-frontend/confirm-update?oldEoriNumber=$existingEori&establishmentDate=04%2F11%2F1997&newEoriNumber=$newEori")
+      status(result) shouldBe OK
+    }
+
+    "show page again with error if existing EORI number date is not matching with Eori numbers date" in withSignedInUser {
+      val existingEori = "GB944494423491"
+      val newEori = "GB944494423492"
+      val fakeRequestWithBody = FakeRequest("POST", "/")
+        .withFormUrlEncodedBody(
+          "existing-eori" -> existingEori,
+          "date-of-establishment.day" -> "04",
+          "date-of-establishment.month" -> "11",
+          "date-of-establishment.year" -> "1997",
+          "new-eori" -> newEori
+        )
+      when(enrolmentService.getEnrolments(meq(Eori("GB944494423491")), meq(stringToLocalDate("04/11/1997")))(any()))
+        .thenReturn(Future.successful(Seq(("HMRC-GVMS-ORG", ValidateEori.ESTABLISHMENT_DATE_WRONG))))
+      val result = controller.continueUpdateEori(fakeRequestWithBody)
+      status(result) shouldBe BAD_REQUEST
+      contentAsString(result) should include("establishment date must match establishment date of the current EORI number")
     }
 
     "show page again with error if existing EORI number is not entered" in withSignedInUser {
@@ -285,31 +303,6 @@ class UpdateEoriControllerSpec
         )
       val result = controller.continueUpdateEori(fakeRequestWithBody)
       status(result) shouldBe SEE_OTHER
-      val Some(redirectURL) = redirectLocation(result)
-      redirectURL should include("/stride/sign-in")
-    }
-  }
-
-  "showConfirmUpdatePage" should {
-    "open confirmation page when user " in withSignedInUser {
-      val oldEori = "GB94449442349"
-      val establishmentDate = "03/12/1990"
-      val newEori = "GB94449442340"
-      when(enrolmentService.getEnrolments(meq(Eori(oldEori)), meq(stringToLocalDate(establishmentDate)))(any()))
-        .thenReturn(Future.successful(Seq(EnrolmentKey.HMRC_CUS_ORG.serviceName -> true)))
-
-      val result = controller.showConfirmUpdatePage(oldEori, establishmentDate, newEori)(fakeRequest)
-      status(result) shouldBe OK
-      verify(enrolmentService, times(1))
-        .getEnrolments(meq(Eori(oldEori)), meq(stringToLocalDate(establishmentDate)))(any())
-    }
-
-
-    "redirect to STRIDE login for not logged-in user" in withNotSignedInUser {
-      val oldEori = "GB94449442349"
-      val establishmentDate = "03/12/1990"
-      val newEori = "GB94449442340"
-      val result = controller.showConfirmUpdatePage(oldEori, establishmentDate, newEori)(fakeRequest)
       val Some(redirectURL) = redirectLocation(result)
       redirectURL should include("/stride/sign-in")
     }

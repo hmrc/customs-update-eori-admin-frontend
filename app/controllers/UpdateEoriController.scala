@@ -17,17 +17,16 @@
 package controllers
 
 import mappings.Mappings
+import models.ValidateEori.{ESTABLISHMENT_DATE_WRONG, TRUE}
 import models._
-import play.api.data.{Form, Forms}
 import play.api.data.Forms._
-import play.api.i18n.I18nSupport
+import play.api.data.{Form, FormError, Forms}
+import play.api.i18n.{I18nSupport, Lang}
 import play.api.mvc._
 import service.EnrolmentService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.{ConfirmEoriUpdateView, UpdateEoriProblemView, UpdateEoriView}
 
-import models.LocalDateBinder._
-import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -41,6 +40,8 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
                                          )(implicit ec: ExecutionContext)
   extends FrontendController(mcc) with Mappings
     with I18nSupport {
+
+  private val SPLITTER_CHARACTER = ","
 
   val formEoriUpdate = Form(
     mapping(
@@ -74,26 +75,26 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
     Ok(viewUpdateEori(formEoriUpdate))
   }
 
-  def continueUpdateEori = auth { implicit request =>
+  def continueUpdateEori = auth.async { implicit request =>
     formEoriUpdate.bindFromRequest().fold(
-      formWithError => BadRequest(viewUpdateEori(formWithError)),
+      formWithError => Future(BadRequest(viewUpdateEori(formWithError))),
       eoriUpdate =>
-        Redirect(controllers.routes.UpdateEoriController.showConfirmUpdatePage(eoriUpdate.existingEori, eoriUpdate.dateOfEstablishment, eoriUpdate.newEori))
+        enrolmentService.getEnrolments(Eori(eoriUpdate.existingEori), eoriUpdate.dateOfEstablishment)
+          .map(enrolments => {
+            if (enrolments.exists(_._2 == ESTABLISHMENT_DATE_WRONG)) {
+              BadRequest(viewUpdateEori(formEoriUpdate.fill(eoriUpdate).withError(FormError("date-of-establishment", mcc.messagesApi.apply("eori.validation.establishmentDate.mustBeMatched")(Lang("en"))))))
+            } else {
+              val enrolmentList = enrolments.filter(_._2 == TRUE).map(_._1).toList
+              val updatableEnrolments = enrolmentList.filter(e => UpdatableEnrolments.values.contains(e))
+              val notUpdatableEnrolments = enrolmentList.filter(e => !UpdatableEnrolments.values.contains(e))
+              Ok(viewConfirmUpdate(
+                formEoriUpdateConfirmation.fill(ConfirmEoriUpdate(eoriUpdate.existingEori, eoriUpdate.dateOfEstablishment, eoriUpdate.newEori, updatableEnrolments.mkString(SPLITTER_CHARACTER), notUpdatableEnrolments.mkString(SPLITTER_CHARACTER))),
+                updatableEnrolments,
+                notUpdatableEnrolments
+              ))
+            }
+          })
     )
-  }
-
-  def showConfirmUpdatePage(oldEoriNumber: String, establishmentDate: LocalDate, newEoriNumber: String) = auth.async { implicit request =>
-    enrolmentService.getEnrolments(Eori(oldEoriNumber), establishmentDate)
-      .map(enrolments => {
-        val enrolmentList = enrolments.filter(_._2).map(_._1).toList
-        val updatableEnrolments = enrolmentList.filter(e => UpdatableEnrolments.values.contains(e))
-        val notUpdatableEnrolments = enrolmentList.filter(e => !UpdatableEnrolments.values.contains(e))
-        Ok(viewConfirmUpdate(
-          formEoriUpdateConfirmation.fill(ConfirmEoriUpdate(oldEoriNumber, establishmentDate, newEoriNumber, updatableEnrolments.mkString(","), notUpdatableEnrolments.mkString(","))),
-          updatableEnrolments,
-          notUpdatableEnrolments
-        ))
-      })
   }
 
   def confirmUpdateEori = auth.async { implicit request =>
@@ -103,7 +104,7 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
       },
       confirmEoriUpdate => {
         val updateAllEnrolments = Future.sequence(
-          confirmEoriUpdate.enrolmentList.split(",")
+          confirmEoriUpdate.enrolmentList.split(SPLITTER_CHARACTER)
             .toList
             .map(EnrolmentKey.getEnrolmentKey(_).get)
             .map(enrolment =>

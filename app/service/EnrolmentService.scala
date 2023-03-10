@@ -19,7 +19,7 @@ package service
 import cats.data.EitherT
 import connector._
 import models.EnrolmentKey._
-import models.{Enrolment, EnrolmentKey, Eori, ErrorMessage}
+import models._
 import uk.gov.hmrc.http.HeaderCarrier
 
 import java.time.LocalDate
@@ -41,14 +41,35 @@ class EnrolmentService @Inject()(groupsConnector: QueryGroupsConnector,
       EnrolmentKey.values.toSeq.map(enrolmentKey => {
         val checkEnrolments = for {
           enrolmentResult <- knownFactsConnector.query(existingEori, enrolmentKey, date)
-            .map(knowFacts => knowFacts.isRight)
-            .recover(_ => false)
-          userResult <- if (enrolmentResult) usersConnector.query(existingEori, enrolmentKey)
-            .map(user => user.isRight)
-            .recover(_ => false) else Future.successful(false)
-          finalResult <- if (userResult) groupsConnector.query(existingEori, enrolmentKey)
-            .map(group => group.isRight)
-            .recover(_ => false) else Future.successful(false)
+            .map(knowFacts =>
+              if (knowFacts.isRight) ValidateEori.TRUE
+              else if (knowFacts.left.getOrElse(ErrorMessage("UNKNOWN")).message.contains("date you have entered does not match")) ValidateEori.ESTABLISHMENT_DATE_WRONG
+              else ValidateEori.FALSE
+            )
+            .recover(_ => ValidateEori.FALSE)
+          userResult <-
+            if (enrolmentResult.equals(ValidateEori.TRUE))
+              usersConnector.query(existingEori, enrolmentKey)
+                .map(user =>
+                  if (user.isRight) ValidateEori.TRUE
+                  else ValidateEori.FALSE
+                )
+                .recover(_ => ValidateEori.FALSE)
+            else
+              Future.successful(enrolmentResult)
+
+          finalResult <-
+            if (enrolmentResult.equals(ValidateEori.TRUE) && userResult.equals(ValidateEori.TRUE))
+              groupsConnector.query(existingEori, enrolmentKey)
+                .map(group =>
+                  if (group.isRight) ValidateEori.TRUE
+                  else ValidateEori.FALSE
+                )
+                .recover(_ => ValidateEori.FALSE)
+            else if (enrolmentResult == ValidateEori.ESTABLISHMENT_DATE_WRONG)
+              Future.successful(enrolmentResult)
+            else
+              Future.successful(ValidateEori.FALSE)
         } yield finalResult
 
         checkEnrolments.map(check => enrolmentKey.serviceName -> check)

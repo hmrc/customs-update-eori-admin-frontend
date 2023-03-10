@@ -39,7 +39,7 @@ object EnrolmentKey extends Enumeration {
   val HMRC_ATAR_ORG = EnrolmentKeyVal("HMRC-ATAR-ORG", "Advance Tariff Ruling (ATaR)")
 
   // HMRC-GVMS-ORG* -> Goods Vehicle Movement System
-  val HMRC_GVMS_ORG = EnrolmentKeyVal("HMRC-GVMS-ORG", "Goods Vehicle Movement System (GVMS)")
+  val HMRC_GVMS_ORG = EnrolmentKeyVal("HMRC-GVMS-ORG", "Goods Vehicle Movement Service (GVMS)")
 
   // HMRC-SS-ORG* -> Safety & Security Great Britain
   val HMRC_SS_ORG = EnrolmentKeyVal("HMRC-SS-ORG", "GB Safety & Security (GB S&S)")
