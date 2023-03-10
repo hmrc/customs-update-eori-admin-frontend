@@ -93,4 +93,4 @@ eori.validation.establishmentDate.required.two = The date the trader was establi
 eori.validation.establishmentDate.required.one = The date the trader was established must include a {0}
 eori.validation.establishmentDate.invalid = The date the trader was established must be a real date
 eori.validation.establishmentDate.mustBeInPast = The date the trader was established must be in the past
-eori.validation.establishmentDate.mustBeMatched = The trader's establishment date must match establishment date of the current EORI number
+eori.validation.establishmentDate.mustBeMatched = The trader’s establishment date must match establishment date of the current EORI number
