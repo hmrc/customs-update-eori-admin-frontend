@@ -82,7 +82,7 @@ class EoriActionControllerSpec
     "return HTML for update success" in withSignedInUser {
       val oldEoriNumber = "GB123456789011"
       val newEoriNumber = "GB123456789012"
-      val result = controller.showPageOnSuccess(Some(EoriActionEnum.UPDATE_EORI.toString), Some(oldEoriNumber), Some(newEoriNumber), None,Some(newEoriNumber))(fakeRequest)
+      val result = controller.showPageOnSuccess(Some(EoriActionEnum.UPDATE_EORI.toString), Some(oldEoriNumber), Some(newEoriNumber), None,Some(newEoriNumber),None)(fakeRequest)
       status(result) shouldBe OK
       contentType(result) shouldBe Some("text/html")
       charset(result) shouldBe Some("utf-8")
@@ -91,7 +91,7 @@ class EoriActionControllerSpec
 
     "return HTML for cancel success" in withSignedInUser {
       val eoriNumber = "GB123456789011"
-      val result = controller.showPageOnSuccess(Some(EoriActionEnum.CANCEL_EORI.toString), Some(eoriNumber), None, Some(""),None)(fakeRequest)
+      val result = controller.showPageOnSuccess(Some(EoriActionEnum.CANCEL_EORI.toString), Some(eoriNumber), None, Some("HMRC-GVMS-ORG"),None,Some("HMRC-CTC-ORG"))(fakeRequest)
       status(result) shouldBe OK
       contentType(result) shouldBe Some("text/html")
       charset(result) shouldBe Some("utf-8")
@@ -99,7 +99,7 @@ class EoriActionControllerSpec
     }
 
     "redirect to STRIDE login for not logged-in user" in withNotSignedInUser {
-      val result = controller.showPageOnSuccess(Some(EoriActionEnum.UPDATE_EORI.toString), Some("GB123456789011"), Some("GB123456789012"), None,None)(fakeRequest)
+      val result = controller.showPageOnSuccess(Some(EoriActionEnum.UPDATE_EORI.toString), Some("GB123456789011"), Some("GB123456789012"), None,None, None)(fakeRequest)
       status(result) shouldBe SEE_OTHER
       val Some(redirectURL) = redirectLocation(result)
       redirectURL should include("/stride/sign-in")

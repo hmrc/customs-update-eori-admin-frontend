@@ -30,7 +30,8 @@
         oldEoriNumber: Option[String] = None,
         newEoriNumber: Option[String] = None,
         cancelledEnrolments: Option[String] = None,
-        subscribedEnrolments: Option[String] = None
+        subscribedEnrolments: Option[String] = None,
+        nonCancelableEnrolments: Option[String] = None
 )(implicit request: Request[_], messages: Messages)
 
 @bannerContentForUpdate(paramExistingEoriNumber: String, paramNewEoriNumber: String) = {
@@ -91,12 +92,14 @@
                 }
             </ul>
 
-            <p class="govuk-body">@messages("eoriCancel.success.section2", oldEoriNumber.get)</p>
-            <ul class="govuk-list govuk-list--bullet">
-                @for(enrolment <- cancelledEnrolments.get.filterNot(_.isWhitespace).split(",")) {
-                <li>@EnrolmentKey.getDescription(enrolment).getOrElse(enrolment)</li>
-                }
-            </ul>
+            @if(nonCancelableEnrolments.isDefined && !nonCancelableEnrolments.get.isEmpty){
+                <p class="govuk-body">@messages("eoriCancel.success.section2", oldEoriNumber.get)</p>
+                <ul class="govuk-list govuk-list--bullet">
+                    @for(enrolment <- nonCancelableEnrolments.get.filterNot(_.isWhitespace).split(",")) {
+                    <li>@EnrolmentKey.getDescription(enrolment).getOrElse(enrolment)</li>
+                    }
+                </ul>
+            }
 
             <p class="govuk-heading-m">@messages("eoriCancel.success.section3")</p>
             <p class="govuk-body">@messages("eoriCancel.success.section4",oldEoriNumber.get)</p>
