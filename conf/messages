@@ -39,10 +39,11 @@ eoriAction.cancelSubscriptions = Cancel subscriptions to HMRC services
 eoriAction.questionForReplaceOrCancel = Do you want to replace an existing EORI number or cancel subscriptions to HMRC services?
 
 # Eori Update Confirm
-eoriUpdate.noEnrolmentPage.title = Replacing existing EORI number {0}
-eoriUpdate.confirmPage.title = Review changes before replacing existing EORI number {0} with {1}
+eoriUpdate.noEnrolmentPage.heading = Replacing existing EORI number {0}
+eoriUpdate.confirmPage.heading = Review changes before replacing existing EORI number {0} with {1}
 eoriUpdate.confirm.details = Existing EORI number {0} will be replaced with {1} for the following subscriptions:
 eoriUpdate.confirm.replaceWith = Are you sure you want to replace the current EORI number with {0}?
+eoriUpdate.confirmPage.section2 = You will not be able to replace existing EORI number {0} for:
 
 # Update Eori Problem
 eoriUpdate.problem.heading = There was a problem replacing the EORI number
@@ -60,11 +61,10 @@ eoriUpdate.success.section2 = What happens next
 eoriUpdate.success.section3 = You will need to email the trader to confirm which subscriptions have been successfully updated with their new EORI number.
 eoriUpdate.success.section4 = You can get help with your email in the guidance.
 
-
-
 # Cancel EORI
 eoriCancel.heading = Cancel a trader’s subscriptions to HMRC services
-eoriCancelConfirm.heading = Review changes before cancelling subscriptions for EORI number {0}
+eoriCancel.confirmPage.heading = Review changes before cancelling subscriptions for EORI number {0}
+eoriCancel.noEnrolmentPage.heading = Cancel subscriptions for {0}
 eoriCancelConfirm.section1 = You can cancel {0}’s subscriptions for:
 eoriCancelConfirm.section2 = You will not be able to cancel {0}’s subscriptions for:
 eoriCancelConfirm.confirmQuestion = Are you sure you want to cancel {0}’s subscriptions?
@@ -97,3 +97,4 @@ eori.validation.establishmentDate.required.two = The date the trader was establi
 eori.validation.establishmentDate.required.one = The date the trader was established must include a {0}
 eori.validation.establishmentDate.invalid = The date the trader was established must be a real date
 eori.validation.establishmentDate.mustBeInPast = The date the trader was established must be in the past
+eori.validation.establishmentDate.mustBeMatched = The trader’s establishment date must match establishment date of the current EORI number

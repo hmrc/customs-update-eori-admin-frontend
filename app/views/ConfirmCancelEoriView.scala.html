@@ -31,15 +31,15 @@
 
         <div class="govuk-width-container">
             <main class="govuk-main-wrapper govuk-!-padding-0" id="main-content" role="main">
-                <h1 class="govuk-heading-l">@messages("eoriCancelConfirm.heading", form.data.get("existing-eori").getOrElse("ERROR"))</h1>
-
                 @if(cancelableEnrolments.isEmpty) {
-                    <p class="govuk-body">@messages("eori.noEnrolment", form("existing-eori").value.getOrElse("ERROR"))</p>
-                    <p class="govuk-body">@messages("eori.noEnrolment.goBack")
-                        <a href="/customs-update-eori-admin-frontend"
-                            class="govuk-link">@messages("eori.noEnrolment.replaceCancelHomePageLink")</a>.
-                    </p>
+                <h1 class="govuk-heading-l">@messages("eoriCancel.noEnrolmentPage.heading", form.data.get("existing-eori").getOrElse("ERROR"))</h1>
+                <p class="govuk-body">@messages("eori.noEnrolment", form("existing-eori").value.getOrElse("ERROR"))</p>
+                <p class="govuk-body">@messages("eori.noEnrolment.goBack")
+                    <a href="/customs-update-eori-admin-frontend"
+                       class="govuk-link">@messages("eori.noEnrolment.replaceCancelHomePageLink")</a>.
+                </p>
                 } else {
+                    <h1 class="govuk-heading-l">@messages("eoriCancel.confirmPage.heading", form.data.get("existing-eori").getOrElse("ERROR"))</h1>
                     <p class="govuk-body">@messages("eoriCancelConfirm.section1", form.data.get("existing-eori").getOrElse("ERROR"))</p>
                     <ul class="govuk-list govuk-list--bullet">
                     @for(enrolment <- cancelableEnrolments) {
@@ -70,6 +70,7 @@
                     <input type="hidden" id="existing-eori" name="existing-eori" value='@form.data.get("existing-eori")'/>
                     <input type="hidden" id="date-of-establishment" name="date-of-establishment" value='@form.data.get("date-of-establishment")'/>
                     <input type="hidden" id="enrolment-list" name="enrolment-list" value='@form.data.get("enrolment-list")'/>
+                    <input type="hidden" id="not-cancellable-enrolment-list" name="not-cancellable-enrolment-list" value='@form.data.get("not-cancellable-enrolment-list")'/>
 
                     <div class="govuk-button-group">
                         @submitButton(Button(content = Text(messages("eori.confirmChanges"))))
