@@ -125,7 +125,8 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
               cancelOrUpdate = Some(EoriActionEnum.UPDATE_EORI.toString),
               oldEoriNumber = Some(confirmEoriUpdate.existingEori),
               newEoriNumber = Some(confirmEoriUpdate.newEori),
-              subscribedEnrolments = Some(confirmEoriUpdate.enrolmentList))
+              subscribedEnrolments = Some(confirmEoriUpdate.enrolmentList),
+              notUpdatableEnrolments = Some(confirmEoriUpdate.notUpdatableEnrolmentList))
             )
           }
         }
