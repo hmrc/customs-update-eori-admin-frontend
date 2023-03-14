@@ -24,6 +24,7 @@ eori.noEnrolment.replaceCancelHomePageLink = replace an existing EORI number or 
 eori.problem.homePageLink = Replace another EORI number or cancel subscriptions to HMRC services
 eori.serviceNowUrl = https://ukrc.service-now.com/esc
 eori.confirmPage.cancelChangesBtn = Cancel changes and start again
+eori.doeExample = For example, 27 3 2007
 
 # Shutter View
 eori.shutter.title = Service not available
@@ -89,13 +90,14 @@ eoriCancel.success.section5 = You can get help with your email in the guidance.
 eori.validation.summary.heading = There is a problem
 
 eori.validation.existingEori.required = Enter the trader’s current EORI number
-eori.validation.existingEori.format = The trader’s current EORI number must start with the letters GB , followed by 12 digits
+eori.validation.existingEori.format = Enter an EORI number in the correct format
 eori.validation.newEori.required = Enter the trader’s new EORI number
-eori.validation.newEori.format = The trader’s new EORI number must start with the letters GB , followed by 12 digits
+eori.validation.newEori.format = Enter an EORI number in the correct format
 
 eori.validation.establishmentDate.required.all = Enter the date that the trader was established
 eori.validation.establishmentDate.required.two = The date the trader was established must be a real date. Enter a {0} and a {1}
 eori.validation.establishmentDate.required.one = The date the trader was established must include a {0}
 eori.validation.establishmentDate.invalid = The date the trader was established must be a real date
+eori.validation.establishmentDate.invalidYear = Year must include 4 numbers
 eori.validation.establishmentDate.mustBeInPast = The date the trader was established must be in the past
 eori.validation.establishmentDate.mustBeMatched = The trader’s establishment date must match establishment date of the current EORI number

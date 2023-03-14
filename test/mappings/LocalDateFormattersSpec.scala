@@ -27,6 +27,7 @@ import java.time.LocalDate
 class LocalDateFormattersSpec extends AnyWordSpec with Matchers with OptionValues with Mappings {
 
   val invalidKey = "error.invalidKey"
+  val invalidYear = "eori.validation.establishmentDate.invalidYear"
   val oneDateComponentMissingKey = "error.oneDateComponentMissingKey"
   val twoDateComponentsMissingKey = "error.twoDateComponentMissingKey"
   val threeDateComponentsMissingKey = "error.threeDateComponentsMissingKey"
@@ -34,6 +35,7 @@ class LocalDateFormattersSpec extends AnyWordSpec with Matchers with OptionValue
   val field = "field"
   val localDateFormatter = new LocalDateFormatter(
     invalidKey,
+    invalidYear,
     oneDateComponentMissingKey,
     twoDateComponentsMissingKey,
     threeDateComponentsMissingKey,

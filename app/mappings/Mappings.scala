@@ -24,6 +24,7 @@ import java.time.LocalDate
 trait Mappings extends Formatters {
 
   protected def localDate(invalidKey: String,
+                          invalidYear: String,
                           oneDateComponentMissingKey: String,
                           twoDateComponentsMissingKey: String,
                           threeDateComponentsMissingKey: String,
@@ -31,6 +32,7 @@ trait Mappings extends Formatters {
                           args: Seq[String] = Seq.empty): FieldMapping[LocalDate] =
     of(new LocalDateFormatter(
       invalidKey,
+      invalidYear,
       oneDateComponentMissingKey,
       twoDateComponentsMissingKey,
       threeDateComponentsMissingKey,

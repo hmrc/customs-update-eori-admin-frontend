@@ -52,6 +52,7 @@ case class CancelEoriController @Inject()(mcc: MessagesControllerComponents,
       ),
       "date-of-establishment" -> localDate(
         invalidKey = "eori.validation.establishmentDate.invalid",
+        invalidYear = "eori.validation.establishmentDate.invalidYear",
         threeDateComponentsMissingKey = "eori.validation.establishmentDate.required.all",
         twoDateComponentsMissingKey = "eori.validation.establishmentDate.required.two",
         oneDateComponentMissingKey = "eori.validation.establishmentDate.required.one",
