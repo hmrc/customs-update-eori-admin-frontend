@@ -29,8 +29,9 @@
         cancelOrUpdate: Option[String] = None,
         oldEoriNumber: Option[String] = None,
         newEoriNumber: Option[String] = None,
-        cancelledEnrolments: Option[String] = None,
         subscribedEnrolments: Option[String] = None,
+        notUpdatableEnrolments : Option[String] = None,
+        cancelledEnrolments: Option[String] = None,
         nonCancelableEnrolments: Option[String] = None
 )(implicit request: Request[_], messages: Messages)
 
@@ -63,9 +64,19 @@
             </ul>
 
 
-            <p class="govuk-heading-m">@messages("eoriUpdate.success.section2")</p>
-            <p class="govuk-body">@messages("eoriUpdate.success.section3")</p>
+            @if(notUpdatableEnrolments.isDefined && !notUpdatableEnrolments.get.isEmpty){
+            <p class="govuk-body">@messages("eoriUpdate.success.section2", oldEoriNumber.get)</p>
+            <ul class="govuk-list govuk-list--bullet">
+                @for(enrolment <- notUpdatableEnrolments.get.filterNot(_.isWhitespace).split(",")) {
+                <li>@EnrolmentKey.getDescription(enrolment).getOrElse(enrolment)</li>
+                }
+            </ul>
+            }
+
+
+            <p class="govuk-heading-m">@messages("eoriUpdate.success.section3")</p>
             <p class="govuk-body">@messages("eoriUpdate.success.section4")</p>
+            <p class="govuk-body">@messages("eoriUpdate.success.section5")</p>
         }
 
 

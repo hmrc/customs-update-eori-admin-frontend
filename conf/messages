@@ -57,9 +57,10 @@ eoriUpdate.problem.section5 = You can get help with your email in the guidance.
 eoriUpdate.problem.section6 = Help with your ServiceNow ticket
 eoriUpdate.problem.section7 = You can get help with your ServiceNow ticket in the guidance.
 eoriUpdate.success.section1 = New EORI number {0} is now subscribed to:
-eoriUpdate.success.section2 = What happens next
-eoriUpdate.success.section3 = You will need to email the trader to confirm which subscriptions have been successfully updated with their new EORI number.
-eoriUpdate.success.section4 = You can get help with your email in the guidance.
+eoriUpdate.success.section2 = EORI number {0} remains subscribed to and cannot be replaced for:
+eoriUpdate.success.section3 = What happens next
+eoriUpdate.success.section4 = You will need to email the trader to confirm which subscriptions have been successfully updated with their new EORI number.
+eoriUpdate.success.section5 = You can get help with your email in the guidance.
 
 # Cancel EORI
 eoriCancel.heading = Cancel a trader’s subscriptions to HMRC services
@@ -81,7 +82,7 @@ eoriCancel.problemPage.serviceNowSectionLink = Create a live service ticket on S
 eoriCancel.success.section1 = EORI number {0} subscriptions have been successfully cancelled for:
 eoriCancel.success.section2 = EORI number {0} remains subscribed to and cannot be cancelled for:
 eoriCancel.success.section3 = What happens next
-eoriCancel.success.section4 = You will need to email the trader confirming that EORI number {0} subscriptions have been successfully cancelled.
+eoriCancel.success.section4 = You will need to email the trader confirming which EORI number {0} subscriptions have been successfully cancelled.
 eoriCancel.success.section5 = You can get help with your email in the guidance.
 
 # Validation Messages

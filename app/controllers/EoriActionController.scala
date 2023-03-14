@@ -43,13 +43,14 @@ case class EoriActionController @Inject()(mcc: MessagesControllerComponents,
     Ok(viewEoriAction(form.fill(EoriAction(EoriActionEnum.UPDATE_EORI.toString))))
   }
 
-  def showPageOnSuccess(cancelOrUpdate: Option[String], oldEoriNumber: Option[String], newEoriNumber: Option[String], cancelledEnrolments: Option[String],subscribedEnrolments: Option[String], nonCancelableEnrolments: Option[String]) = auth { implicit request =>
+  def showPageOnSuccess(cancelOrUpdate: Option[String], oldEoriNumber: Option[String], newEoriNumber: Option[String], subscribedEnrolments: Option[String],notUpdatableEnrolments: Option[String],cancelledEnrolments: Option[String], nonCancelableEnrolments: Option[String]) = auth { implicit request =>
     Ok(eoriOperationSuccessfulView(
       form.fill(EoriAction(EoriActionEnum.UPDATE_EORI.toString)),
       cancelOrUpdate = cancelOrUpdate,
       oldEoriNumber = oldEoriNumber,
       newEoriNumber = newEoriNumber,
       cancelledEnrolments = cancelledEnrolments,
+      notUpdatableEnrolments= notUpdatableEnrolments,
       subscribedEnrolments = subscribedEnrolments,
       nonCancelableEnrolments = nonCancelableEnrolments
     ))

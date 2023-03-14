@@ -5,7 +5,7 @@ GET        /assets/*file                controllers.Assets.versioned(path = "/pu
 
 # Select Action
 GET        /                            controllers.EoriActionController.showPage
-GET        /success                     controllers.EoriActionController.showPageOnSuccess(cancelOrUpdate: Option[String], oldEoriNumber: Option[String] ?= None, newEoriNumber: Option[String] ?= None, cancelledEnrolments: Option[String] ?= None,subscribedEnrolments: Option[String] ?= None,nonCancelableEnrolments: Option[String] ?= None)
+GET        /success                     controllers.EoriActionController.showPageOnSuccess(cancelOrUpdate: Option[String], oldEoriNumber: Option[String] ?= None, newEoriNumber: Option[String] ?= None, subscribedEnrolments: Option[String] ?= None,notUpdatableEnrolments: Option[String] ?= None,cancelledEnrolments: Option[String] ?= None,nonCancelableEnrolments: Option[String] ?= None)
 POST       /                            controllers.EoriActionController.continueAction
 
 # Update EORI
