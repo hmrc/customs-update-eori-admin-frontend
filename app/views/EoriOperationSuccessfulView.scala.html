@@ -21,8 +21,8 @@
         layout: Layout,
         formHelper: FormWithCSRF,
         govukRadios: GovukRadios,
-        govukNotificationBanner: GovukNotificationBanner,
-        submitButton: GovukButton
+        submitButton: GovukButton,
+        govukPanel: GovukPanel
 )
 @(
         form: Form[_],
@@ -34,17 +34,13 @@
         nonCancelableEnrolments: Option[String] = None
 )(implicit request: Request[_], messages: Messages)
 
-@bannerContentForUpdate(paramExistingEoriNumber: String, paramNewEoriNumber: String) = {
-    <h3 class="govuk-notification-banner__heading">
+@panelContentForUpdate(paramExistingEoriNumber: String, paramNewEoriNumber: String) = {
     @messages("eoriAction.successBannerEoriUpdateContent", paramExistingEoriNumber, paramNewEoriNumber)
-    </h3>
 }
 
 
-@bannerContentForCancel(paramExistingEoriNumber: String, paramCancelledEnrolments: String) = {
-    <h3 class="govuk-notification-banner__heading">
+@panelContentForCancel(paramExistingEoriNumber: String, paramCancelledEnrolments: String) = {
         @messages("eoriAction.successBannerEoriCancelHeading", paramExistingEoriNumber)
-    </h3>
 }
 
 @layout(pageTitle = Some("EORI number management service"), showBackLink = false) {
@@ -52,10 +48,9 @@
 
         <!--Update Content-->
         @if(cancelOrUpdate.getOrElse("NO_CONTENT").equalsIgnoreCase(EoriActionEnum.UPDATE_EORI.toString) && oldEoriNumber.isDefined && newEoriNumber.isDefined) {
-            @govukNotificationBanner(
-                NotificationBanner(
-                    bannerType = Some("success"),
-                    content = HtmlContent(bannerContentForUpdate(oldEoriNumber.get, newEoriNumber.get))
+            @govukPanel(
+                Panel(
+                    title = HtmlContent(panelContentForUpdate(oldEoriNumber.get, newEoriNumber.get))
                 )
             )
 
@@ -78,10 +73,9 @@
 
         <!--Cancel Content-->
         @if(cancelOrUpdate.getOrElse("NO_CONTENT").equalsIgnoreCase(EoriActionEnum.CANCEL_EORI.toString) && oldEoriNumber.isDefined && cancelledEnrolments.isDefined) {
-            @govukNotificationBanner(
-                NotificationBanner(
-                    bannerType = Some("success"),
-                    content = HtmlContent(bannerContentForCancel(oldEoriNumber.get, cancelledEnrolments.get))
+            @govukPanel(
+                Panel(
+                    title = HtmlContent(panelContentForCancel(oldEoriNumber.get, cancelledEnrolments.get))
                 )
             )
 
