@@ -23,6 +23,7 @@ import java.time.LocalDate
 import scala.util.{Failure, Success, Try}
 
 private[mappings] class LocalDateFormatter(invalidKey: String,
+                                           invalidYear: String,
                                            oneDateComponentMissingKey: String,
                                            twoDateComponentsMissingKey: String,
                                            threeDateComponentsMissingKey: String,
@@ -33,9 +34,9 @@ private[mappings] class LocalDateFormatter(invalidKey: String,
   private val fieldKeys: List[String] = List("day", "month", "year")
 
   private def toDate(key: String, day: Int, month: Int, year: Int): Either[Seq[FormError], LocalDate] = {
-    if (year.toString.length < 4)
-      Left(Seq(FormError(key, invalidKey, args)))
-    else {
+    if (year.toString.length < 4) {
+      Left(Seq(FormError(key, invalidYear, args)))
+    } else {
       Try(LocalDate.of(year, month, day)) match {
         case Success(date) =>
           Right(date)

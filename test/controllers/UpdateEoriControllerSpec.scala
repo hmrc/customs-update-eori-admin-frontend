@@ -146,7 +146,7 @@ class UpdateEoriControllerSpec
         )
       val result = controller.continueUpdateEori(fakeRequestWithBody)
       status(result) shouldBe BAD_REQUEST
-      contentAsString(result) should include(s"The trader’s current EORI number must start with the letters GB , followed by 12 digits")
+      contentAsString(result) should include(s"Enter an EORI number in the correct format")
     }
 
     "show page again with error if new EORI number is empty" in withSignedInUser {
@@ -174,7 +174,7 @@ class UpdateEoriControllerSpec
         )
       val result = controller.continueUpdateEori(fakeRequestWithBody)
       status(result) shouldBe BAD_REQUEST
-      contentAsString(result) should include(s"The trader’s new EORI number must start with the letters GB , followed by 12 digits")
+      contentAsString(result) should include(s"Enter an EORI number in the correct format")
     }
 
     "show page again with error if day of DOE is not entered" in withSignedInUser {
@@ -279,7 +279,7 @@ class UpdateEoriControllerSpec
         )
       val result = controller.continueUpdateEori(fakeRequestWithBody)
       status(result) shouldBe BAD_REQUEST
-      contentAsString(result) should include(s"The date the trader was established must be a real date")
+      contentAsString(result) should include(s"Year must include 4 numbers")
     }
 
     "show page again with multiple errors and with bad request status" in withSignedInUser {
