@@ -95,7 +95,7 @@ class CancelEoriControllerSpec extends AnyWordSpec
           "date-of-establishment.month" -> "11",
           "date-of-establishment.year" -> "1997"
         )
-      when(enrolmentService.getEnrolments(meq(Eori("GB123456789012")), meq(stringToLocalDate("04/11/1997")))(any()))
+      when(enrolmentService.getEnrolments(meq("Cancel"), meq(Eori("GB123456789012")), meq(stringToLocalDate("04/11/1997")))(any()))
         .thenReturn(Future.successful(Seq(("HMRC-GVMS-ORG", ValidateEori.TRUE))))
       val result = controller.continueCancelEori(fakeRequestWithBody)
       status(result) shouldBe OK
@@ -109,7 +109,7 @@ class CancelEoriControllerSpec extends AnyWordSpec
           "date-of-establishment.month" -> "11",
           "date-of-establishment.year" -> "1997"
         )
-      when(enrolmentService.getEnrolments(meq(Eori("GB123456789012")), meq(stringToLocalDate("04/11/1997")))(any()))
+      when(enrolmentService.getEnrolments(meq("Cancel"), meq(Eori("GB123456789012")), meq(stringToLocalDate("04/11/1997")))(any()))
         .thenReturn(Future.successful(Seq(("HMRC-GVMS-ORG", ValidateEori.ESTABLISHMENT_DATE_WRONG))))
       val result = controller.continueCancelEori(fakeRequestWithBody)
       status(result) shouldBe BAD_REQUEST

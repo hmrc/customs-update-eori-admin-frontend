@@ -74,7 +74,7 @@ case class CancelEoriController @Inject()(mcc: MessagesControllerComponents,
   def continueCancelEori = auth.async { implicit request =>
     formCancelEori.bindFromRequest().fold(
       formWithError => Future(BadRequest(viewCancelEori(formWithError))),
-      eoriCancel => enrolmentService.getEnrolments(Eori(eoriCancel.existingEori), eoriCancel.dateOfEstablishment)
+      eoriCancel => enrolmentService.getEnrolments("Cancel", Eori(eoriCancel.existingEori), eoriCancel.dateOfEstablishment)
         .map(enrolments => {
           if (enrolments.exists(_._2 == ESTABLISHMENT_DATE_WRONG)) {
             BadRequest(viewCancelEori(formCancelEori.fill(eoriCancel).withError(FormError("date-of-establishment", mcc.messagesApi.apply("eori.validation.establishmentDate.mustBeMatched")(Lang("en"))))))

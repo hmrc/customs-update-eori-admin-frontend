@@ -28,7 +28,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class DeAllocateGroupConnectorSpec extends ConnectorSpecBase {
 
-  private val connector = new DeAllocateGroupConnector(mockHttpClient, mockAppConfig)
+  private val connector = new DeAllocateGroupConnector(mockHttpClient, mockAppConfig, mockAuditable)
 
   "The Delete Enrolment Connector" should {
     "call the de-enrolment service with a DELETE command with the correct url" in {
@@ -39,7 +39,7 @@ class DeAllocateGroupConnectorSpec extends ConnectorSpecBase {
           any[ExecutionContext]))
         .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
       whenReady(
-        connector.deAllocateGroup(Eori("GB1234567890"), HMRC_CUS_ORG, GroupId("90ccf333-65d2-4bf2-a008-01dfca702161"))) {
+        connector.deAllocateGroup("Update", Eori("GB1234567890"), HMRC_CUS_ORG, GroupId("90ccf333-65d2-4bf2-a008-01dfca702161"))) {
         _ =>
           verify(mockHttpClient).DELETE(
             meq("http://localhost:1222/groups/90ccf333-65d2-4bf2-a008-01dfca702161/enrolments/HMRC-CUS-ORG~EORINumber~GB1234567890"),
@@ -59,7 +59,7 @@ class DeAllocateGroupConnectorSpec extends ConnectorSpecBase {
           any[HeaderCarrier],
           any[ExecutionContext]))
         .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
-      val Left(ErrorMessage(message)) = connector.deAllocateGroup(Eori("GB1234566634"), HMRC_CUS_ORG, GroupId("90ccf333-65d2-4bf2-a008-01dfca706334"))
+      val Left(ErrorMessage(message)) = connector.deAllocateGroup("Update", Eori("GB1234566634"), HMRC_CUS_ORG, GroupId("90ccf333-65d2-4bf2-a008-01dfca706334"))
         .futureValue
       message shouldBe "Delete enrolment failed with HTTP status: 400"
     }

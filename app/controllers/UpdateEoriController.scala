@@ -42,6 +42,7 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
     with I18nSupport {
 
   private val SPLITTER_CHARACTER = ","
+  private val EORI_ACTION = "Update"
 
   val formEoriUpdate = Form(
     mapping(
@@ -78,8 +79,8 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
   def continueUpdateEori = auth.async { implicit request =>
     formEoriUpdate.bindFromRequest().fold(
       formWithError => Future(BadRequest(viewUpdateEori(formWithError))),
-      eoriUpdate =>
-        enrolmentService.getEnrolments(Eori(eoriUpdate.existingEori), eoriUpdate.dateOfEstablishment)
+      eoriUpdate => {
+        enrolmentService.getEnrolments(EORI_ACTION, Eori(eoriUpdate.existingEori), eoriUpdate.dateOfEstablishment)
           .map(enrolments => {
             if (enrolments.exists(_._2 == ESTABLISHMENT_DATE_WRONG)) {
               BadRequest(viewUpdateEori(formEoriUpdate.fill(eoriUpdate).withError(FormError("date-of-establishment", mcc.messagesApi.apply("eori.validation.establishmentDate.mustBeMatched")(Lang("en"))))))
@@ -94,6 +95,7 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
               ))
             }
           })
+      }
     )
   }
 

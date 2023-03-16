@@ -31,7 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class QueryKnownFactsConnectorSpec extends ConnectorSpecBase {
 
-  private val connector = new QueryKnownFactsConnector(mockHttpClient, mockAppConfig)
+  private val connector = new QueryKnownFactsConnector(mockHttpClient, mockAppConfig, mockAuditable)
 
   "The Query Known Facts Connector" should {
     "return an Enrolment for a valid EORI" in {
@@ -77,7 +77,7 @@ class QueryKnownFactsConnectorSpec extends ConnectorSpecBase {
         .thenReturn(Future.successful(HttpResponse(OK, response)))
 
       val Right(enrolment) = connector
-        .query(Eori("GB1234567890"), HMRC_CUS_ORG, LocalDate.of(2011, 1, 1))
+        .query("Update", Eori("GB1234567890"), HMRC_CUS_ORG, LocalDate.of(2011, 1, 1))
         .futureValue
 
       enrolment.identifiers shouldBe Seq(KeyValue("EORINumber", "GB1234567890"))
@@ -129,7 +129,7 @@ class QueryKnownFactsConnectorSpec extends ConnectorSpecBase {
         .thenReturn(Future.successful(HttpResponse(OK, response)))
 
       val Left(ErrorMessage(error)) = connector
-        .query(Eori("GB1234567890"), HMRC_CUS_ORG, LocalDate.of(2010, 1, 1))
+        .query("Update", Eori("GB1234567890"), HMRC_CUS_ORG, LocalDate.of(2010, 1, 1))
         .futureValue
 
       error shouldBe "The date you have entered does not match our records, please try again"
@@ -149,7 +149,7 @@ class QueryKnownFactsConnectorSpec extends ConnectorSpecBase {
         .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
 
       val Left(ErrorMessage(error)) = connector
-        .query(Eori("GB9999999999"), HMRC_CUS_ORG, LocalDate.now())
+        .query("Update", Eori("GB9999999999"), HMRC_CUS_ORG, LocalDate.now())
         .futureValue
       error shouldBe "Could not find Known Facts for existing EORI: GB9999999999"
     }

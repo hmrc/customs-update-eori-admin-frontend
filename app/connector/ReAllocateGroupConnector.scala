@@ -16,9 +16,11 @@
 
 package connector
 
+import audit.Auditable
 import config.AppConfig
 import models.EnrolmentKey.EnrolmentKeyType
 import models._
+import models.events.ReAllocateGroupEvent
 import play.api.Logging
 import play.api.http.Status._
 import play.api.libs.json.{Json, OWrites}
@@ -36,16 +38,19 @@ object ReEnrolRequest {
   implicit val writes: OWrites[ReEnrolRequest] = Json.writes[ReEnrolRequest]
 }
 
-class ReAllocateGroupConnector @Inject()(httpClient: HttpClient, config: AppConfig)(implicit ec: ExecutionContext) extends Logging{
+class ReAllocateGroupConnector @Inject()(httpClient: HttpClient, config: AppConfig, audit: Auditable)(implicit ec: ExecutionContext) extends Logging{
 
   def reAllocate(eori: Eori, enrolmentKey: EnrolmentKeyType, userId: UserId, groupId: GroupId)
                         (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
     val req = ReEnrolRequest(userId.id)
-    val url = s"${config.taxEnrolmentsServiceUrl}/groups/$groupId/enrolments/${enrolmentKey.getEnrolmentKey(eori)}"
+    val strEnrolmentKey = enrolmentKey.getEnrolmentKey(eori)
+    val url = s"${config.taxEnrolmentsServiceUrl}/groups/$groupId/enrolments/$strEnrolmentKey"
 
     httpClient.POST[ReEnrolRequest, HttpResponse](url, req, Seq("Content-Type" -> "application/json")) map { resp =>
       resp.status match {
-        case CREATED => Right(CREATED)
+        case CREATED =>
+          auditCall(url, groupId.toString, userId.toString, strEnrolmentKey)
+          Right(CREATED)
         case failStatus =>{
           logger.error(s"Allocate group failed with HTTP status: $failStatus for existing EORI: $eori. Result: ${resp.body}")
           Left(ErrorMessage(s"Allocate group failed with HTTP status: $failStatus (${resp.body})"))
@@ -53,4 +58,12 @@ class ReAllocateGroupConnector @Inject()(httpClient: HttpClient, config: AppConf
       }
     }
   }
+
+  private def auditCall(url: String, groupId: String, userId: String, enrolmentKey: String)(implicit hc: HeaderCarrier): Unit =
+    audit.sendExtendedDataEvent(
+      transactionName = "Tax-Enrolments-Call",
+      path = url,
+      details = Json.toJson(ReAllocateGroupEvent(groupId, userId, enrolmentKey)),
+      eventType = s"TaxEnrolmentsReAllocateGroupCall",
+    )
 }

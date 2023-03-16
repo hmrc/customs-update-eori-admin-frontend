@@ -16,12 +16,12 @@
 
 package config
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.{Inject, Named, Singleton}
 import play.api.Configuration
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 @Singleton
-class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig) {
+class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig, @Named("appName") val appName: String) {
   lazy val isShuttered: Boolean = config.get[Boolean]("shuttered")
   val enrolmentStoreProxyServiceUrl: String = s"${servicesConfig.baseUrl("enrolment-store-proxy")}/enrolment-store-proxy"
   val taxEnrolmentsServiceUrl: String = s"${servicesConfig.baseUrl("tax-enrolments")}/tax-enrolments"

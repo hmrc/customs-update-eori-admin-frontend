@@ -97,7 +97,7 @@ class UpdateEoriControllerSpec
           "date-of-establishment.year" -> "1997",
           "new-eori" -> newEori
         )
-      when(enrolmentService.getEnrolments(meq(Eori("GB944494423491")), meq(stringToLocalDate("04/11/1997")))(any()))
+      when(enrolmentService.getEnrolments(meq("Update"), meq(Eori("GB944494423491")), meq(stringToLocalDate("04/11/1997")))(any()))
         .thenReturn(Future.successful(Seq(("HMRC-GVMS-ORG", ValidateEori.TRUE))))
       val result = controller.continueUpdateEori(fakeRequestWithBody)
       status(result) shouldBe OK
@@ -114,7 +114,7 @@ class UpdateEoriControllerSpec
           "date-of-establishment.year" -> "1997",
           "new-eori" -> newEori
         )
-      when(enrolmentService.getEnrolments(meq(Eori("GB944494423491")), meq(stringToLocalDate("04/11/1997")))(any()))
+      when(enrolmentService.getEnrolments(meq("Update"), meq(Eori("GB944494423491")), meq(stringToLocalDate("04/11/1997")))(any()))
         .thenReturn(Future.successful(Seq(("HMRC-GVMS-ORG", ValidateEori.ESTABLISHMENT_DATE_WRONG))))
       val result = controller.continueUpdateEori(fakeRequestWithBody)
       status(result) shouldBe BAD_REQUEST
