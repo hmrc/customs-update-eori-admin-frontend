@@ -29,7 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ReAllocateGroupConnectorSpec extends ConnectorSpecBase {
 
-  private val connector = new ReAllocateGroupConnector(mockHttpClient, mockAppConfig)
+  private val connector = new ReAllocateGroupConnector(mockHttpClient, mockAppConfig, mockAuditable)
 
   "The ReEnrolment Connector" should {
     "call the re-enrolment service with a POST command with the correct url" in {

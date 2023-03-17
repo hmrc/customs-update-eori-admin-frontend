@@ -29,7 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class UpsertKnownFactsConnectorSpec extends ConnectorSpecBase {
 
-  private val connector = new UpsertKnownFactsConnector(mockHttpClient, mockAppConfig)
+  private val connector = new UpsertKnownFactsConnector(mockHttpClient, mockAppConfig, mockAuditable)
 
   "The Upsert Enrolment Connector" should {
     "return a success status for a valid upsert" in {

@@ -16,6 +16,7 @@
 
 package connector
 
+import audit.Auditable
 import config.AppConfig
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
@@ -37,6 +38,7 @@ class ConnectorSpecBase
   protected implicit val mockHeaderCarrier = mock[HeaderCarrier]
   protected val mockHttpClient = mock[HttpClient]
   protected val mockAppConfig = mock[AppConfig]
+  protected val mockAuditable = mock[Auditable]
 
   override def beforeEach(): Unit = {
     reset(mockAppConfig, mockHttpClient)

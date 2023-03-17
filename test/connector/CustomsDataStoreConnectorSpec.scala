@@ -16,7 +16,6 @@
 
 package connector
 
-import audit.Auditor
 import models.{Eori, ErrorMessage}
 import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
@@ -29,12 +28,10 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class CustomsDataStoreConnectorSpec extends ConnectorSpecBase {
 
-  private val mockAuditor = mock[Auditor]
-  private val connector = new CustomsDataStoreConnector(mockHttpClient, mockAppConfig, mockAuditor)
+  private val connector = new CustomsDataStoreConnector(mockHttpClient, mockAppConfig, mockAuditable)
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    reset(mockAuditor)
   }
 
   "Customs Data Store Connector" should {
@@ -48,9 +45,6 @@ class CustomsDataStoreConnectorSpec extends ConnectorSpecBase {
           any[HeaderCarrier],
           any[ExecutionContext]))
         .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
-      doNothing()
-        .when(mockAuditor)
-        .sendDataEvent(any(), any(), any(), any())(any[HeaderCarrier])
 
       val Right(statusCode) = connector.notify(Eori("GB12349876")).futureValue
       statusCode shouldBe NO_CONTENT
@@ -66,9 +60,6 @@ class CustomsDataStoreConnectorSpec extends ConnectorSpecBase {
           any[HeaderCarrier],
           any[ExecutionContext]))
         .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, "")))
-      doNothing()
-        .when(mockAuditor)
-        .sendDataEvent(any(), any(), any(), any())(any[HeaderCarrier])
 
       val Left(ErrorMessage(error)) =
         connector.notify(Eori("GB9999999999")).futureValue

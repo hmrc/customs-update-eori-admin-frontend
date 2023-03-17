@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package models
+package models.events
 
-import play.api.libs.json.{Json, OFormat}
+import models.Enrolment
+import play.api.libs.json.Json
 
-case class Enrolment(identifiers: Seq[KeyValue], verifiers: Seq[KeyValue])
+case class EnrolmentStoreProxyEvent(eoriNumber: String, serviceName: String, enrolments: List[Enrolment])
 
-object Enrolment {
-  implicit val jsonKeyValueFormat: OFormat[KeyValue] = Json.format[KeyValue]
-  implicit val jsonFormat: OFormat[Enrolment] = Json.format[Enrolment]
+object EnrolmentStoreProxyEvent {
+  implicit val format = Json.format[EnrolmentStoreProxyEvent]
 }

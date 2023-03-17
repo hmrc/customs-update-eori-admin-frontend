@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package models
+package models.events
 
+import models.KeyValue
 import play.api.libs.json.{Json, OFormat}
 
-case class Enrolment(identifiers: Seq[KeyValue], verifiers: Seq[KeyValue])
+case class UpsertKnownFactsEvent(enrolmentKey: String, verifiers: Seq[KeyValue])
 
-object Enrolment {
+object UpsertKnownFactsEvent {
   implicit val jsonKeyValueFormat: OFormat[KeyValue] = Json.format[KeyValue]
-  implicit val jsonFormat: OFormat[Enrolment] = Json.format[Enrolment]
+  implicit val format = Json.format[UpsertKnownFactsEvent]
 }

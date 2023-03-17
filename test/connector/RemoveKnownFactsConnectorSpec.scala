@@ -28,7 +28,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class RemoveKnownFactsConnectorSpec extends ConnectorSpecBase {
 
-  private val connector = new RemoveKnownFactsConnector(mockHttpClient, mockAppConfig)
+  private val connector = new RemoveKnownFactsConnector(mockHttpClient, mockAppConfig, mockAuditable)
 
   "The Remove Known Facts Connector" should {
     "call the remove known facts service with a DELETE command with the correct url" in {
@@ -37,7 +37,7 @@ class RemoveKnownFactsConnectorSpec extends ConnectorSpecBase {
           any[HttpReads[HttpResponse]], any[HeaderCarrier], any[ExecutionContext]))
         .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
 
-      val Right(response) = connector.remove(Eori("GB1234567890"), HMRC_CUS_ORG).futureValue
+      val Right(response) = connector.remove("Update", Eori("GB1234567890"), HMRC_CUS_ORG).futureValue
       response shouldBe NO_CONTENT
       verify(mockHttpClient).DELETE(
         meq("http://localhost:1222/enrolments/HMRC-CUS-ORG~EORINumber~GB1234567890"),
@@ -55,7 +55,7 @@ class RemoveKnownFactsConnectorSpec extends ConnectorSpecBase {
         any[HeaderCarrier],
         any[ExecutionContext]))
         .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
-      val Left(ErrorMessage(message)) = connector.remove(Eori("GB1122334455"), HMRC_CUS_ORG).futureValue
+      val Left(ErrorMessage(message)) = connector.remove("Update", Eori("GB1122334455"), HMRC_CUS_ORG).futureValue
       message shouldBe "Remove known facts failed with HTTP status: 400"
     }
   }

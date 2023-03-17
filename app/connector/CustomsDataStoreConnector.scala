@@ -16,12 +16,13 @@
 
 package connector
 
-import audit.Auditor
+import audit.Auditable
 import config.AppConfig
 import models.{Eori, ErrorMessage}
 import play.api.Logging
 import play.api.http.MimeTypes.JSON
 import play.api.http.Status.{NOT_FOUND, NO_CONTENT}
+import play.api.libs.json.Json
 import play.mvc.Http.HeaderNames.CONTENT_TYPE
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
@@ -29,17 +30,15 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CustomsDataStoreConnector @Inject()(httpClient: HttpClient, config: AppConfig, audit: Auditor)
+class CustomsDataStoreConnector @Inject()(httpClient: HttpClient, config: AppConfig, audit: Auditable)
                                          (implicit ec: ExecutionContext) extends Logging {
 
   def notify(newEori: Eori)(implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
     val contentType = CONTENT_TYPE -> JSON
 
-    auditRequest(config.customsDataStoreUrl, newEori.eori)
-
     httpClient.POST[Eori, HttpResponse](config.customsDataStoreUrl, newEori, Seq(contentType))
       .map { response =>
-        auditResponse(response, config.customsDataStoreUrl)
+        auditCall(config.customsDataStoreUrl, newEori.toString, response)
         response.status match {
           case NO_CONTENT =>
             logger.info(s"[CDS] No content for EORI: $newEori")
@@ -54,23 +53,16 @@ class CustomsDataStoreConnector @Inject()(httpClient: HttpClient, config: AppCon
       }
   }
 
-  private def auditRequest(url: String, existingEori: String)(
-    implicit hc: HeaderCarrier): Unit = {
-    audit.sendDataEvent(
-      transactionName = "CustomsDataStoreRequestSubmitted",
+  private def auditCall(url: String, newEori: String, response: HttpResponse)(implicit hc: HeaderCarrier): Unit =
+    audit.sendExtendedDataEvent(
+      transactionName = "Custom-Data-Store-Call",
       path = url,
-      detail = Map("existingEori" -> existingEori),
-      auditType = "CustomsDataStoreRequest"
+      details = Json.toJson(
+        Map(
+          "request" -> Map("newEori" -> newEori),
+          "response" -> Map("status" -> s"${response.status}", "message" -> s"${response.body}")
+        )
+      ),
+      eventType = "CustomDataStoreCall",
     )
-  }
-
-  private def auditResponse(response: HttpResponse, url: String)(
-    implicit hc: HeaderCarrier): Unit = {
-    audit.sendDataEvent(
-      transactionName = "CustomsDataStoreResponseReceived",
-      path = url,
-      detail = Map("status" -> s"${response.status}", "message" -> s"${response.body}"),
-      auditType = "CustomsDataStoreResponse"
-    )
-  }
 }

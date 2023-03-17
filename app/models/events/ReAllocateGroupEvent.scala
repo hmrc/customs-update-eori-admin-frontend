@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package models
+package models.events
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.Json
 
-case class Enrolment(identifiers: Seq[KeyValue], verifiers: Seq[KeyValue])
+case class ReAllocateGroupEvent(groupId: String, userId: String, enrolmentKey: String)
 
-object Enrolment {
-  implicit val jsonKeyValueFormat: OFormat[KeyValue] = Json.format[KeyValue]
-  implicit val jsonFormat: OFormat[Enrolment] = Json.format[Enrolment]
+object ReAllocateGroupEvent {
+  implicit val format = Json.format[ReAllocateGroupEvent]
 }

@@ -16,26 +16,28 @@
 
 package audit
 
-import play.api.Configuration
+import config.AppConfig
+import play.api.libs.json.JsValue
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.AuditExtensions._
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.audit.model.{Audit, DataEvent}
+import uk.gov.hmrc.play.audit.model.ExtendedDataEvent
 
 import javax.inject.{Inject, Singleton}
+import scala.concurrent.ExecutionContext
 
 @Singleton
-class Auditor @Inject()(auditConnector: AuditConnector, config: Configuration) {
-  private val auditSource: String = config.get[String]("appName")
-  private val audit: Audit = Audit(auditSource, auditConnector)
+class Auditable @Inject()(auditConnector: AuditConnector, config: AppConfig)(implicit ec: ExecutionContext) {
 
-  def sendDataEvent(transactionName: String,
-                    path: String = "N/A",
-                    detail: Map[String, String],
-                    auditType: String)(implicit hc: HeaderCarrier): Unit =
-    audit.sendDataEvent(
-      DataEvent(auditSource,
-        auditType,
-        tags = hc.toAuditTags(transactionName, path),
-        detail = hc.toAuditDetails(detail.toSeq: _*)))
+  private val auditSource: String = config.appName
+
+  def sendExtendedDataEvent(transactionName: String,
+                            path: String,
+                            tags: Map[String, String] = Map.empty,
+                            details: JsValue,
+                            eventType: String,
+                           )(implicit hc: HeaderCarrier): Unit =
+    auditConnector.sendExtendedEvent(
+      ExtendedDataEvent(auditSource, eventType, tags = hc.toAuditTags(transactionName, path) ++ tags, detail = details)
+    )
 }
