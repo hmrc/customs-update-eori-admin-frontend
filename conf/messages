@@ -83,7 +83,7 @@ eoriCancel.problemPage.serviceNowSectionLink = Create a live service ticket on S
 eoriCancel.success.section1 = EORI number {0} subscriptions have been successfully cancelled for:
 eoriCancel.success.section2 = EORI number {0} remains subscribed to and cannot be cancelled for:
 eoriCancel.success.section3 = What happens next
-eoriCancel.success.section4 = You will need to email the trader confirming which EORI number {0} subscriptions have been successfully cancelled.
+eoriCancel.success.section4 = You will need to email the trader to confirm which EORI number {0} subscriptions have been successfully cancelled.
 eoriCancel.success.section5 = You can get help with your email in the guidance.
 
 # Validation Messages
