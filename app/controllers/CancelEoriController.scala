@@ -113,7 +113,7 @@ case class CancelEoriController @Inject()(mcc: MessagesControllerComponents,
         )
         updateAllEnrolments.map { updates => {
           val status = updates.map(either => either._1 -> either._2.isRight).toMap
-          if (status.exists(_._2 == false)) {
+          if (status.exists(_._2 == true)) {
             Ok(cancelEoriProblemView(status.filter(_._2 == true).keys.toList, status.filter(_._2 == false).keys.toList, confirmEoriCancel.existingEori))
           } else {
             Redirect(controllers.routes.EoriActionController.showPageOnSuccess(
