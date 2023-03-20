@@ -33,9 +33,6 @@
 @layout(pageTitle = Some("EORI number management service")) {
     @formHelper(action = controllers.routes.CancelEoriController.continueCancelEori) {
 
-        <div class="govuk-width-container">
-            <main class="govuk-main-wrapper govuk-!-padding-0" id="main-content" role="main">
-
                 @if(form.errors.nonEmpty) {
                     @govukErrorSummary(
                         ErrorSummary(
@@ -102,7 +99,5 @@
 
                 @submitButton(Button(content = Text(messages("eori.continueButton"))))
 
-            </main>
-        </div>
     }
 }

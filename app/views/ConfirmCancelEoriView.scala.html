@@ -29,8 +29,6 @@
 @layout(pageTitle = Some("EORI number management service")) {
     @formHelper(action = controllers.routes.CancelEoriController.confirmCancelEori) {
 
-        <div class="govuk-width-container">
-            <main class="govuk-main-wrapper govuk-!-padding-0" id="main-content" role="main">
                 @if(cancelableEnrolments.isEmpty) {
                 <h1 class="govuk-heading-l">@messages("eoriCancel.noEnrolmentPage.heading", form.data.get("existing-eori").getOrElse("ERROR"))</h1>
                 <p class="govuk-body">@messages("eori.noEnrolment", form("existing-eori").value.getOrElse("ERROR"))</p>
@@ -79,7 +77,5 @@
                         </a>
                     </div>
                 }
-            </main>
-        </div>
     }
 }

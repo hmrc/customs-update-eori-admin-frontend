@@ -24,8 +24,6 @@
 @(successfulUpdateList: List[String], failedUpdateList: List[String], newEoriNumber: String)(implicit request: Request[_], messages: Messages)
 
     @layout(pageTitle = Some("EORI number management service"), showBackLink = false) {
-        <div class="govuk-width-container ">
-            <main class="govuk-main-wrapper govuk-!-padding-0" id="main-content" role="main">
                 <div class="govuk-grid-row">
                     <div class="govuk-grid-column-full">
                         <h1 class="govuk-heading-l">@messages("eoriUpdate.problem.heading")</h1>
@@ -66,6 +64,4 @@
                         </p>
                     </div>
                 </div>
-            </main>
-        </div>
     }
