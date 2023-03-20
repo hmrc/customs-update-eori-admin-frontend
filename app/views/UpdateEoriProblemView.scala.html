@@ -28,7 +28,7 @@
                     <div class="govuk-grid-column-full">
                         <h1 class="govuk-heading-l">@messages("eoriUpdate.problem.heading")</h1>
 
-                        @if(successfulUpdateList.nonEmpty) {
+                        @if(failedUpdateList.nonEmpty) {
                             <p class="govuk-body">@messages("eoriUpdate.problem.section1", newEoriNumber)</p>
                             <ul class="govuk-list govuk-list--bullet">
                             @for(enrolment <- failedUpdateList) {
