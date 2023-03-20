@@ -88,12 +88,11 @@ class EnrolmentService @Inject()(groupsConnector: QueryGroupsConnector,
       enrolment <- EitherT(queryKnownFacts) // ES20
       userId <- EitherT(queryUsers) // ES0
       groupId <- EitherT(queryGroups) // ES1
-      /*
       _ <- EitherT(upsertKnownFactsConnector.upsert(newEori, enrolmentKey, enrolment)) // ES6
       _ <- EitherT(deAllocateGroupConnector.deAllocateGroup(EORI_ACTION, existingEori, enrolmentKey, groupId)) // ES9
       _ <- EitherT(removeKnownFactsConnector.remove(EORI_ACTION, existingEori, enrolmentKey)) // ES7
       _ <- EitherT(reAllocateGroupConnector.reAllocate(newEori, enrolmentKey, userId, groupId)) // ES8
-      _ <- EitherT(customsDataStoreConnector.notify(newEori)) */// Notify Customs Data Store with new number
+      _ <- EitherT(customsDataStoreConnector.notify(newEori)) // Notify Customs Data Store with new number
     } yield enrolment
     result.value
   }
@@ -114,8 +113,8 @@ class EnrolmentService @Inject()(groupsConnector: QueryGroupsConnector,
     val result = for {
       enrolment <- EitherT(queryKnownFacts) // ES20
       groupId <- EitherT(queryGroups) // ES1
-     /* _ <- EitherT(deAllocateGroupConnector.deAllocateGroup(EORI_ACTION, existingEori, enrolmentKey, groupId)) // ES9
-      _ <- EitherT(removeKnownFactsConnector.remove(EORI_ACTION, existingEori, enrolmentKey))*/ // ES7
+      _ <- EitherT(deAllocateGroupConnector.deAllocateGroup(EORI_ACTION, existingEori, enrolmentKey, groupId)) // ES9
+      _ <- EitherT(removeKnownFactsConnector.remove(EORI_ACTION, existingEori, enrolmentKey)) // ES7
     } yield enrolment
     result.value
   }
