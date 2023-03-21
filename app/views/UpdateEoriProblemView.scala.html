@@ -24,24 +24,24 @@
 @(successfulUpdateList: List[String], failedUpdateList: List[String], newEoriNumber: String)(implicit request: Request[_], messages: Messages)
 
     @layout(pageTitle = Some("EORI number management service"), showBackLink = false) {
-        <div class="govuk-width-container ">
-            <main class="govuk-main-wrapper govuk-!-padding-0" id="main-content" role="main">
                 <div class="govuk-grid-row">
                     <div class="govuk-grid-column-full">
                         <h1 class="govuk-heading-l">@messages("eoriUpdate.problem.heading")</h1>
-                        <p class="govuk-body">@messages("eoriUpdate.problem.section1", newEoriNumber)</p>
 
-                        <ul class="govuk-list govuk-list--bullet">
-                        @for(enrolment <- failedUpdateList) {
-                            @if(enrolment.equals("HMRC-CTS-ORG")) {
-                                @for(cts <- EnrolmentKeySubLists.ctsList) {
-                                    <li>@cts</li>
+                        @if(failedUpdateList.nonEmpty) {
+                            <p class="govuk-body">@messages("eoriUpdate.problem.section1", newEoriNumber)</p>
+                            <ul class="govuk-list govuk-list--bullet">
+                            @for(enrolment <- failedUpdateList) {
+                                @if(enrolment.equals("HMRC-CTS-ORG")) {
+                                    @for(cts <- EnrolmentKeySubLists.ctsList) {
+                                        <li>@cts</li>
+                                    }
+                                } else {
+                                    <li>@EnrolmentKey.getDescription(enrolment).getOrElse(enrolment)</li>
                                 }
-                            } else {
-                                <li>@EnrolmentKey.getDescription(enrolment).getOrElse(enrolment)</li>
                             }
+                            </ul>
                         }
-                        </ul>
 
                         <p class="govuk-body">@messages("eoriUpdate.problem.section2.phrase1")  <a href='@messages("eori.serviceNowUrl")' class="govuk-link" target="_blank" rel="noopener noreferrer">@messages("eoriUpdate.problem.section2.phrase3")</a> @messages("eoriUpdate.problem.section2.phrase4")</p>
 
@@ -66,6 +66,4 @@
                         </p>
                     </div>
                 </div>
-            </main>
-        </div>
     }

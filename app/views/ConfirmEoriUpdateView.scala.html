@@ -27,8 +27,6 @@
 
     @layout(pageTitle = Some("EORI number management service")) {
         @formHelper(action = controllers.routes.UpdateEoriController.confirmUpdateEori) {
-            <div class="govuk-width-container ">
-                <main class="govuk-main-wrapper govuk-!-padding-0" id="main-content" role="main">
 
                     @if(updatableEnrolments.isEmpty) {
                         <h1 class="govuk-heading-l">@messages("eoriUpdate.noEnrolmentPage.heading", form("existing-eori").value.getOrElse("ERROR"))</h1>
@@ -75,7 +73,5 @@
                             </a>
                         </div>
                       }
-                </main>
-            </div>
         }
     }
