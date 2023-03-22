@@ -51,7 +51,7 @@
     </ul>
 }
 
-@layout(pageTitle = Some("EORI number management service"), showBackLink = false) {
+@layout(pageTitle = Some("EORI number management service - Main"), showBackLink = false) {
     @formHelper(action = controllers.routes.EoriActionController.continueAction) {
 
         @if(cancelOrUpdate.getOrElse("NO_CONTENT").equalsIgnoreCase(EoriActionEnum.UPDATE_EORI.toString) && oldEoriNumber.isDefined && newEoriNumber.isDefined) {
@@ -71,14 +71,8 @@
             )
         }
 
+        <h1 class="govuk-heading-l">@messages("eoriAction.questionForReplaceOrCancel")</h1>
         @govukRadios(Radios(
-            fieldset = Some(Fieldset(
-                legend = Some(Legend(
-                    content = Text(messages("eoriAction.questionForReplaceOrCancel")),
-                    classes = "govuk-fieldset__legend--l",
-                    isPageHeading = true
-                ))
-            )),
             name = "update-or-cancel-eori",
             items = Seq(
                 RadioItem(

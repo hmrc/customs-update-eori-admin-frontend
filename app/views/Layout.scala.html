@@ -18,6 +18,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components.GovukLayout
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.HmrcInternalHeader
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.internalheader.InternalHeader
+@import uk.gov.hmrc.govukfrontend.views.Aliases.FooterItem
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.language.En
 @import views.html.helper.CSPNonce
 
@@ -30,13 +31,14 @@
         govukBackLink: GovukBackLink
 )
 
+
 @(pageTitle: Option[String] = None, showBackLink: Boolean = true)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
 
 @header = {
 @hmrcInternalHeader(
     InternalHeader(
         homepageUrl = "/customs-update-eori-admin-frontend",
-        serviceName = pageTitle,
+        serviceName = Some("EORI Number Management Service"),
         serviceUrl = "/customs-update-eori-admin-frontend",
         language = En
     )
@@ -77,7 +79,11 @@
     scriptsBlock       = Some(hmrcScripts(
         nonce        = CSPNonce.get,
         scriptsBlock = Some(additionalScripts)
-    ))
+    )),
+    footerItems =  Seq(
+        FooterItem(href = Some("https://www.gov.uk/help/cookies"), text = Some("Cookies")),
+        FooterItem(href = Some("https://www.gov.uk/help/accessibility-statement"), text = Some("Accessibility Statement"))
+    ),
 )(contentBlock)
 
 @{
