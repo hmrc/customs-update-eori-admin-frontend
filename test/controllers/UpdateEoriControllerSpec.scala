@@ -16,6 +16,8 @@
 
 package controllers
 
+import audit.Auditable
+import config.AppConfig
 import models.{Enrolment, EnrolmentKey, Eori, ValidateEori}
 import models.LocalDateBinder.stringToLocalDate
 import org.mockito.ArgumentMatchers.{any, eq => meq}
@@ -59,7 +61,9 @@ class UpdateEoriControllerSpec
   private val viewConfirmUpdate = app.injector.instanceOf[ConfirmEoriUpdateView]
   private val viewEoriProblem = app.injector.instanceOf[UpdateEoriProblemView]
   private val enrolmentService = mock[EnrolmentService]
-  private val controller = UpdateEoriController(mcc, viewUpdateEori, viewConfirmUpdate, viewEoriProblem, testAuthAction, enrolmentService)
+  private val mockAppConfig = mock[AppConfig]
+  private val mockAuditable = mock[Auditable]
+  private val controller = UpdateEoriController(mcc, viewUpdateEori, viewConfirmUpdate, viewEoriProblem, testAuthAction, enrolmentService, mockAppConfig, mockAuditable)
 
   override def beforeEach(): Unit = {
     reset(mockAuthConnector, enrolmentService)

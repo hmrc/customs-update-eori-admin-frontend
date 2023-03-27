@@ -16,14 +16,19 @@
 
 package controllers
 
+import audit.Auditable
+import config.AppConfig
 import mappings.Mappings
 import models.ValidateEori.{ESTABLISHMENT_DATE_WRONG, TRUE}
 import models._
+import models.events.CancelEoriEvent
 import play.api.data.Forms._
 import play.api.data.{Form, FormError, Forms}
 import play.api.i18n.{I18nSupport, Lang}
+import play.api.libs.json.Json
 import play.api.mvc._
 import service.EnrolmentService
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.{CancelEoriProblemView, CancelEoriView, ConfirmCancelEoriView}
 
@@ -36,7 +41,9 @@ case class CancelEoriController @Inject()(mcc: MessagesControllerComponents,
                                           viewConfirmCancelEori: ConfirmCancelEoriView,
                                           cancelEoriProblemView: CancelEoriProblemView,
                                           auth: AuthAction,
-                                          enrolmentService: EnrolmentService
+                                          enrolmentService: EnrolmentService,
+                                          config: AppConfig,
+                                          audit: Auditable
                                          )(implicit ec: ExecutionContext)
   extends FrontendController(mcc)
     with Mappings
@@ -99,7 +106,7 @@ case class CancelEoriController @Inject()(mcc: MessagesControllerComponents,
         Future(Redirect(controllers.routes.CancelEoriController.showPage))
       },
       confirmEoriCancel => {
-        val updateAllEnrolments = Future.sequence(
+        val cancelAllEnrolments = Future.sequence(
           confirmEoriCancel.enrolmentList.split(SPLITTER_CHARACTER)
             .toList
             .map(EnrolmentKey.getEnrolmentKey(_).get)
@@ -111,22 +118,42 @@ case class CancelEoriController @Inject()(mcc: MessagesControllerComponents,
               ).map(enrolment.serviceName -> _)
             )
         )
-        updateAllEnrolments.map { updates => {
+        cancelAllEnrolments.map { updates => {
           val status = updates.map(either => either._1 -> either._2.isRight).toMap
           if (status.exists(_._2 == false)) {
+            auditCall(CancelEoriEvent(
+              eoriNumber = confirmEoriCancel.existingEori,
+              dateOfEstablishment = LocalDateBinder.localDateToString(confirmEoriCancel.dateOfEstablishment),
+              status = "FAILED",
+              failedServices = status.filter(_._2 == false).keys.toList
+            ))
             Ok(cancelEoriProblemView(status.filter(_._2 == true).keys.toList, status.filter(_._2 == false).keys.toList, confirmEoriCancel.existingEori))
           } else {
+            auditCall(CancelEoriEvent(
+              eoriNumber = confirmEoriCancel.existingEori,
+              dateOfEstablishment = LocalDateBinder.localDateToString(confirmEoriCancel.dateOfEstablishment),
+              status = "OK",
+              cancelledServices = status.filter(_._2 == true).keys.toList
+            ))
             Redirect(controllers.routes.EoriActionController.showPageOnSuccess(
               cancelOrUpdate = Some(EoriActionEnum.CANCEL_EORI.toString),
               oldEoriNumber = Some(confirmEoriCancel.existingEori),
               cancelledEnrolments = Some(confirmEoriCancel.enrolmentList),
               nonCancelableEnrolments = Some(confirmEoriCancel.notCancellableEnrolmentList)
-              ))
+            ))
           }
         }
         }
       }
     )
   }
+
+  private def auditCall(details: CancelEoriEvent)(implicit hc: HeaderCarrier): Unit =
+    audit.sendExtendedDataEvent(
+      transactionName = "CancelEoriNumber",
+      path = s"https://${config.appName}.mdtp:443/confirm/confirm-cancel",
+      details = Json.toJson(details),
+      eventType = "CancelEoriNumber",
+    )
 
 }
