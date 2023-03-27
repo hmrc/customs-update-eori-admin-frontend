@@ -16,6 +16,8 @@
 
 package controllers
 
+import audit.Auditable
+import config.AppConfig
 import models.LocalDateBinder.stringToLocalDate
 import models.{Enrolment, EnrolmentKey, Eori, ValidateEori}
 import org.mockito.ArgumentMatchers.{any, eq => meq}
@@ -59,7 +61,9 @@ class CancelEoriControllerSpec extends AnyWordSpec
   private val viewConfirmCancel = app.injector.instanceOf[ConfirmCancelEoriView]
   private val viewCancelEoriProblem = app.injector.instanceOf[CancelEoriProblemView]
   private val enrolmentService = mock[EnrolmentService]
-  private val controller = CancelEoriController(mcc, viewCancelEori, viewConfirmCancel, viewCancelEoriProblem, testAuthAction, enrolmentService)
+  private val mockAppConfig = mock[AppConfig]
+  private val mockAuditable = mock[Auditable]
+  private val controller = CancelEoriController(mcc, viewCancelEori, viewConfirmCancel, viewCancelEoriProblem, testAuthAction, enrolmentService, mockAppConfig, mockAuditable)
 
   override def beforeEach(): Unit = {
     reset(mockAuthConnector, enrolmentService)

@@ -16,14 +16,19 @@
 
 package controllers
 
+import audit.Auditable
+import config.AppConfig
 import mappings.Mappings
 import models.ValidateEori.{ESTABLISHMENT_DATE_WRONG, TRUE}
 import models._
+import models.events.UpdateEoriEvent
 import play.api.data.Forms._
 import play.api.data.{Form, FormError, Forms}
 import play.api.i18n.{I18nSupport, Lang}
+import play.api.libs.json.Json
 import play.api.mvc._
 import service.EnrolmentService
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.{ConfirmEoriUpdateView, UpdateEoriProblemView, UpdateEoriView}
 
@@ -36,7 +41,9 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
                                           viewConfirmUpdate: ConfirmEoriUpdateView,
                                           viewUpdateEoriProblem: UpdateEoriProblemView,
                                           auth: AuthAction,
-                                          enrolmentService: EnrolmentService
+                                          enrolmentService: EnrolmentService,
+                                          config: AppConfig,
+                                          audit: Auditable
                                          )(implicit ec: ExecutionContext)
   extends FrontendController(mcc) with Mappings
     with I18nSupport {
@@ -122,8 +129,23 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
         updateAllEnrolments.map { updates => {
           val status = updates.map(either => either._1 -> either._2.isRight).toMap
           if (status.exists(_._2 == false)) {
+            auditCall(UpdateEoriEvent(
+              oldEoriNumber = confirmEoriUpdate.existingEori,
+              newEoriNumber = confirmEoriUpdate.newEori,
+              dateOfEstablishment = LocalDateBinder.localDateToString(confirmEoriUpdate.dateOfEstablishment),
+              status = "FAILED",
+              failedServices = status.filter(_._2 == false).keys.toList,
+              updatedServices = status.filter(_._2 == true).keys.toList
+            ))
             Ok(viewUpdateEoriProblem(status.filter(_._2 == true).keys.toList, status.filter(_._2 == false).keys.toList, confirmEoriUpdate.newEori))
           } else {
+            auditCall(UpdateEoriEvent(
+              oldEoriNumber = confirmEoriUpdate.existingEori,
+              newEoriNumber = confirmEoriUpdate.newEori,
+              dateOfEstablishment = LocalDateBinder.localDateToString(confirmEoriUpdate.dateOfEstablishment),
+              status = "OK",
+              updatedServices = status.filter(_._2 == true).keys.toList
+            ))
             Redirect(controllers.routes.EoriActionController.showPageOnSuccess(
               cancelOrUpdate = Some(EoriActionEnum.UPDATE_EORI.toString),
               oldEoriNumber = Some(confirmEoriUpdate.existingEori),
@@ -137,5 +159,13 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
       }
     )
   }
+
+  private def auditCall(details: UpdateEoriEvent)(implicit hc: HeaderCarrier): Unit =
+    audit.sendExtendedDataEvent(
+      transactionName = "UpdateEoriNumber",
+      path = s"https://${config.appName}.mdtp:443/confirm/confirm-update",
+      details = Json.toJson(details),
+      eventType = "UpdateEoriNumber",
+    )
 
 }
