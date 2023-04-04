@@ -33,7 +33,7 @@
                 <h1 class="govuk-heading-l">@messages("eoriCancel.noEnrolmentPage.heading", form.data.get("existing-eori").getOrElse("ERROR"))</h1>
                 <p class="govuk-body">@messages("eori.noEnrolment", form("existing-eori").value.getOrElse("ERROR"))</p>
                 <p class="govuk-body">@messages("eori.noEnrolment.goBack")
-                    <a href="/customs-update-eori-admin-frontend"
+                    <a href="/manage-eori-number"
                        class="govuk-link">@messages("eori.noEnrolment.replaceCancelHomePageLink")</a>.
                 </p>
                 } else {

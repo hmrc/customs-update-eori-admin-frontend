@@ -1,2 +1,2 @@
-service.name = customs-update-eori-admin-frontend
+service.name = manage-eori-number
 service.text = Dyma'ch gwasanaeth newydd

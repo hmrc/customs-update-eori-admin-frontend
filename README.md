@@ -59,7 +59,7 @@ Adjust the following in `build.sbt` to configure Scoverage
     1. run `./run-services.sh` script
     2. launch `customs-update-eori-admin-frontend` via sbt using `sbt run` command
     3. set up known-facts and enrolments stubs as per examples bellow
-    4. navigate to `http://localhost:9000/customs-update-eori-admin-frontend`
+    4. navigate to `http://localhost:9000/manage-eori-number`
     5. enter any String for `PID` field and enter `update-enrolment-eori` in `Roles` text-box
 
 #### Example known-facts test data creation

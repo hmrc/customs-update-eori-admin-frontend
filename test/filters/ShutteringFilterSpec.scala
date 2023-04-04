@@ -40,7 +40,7 @@ class ShutteringFilterSpec extends AnyWordSpec with Matchers with GuiceOneAppPer
       val result = route(app, FakeRequest(GET, controllers.routes.EoriActionController.showPage.url)).value
 
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result) shouldBe Some("/customs-update-eori-admin-frontend/maintenance")
+      redirectLocation(result) shouldBe Some("/manage-eori-number/maintenance")
     }
   }
 }
