@@ -336,7 +336,7 @@ class UpdateEoriControllerSpec
       val result = controller.confirmUpdateEori(fakeRequestWithBody)
       val Some(redirectURL) = redirectLocation(result)
       status(result) shouldBe SEE_OTHER
-      redirectURL should include(s"/customs-update-eori-admin-frontend/success?cancelOrUpdate=Update-Eori&oldEoriNumber=$oldEori&newEoriNumber=$newEori")
+      redirectURL should include(s"/manage-eori-number/success?cancelOrUpdate=Update-Eori&oldEoriNumber=$oldEori&newEoriNumber=$newEori")
     }
 
     "redirect to STRIDE login for not logged-in user" in withNotSignedInUser {

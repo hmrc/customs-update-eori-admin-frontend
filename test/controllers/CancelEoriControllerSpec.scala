@@ -290,7 +290,7 @@ class CancelEoriControllerSpec extends AnyWordSpec
       val result = controller.confirmCancelEori(fakeRequestWithBody)
       val Some(redirectURL) = redirectLocation(result)
       status(result) shouldBe SEE_OTHER
-      redirectURL should include(s"/customs-update-eori-admin-frontend/success?cancelOrUpdate=Cancel-Eori&oldEoriNumber=GB94449442349&cancelledEnrolments=HMRC-GVMS-ORG%2CHMRC-ATAR-ORG")
+      redirectURL should include(s"/manage-eori-number/success?cancelOrUpdate=Cancel-Eori&oldEoriNumber=GB94449442349&cancelledEnrolments=HMRC-GVMS-ORG%2CHMRC-ATAR-ORG")
     }
 
     "redirect to STRIDE login for not logged-in user" in withNotSignedInUser {
