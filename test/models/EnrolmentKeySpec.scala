@@ -53,4 +53,22 @@ class EnrolmentKeySpec
       EnrolmentKey.getEnrolmentKey("DUMMY") shouldBe None
     }
   }
+
+  "EnrolmentKeySubLists" should {
+    "return the Route 1 & NDRC & C18" in {
+      EnrolmentKeySubLists.ctsList shouldBe List("Route 1", "National Duty Repayment Centre (NDRC)", "C18")
+    }
+  }
+
+  "UpdatableEnrolments" should {
+    "return correct enrolment list" in {
+      UpdatableEnrolments.values shouldBe List(HMRC_CUS_ORG, HMRC_ATAR_ORG, HMRC_GVMS_ORG, HMRC_SS_ORG, HMRC_CTS_ORG, HMRC_ESC_ORG).map(e => e.serviceName)
+    }
+  }
+
+  "CancelableEnrolments" should {
+    "return correct enrolment list" in {
+      CancelableEnrolments.values shouldBe List(HMRC_ATAR_ORG, HMRC_GVMS_ORG, HMRC_SS_ORG).map(e => e.serviceName)
+    }
+  }
 }

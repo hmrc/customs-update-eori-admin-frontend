@@ -19,7 +19,7 @@ package controllers
 import audit.Auditable
 import config.AppConfig
 import models.LocalDateBinder.stringToLocalDate
-import models.{Enrolment, EnrolmentKey, Eori, ValidateEori}
+import models.{Enrolment, EnrolmentKey, Eori, ErrorMessage, ValidateEori}
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
@@ -291,6 +291,28 @@ class CancelEoriControllerSpec extends AnyWordSpec
       val Some(redirectURL) = redirectLocation(result)
       status(result) shouldBe SEE_OTHER
       redirectURL should include(s"/manage-eori-number/success?cancelOrUpdate=Cancel-Eori&oldEoriNumber=GB94449442349&cancelledEnrolments=HMRC-GVMS-ORG%2CHMRC-ATAR-ORG")
+    }
+
+    "display error page if user select confirm and there is error" in withSignedInUser {
+      val oldEori = "GB94449442349"
+      val establishmentDate = "04/11/1997"
+      val fakeRequestWithBody = FakeRequest("POST", "/")
+        .withFormUrlEncodedBody(
+          "existing-eori" -> oldEori,
+          "date-of-establishment" -> establishmentDate,
+          "enrolment-list" -> s"${EnrolmentKey.HMRC_GVMS_ORG.serviceName},${EnrolmentKey.HMRC_ATAR_ORG.serviceName}",
+          "not-cancellable-enrolment-list" -> "",
+        )
+
+      when(enrolmentService.cancel(meq(Eori(oldEori)), meq(stringToLocalDate(establishmentDate)), meq(EnrolmentKey.HMRC_GVMS_ORG))(any()))
+        .thenReturn(Future.successful(Right(Enrolment(Seq.empty, Seq.empty))))
+
+      when(enrolmentService.cancel(meq(Eori(oldEori)), meq(stringToLocalDate(establishmentDate)), meq(EnrolmentKey.HMRC_ATAR_ORG))(any()))
+        .thenReturn(Future.successful(Left(ErrorMessage("Something Went Wrong"))))
+
+      val result = controller.confirmCancelEori(fakeRequestWithBody)
+      status(result) shouldBe OK
+      contentAsString(result) should include("EORI number management service - Cancel Problem")
     }
 
     "redirect to STRIDE login for not logged-in user" in withNotSignedInUser {
