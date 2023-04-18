@@ -18,10 +18,10 @@ package controllers
 
 import audit.Auditable
 import config.AppConfig
-import models.{Enrolment, EnrolmentKey, Eori, ValidateEori}
+import models.{Enrolment, EnrolmentKey, Eori, ErrorMessage, ValidateEori}
 import models.LocalDateBinder.stringToLocalDate
 import org.mockito.ArgumentMatchers.{any, eq => meq}
-import org.mockito.Mockito.{reset, when}
+import org.mockito.Mockito.{reset, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -337,6 +337,31 @@ class UpdateEoriControllerSpec
       val Some(redirectURL) = redirectLocation(result)
       status(result) shouldBe SEE_OTHER
       redirectURL should include(s"/manage-eori-number/success?cancelOrUpdate=Update-Eori&oldEoriNumber=$oldEori&newEoriNumber=$newEori")
+    }
+
+    "display error page if user select confirm and there is error" in withSignedInUser {
+      val oldEori = "GB94449442349"
+      val newEori = "GB94449442340"
+      val establishmentDate = "04/11/1997"
+      val fakeRequestWithBody = FakeRequest("POST", "/")
+        .withFormUrlEncodedBody(
+          "existing-eori" -> oldEori,
+          "date-of-establishment" -> establishmentDate,
+          "new-eori" -> newEori,
+          "enrolment-list" -> s"${EnrolmentKey.HMRC_CUS_ORG.serviceName},${EnrolmentKey.HMRC_ATAR_ORG.serviceName}",
+          "not-updatable-enrolment-list" -> "",
+          "confirm" -> "true"
+        )
+
+      when(enrolmentService.update(meq(Eori(oldEori)), meq(stringToLocalDate(establishmentDate)), meq(Eori(newEori)), meq(EnrolmentKey.HMRC_CUS_ORG))(any()))
+        .thenReturn(Future.successful(Left(ErrorMessage("Something Went Wrong"))))
+
+      when(enrolmentService.update(meq(Eori(oldEori)), meq(stringToLocalDate(establishmentDate)), meq(Eori(newEori)), meq(EnrolmentKey.HMRC_ATAR_ORG))(any()))
+        .thenReturn(Future.successful(Right(Enrolment(Seq.empty, Seq.empty))))
+
+      val result = controller.confirmUpdateEori(fakeRequestWithBody)
+      status(result) shouldBe OK
+      contentAsString(result) should include("EORI number management service - Update Problem")
     }
 
     "redirect to STRIDE login for not logged-in user" in withNotSignedInUser {

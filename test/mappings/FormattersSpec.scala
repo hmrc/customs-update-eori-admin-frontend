@@ -34,9 +34,19 @@ class FormattersSpec extends AnyWordSpec with Matchers with OptionValues with Ma
         result.toOption.get shouldBe "TestString"
     }
 
+    "return requiredKey error when trimmed string is empty" in {
+      val result = stringFormatter(requiredKey).bind(field, Map(field -> "       "))
+      result.left.toOption.get shouldBe (Seq(FormError(field, requiredKey)))
+    }
+
     "return requiredKey error when string empty" in {
       val result = stringFormatter(requiredKey).bind(field, Map(field -> ""))
       result.left.toOption.get shouldBe (Seq(FormError(field, requiredKey)))
+    }
+
+    "return correct string when unbind" in {
+      val result = stringFormatter(requiredKey).unbind("TestKey", "TestVal")
+      result.get("TestKey") shouldBe Some("TestVal")
     }
   }
 
@@ -59,6 +69,11 @@ class FormattersSpec extends AnyWordSpec with Matchers with OptionValues with Ma
     "return wholeNumberKey error when string empty" in {
       val result = intFormatter(requiredKey, wholeNumberKey, nonNumericKey).bind(field, Map(field -> "ab12312"))
       result.left.toOption.get shouldBe (Seq(FormError(field, nonNumericKey)))
+    }
+
+    "return correct number when unbind" in {
+      val result = intFormatter(requiredKey, wholeNumberKey, nonNumericKey).unbind("TestKey", 100)
+      result.get("TestKey") shouldBe Some("100")
     }
   }
 }
