@@ -19,6 +19,7 @@ package controllers
 import audit.Auditable
 import config.AppConfig
 import mappings.Mappings
+import models.EoriEventEnum.CANCEL
 import models.ValidateEori.{ESTABLISHMENT_DATE_WRONG, TRUE}
 import models._
 import models.events.CancelEoriEvent
@@ -82,7 +83,7 @@ case class CancelEoriController @Inject()(mcc: MessagesControllerComponents,
   def continueCancelEori = auth.async { implicit request =>
     formCancelEori.bindFromRequest().fold(
       formWithError => Future(BadRequest(viewCancelEori(formWithError))),
-      eoriCancel => enrolmentService.getEnrolments("Cancel", Eori(eoriCancel.existingEori), eoriCancel.dateOfEstablishment)
+      eoriCancel => enrolmentService.getEnrolments(CANCEL, Eori(eoriCancel.existingEori), eoriCancel.dateOfEstablishment)
         .map(enrolments => {
           if (enrolments.exists(_._2 == ESTABLISHMENT_DATE_WRONG)) {
             BadRequest(viewCancelEori(formCancelEori.fill(eoriCancel).withError(FormError("date-of-establishment", mcc.messagesApi.apply("eori.validation.establishmentDate.mustBeMatched")(Lang("en"))))))
