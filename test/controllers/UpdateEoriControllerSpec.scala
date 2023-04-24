@@ -18,10 +18,11 @@ package controllers
 
 import audit.Auditable
 import config.AppConfig
+import models.EoriEventEnum.UPDATE
 import models.{Enrolment, EnrolmentKey, Eori, ErrorMessage, ValidateEori}
 import models.LocalDateBinder.stringToLocalDate
 import org.mockito.ArgumentMatchers.{any, eq => meq}
-import org.mockito.Mockito.{reset, verify, when}
+import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -66,7 +67,8 @@ class UpdateEoriControllerSpec
   private val controller = UpdateEoriController(mcc, viewUpdateEori, viewConfirmUpdate, viewEoriProblem, testAuthAction, enrolmentService, mockAppConfig, mockAuditable)
 
   override def beforeEach(): Unit = {
-    reset(mockAuthConnector, enrolmentService)
+    reset(mockAuthConnector)
+    reset(enrolmentService)
   }
 
   "showPage /" should {
@@ -84,8 +86,8 @@ class UpdateEoriControllerSpec
     "redirect to STRIDE login for not logged-in user" in withNotSignedInUser {
       val result = controller.showPage(fakeRequest)
       status(result) shouldBe SEE_OTHER
-      val Some(redirectURL) = redirectLocation(result)
-      redirectURL should include("/stride/sign-in")
+      val maybeRedirectUrl = redirectLocation(result)
+      maybeRedirectUrl.getOrElse("") should include("/stride/sign-in")
     }
   }
 
@@ -101,7 +103,7 @@ class UpdateEoriControllerSpec
           "date-of-establishment.year" -> "1997",
           "new-eori" -> newEori
         )
-      when(enrolmentService.getEnrolments(meq("Update"), meq(Eori("GB944494423491")), meq(stringToLocalDate("04/11/1997")))(any()))
+      when(enrolmentService.getEnrolments(meq(UPDATE), meq(Eori("GB944494423491")), meq(stringToLocalDate("04/11/1997")))(any()))
         .thenReturn(Future.successful(Seq(("HMRC-GVMS-ORG", ValidateEori.TRUE))))
       val result = controller.continueUpdateEori(fakeRequestWithBody)
       status(result) shouldBe OK
@@ -118,7 +120,7 @@ class UpdateEoriControllerSpec
           "date-of-establishment.year" -> "1997",
           "new-eori" -> newEori
         )
-      when(enrolmentService.getEnrolments(meq("Update"), meq(Eori("GB944494423491")), meq(stringToLocalDate("04/11/1997")))(any()))
+      when(enrolmentService.getEnrolments(meq(UPDATE), meq(Eori("GB944494423491")), meq(stringToLocalDate("04/11/1997")))(any()))
         .thenReturn(Future.successful(Seq(("HMRC-GVMS-ORG", ValidateEori.ESTABLISHMENT_DATE_WRONG))))
       val result = controller.continueUpdateEori(fakeRequestWithBody)
       status(result) shouldBe BAD_REQUEST
@@ -307,8 +309,8 @@ class UpdateEoriControllerSpec
         )
       val result = controller.continueUpdateEori(fakeRequestWithBody)
       status(result) shouldBe SEE_OTHER
-      val Some(redirectURL) = redirectLocation(result)
-      redirectURL should include("/stride/sign-in")
+      val maybeRedirectUrl = redirectLocation(result)
+      maybeRedirectUrl.getOrElse("") should include("/stride/sign-in")
     }
   }
 
@@ -334,9 +336,9 @@ class UpdateEoriControllerSpec
         .thenReturn(Future.successful(Right(Enrolment(Seq.empty, Seq.empty))))
 
       val result = controller.confirmUpdateEori(fakeRequestWithBody)
-      val Some(redirectURL) = redirectLocation(result)
+      val maybeRedirectUrl = redirectLocation(result)
       status(result) shouldBe SEE_OTHER
-      redirectURL should include(s"/manage-eori-number/success?cancelOrUpdate=Update-Eori&oldEoriNumber=$oldEori&newEoriNumber=$newEori")
+      maybeRedirectUrl.getOrElse("") should include(s"/manage-eori-number/success?cancelOrUpdate=Update-Eori&oldEoriNumber=$oldEori&newEoriNumber=$newEori")
     }
 
     "display error page if user select confirm and there is error" in withSignedInUser {
@@ -361,7 +363,7 @@ class UpdateEoriControllerSpec
 
       val result = controller.confirmUpdateEori(fakeRequestWithBody)
       status(result) shouldBe OK
-      contentAsString(result) should include("EORI number management service - Update Problem")
+      contentAsString(result) should include("EORI Number Management Service - Update Problem")
     }
 
     "redirect to STRIDE login for not logged-in user" in withNotSignedInUser {
@@ -375,9 +377,9 @@ class UpdateEoriControllerSpec
         )
 
       val result = controller.confirmUpdateEori(fakeRequestWithBody)
-      val Some(redirectURL) = redirectLocation(result)
+      val maybeRedirectUrl = redirectLocation(result)
       status(result) shouldBe SEE_OTHER
-      redirectURL should include("/stride/sign-in")
+      maybeRedirectUrl.getOrElse("") should include("/stride/sign-in")
     }
   }
 

@@ -18,6 +18,7 @@ package controllers
 
 import audit.Auditable
 import config.AppConfig
+import models.EoriEventEnum.CANCEL
 import models.LocalDateBinder.stringToLocalDate
 import models.{Enrolment, EnrolmentKey, Eori, ErrorMessage, ValidateEori}
 import org.mockito.ArgumentMatchers.{any, eq => meq}
@@ -66,7 +67,8 @@ class CancelEoriControllerSpec extends AnyWordSpec
   private val controller = CancelEoriController(mcc, viewCancelEori, viewConfirmCancel, viewCancelEoriProblem, testAuthAction, enrolmentService, mockAppConfig, mockAuditable)
 
   override def beforeEach(): Unit = {
-    reset(mockAuthConnector, enrolmentService)
+    reset(mockAuthConnector)
+    reset(enrolmentService)
   }
 
   "showPage /" should {
@@ -84,8 +86,8 @@ class CancelEoriControllerSpec extends AnyWordSpec
     "redirect to STRIDE login for not logged-in user" in withNotSignedInUser {
       val result = controller.showPage(fakeRequest)
       status(result) shouldBe SEE_OTHER
-      val Some(redirectURL) = redirectLocation(result)
-      redirectURL should include("/stride/sign-in")
+      val maybeRedirectUrl = redirectLocation(result)
+      maybeRedirectUrl.getOrElse("") should include("/stride/sign-in")
     }
 
   }
@@ -99,7 +101,7 @@ class CancelEoriControllerSpec extends AnyWordSpec
           "date-of-establishment.month" -> "11",
           "date-of-establishment.year" -> "1997"
         )
-      when(enrolmentService.getEnrolments(meq("Cancel"), meq(Eori("GB123456789012")), meq(stringToLocalDate("04/11/1997")))(any()))
+      when(enrolmentService.getEnrolments(meq(CANCEL), meq(Eori("GB123456789012")), meq(stringToLocalDate("04/11/1997")))(any()))
         .thenReturn(Future.successful(Seq(("HMRC-GVMS-ORG", ValidateEori.TRUE))))
       val result = controller.continueCancelEori(fakeRequestWithBody)
       status(result) shouldBe OK
@@ -113,7 +115,7 @@ class CancelEoriControllerSpec extends AnyWordSpec
           "date-of-establishment.month" -> "11",
           "date-of-establishment.year" -> "1997"
         )
-      when(enrolmentService.getEnrolments(meq("Cancel"), meq(Eori("GB123456789012")), meq(stringToLocalDate("04/11/1997")))(any()))
+      when(enrolmentService.getEnrolments(meq(CANCEL), meq(Eori("GB123456789012")), meq(stringToLocalDate("04/11/1997")))(any()))
         .thenReturn(Future.successful(Seq(("HMRC-GVMS-ORG", ValidateEori.ESTABLISHMENT_DATE_WRONG))))
       val result = controller.continueCancelEori(fakeRequestWithBody)
       status(result) shouldBe BAD_REQUEST
@@ -264,8 +266,8 @@ class CancelEoriControllerSpec extends AnyWordSpec
         )
       val result = controller.continueCancelEori(fakeRequestWithBody)
       status(result) shouldBe SEE_OTHER
-      val Some(redirectURL) = redirectLocation(result)
-      redirectURL should include("/stride/sign-in")
+      val maybeRedirectUrl = redirectLocation(result)
+      maybeRedirectUrl.getOrElse("") should include("/stride/sign-in")
     }
   }
 
@@ -288,9 +290,9 @@ class CancelEoriControllerSpec extends AnyWordSpec
         .thenReturn(Future.successful(Right(Enrolment(Seq.empty, Seq.empty))))
 
       val result = controller.confirmCancelEori(fakeRequestWithBody)
-      val Some(redirectURL) = redirectLocation(result)
+      val maybeRedirectUrl = redirectLocation(result)
       status(result) shouldBe SEE_OTHER
-      redirectURL should include(s"/manage-eori-number/success?cancelOrUpdate=Cancel-Eori&oldEoriNumber=GB94449442349&cancelledEnrolments=HMRC-GVMS-ORG%2CHMRC-ATAR-ORG")
+      maybeRedirectUrl.getOrElse("") should include(s"/manage-eori-number/success?cancelOrUpdate=Cancel-Eori&oldEoriNumber=GB94449442349&cancelledEnrolments=HMRC-GVMS-ORG%2CHMRC-ATAR-ORG")
     }
 
     "display error page if user select confirm and there is error" in withSignedInUser {
@@ -312,7 +314,7 @@ class CancelEoriControllerSpec extends AnyWordSpec
 
       val result = controller.confirmCancelEori(fakeRequestWithBody)
       status(result) shouldBe OK
-      contentAsString(result) should include("EORI number management service - Cancel Problem")
+      contentAsString(result) should include("EORI Number Management Service - Cancel Problem")
     }
 
     "redirect to STRIDE login for not logged-in user" in withNotSignedInUser {
@@ -326,9 +328,9 @@ class CancelEoriControllerSpec extends AnyWordSpec
         )
 
       val result = controller.confirmCancelEori(fakeRequestWithBody)
-      val Some(redirectURL) = redirectLocation(result)
+      val maybeRedirectUrl = redirectLocation(result)
       status(result) shouldBe SEE_OTHER
-      redirectURL should include("/stride/sign-in")
+      maybeRedirectUrl.getOrElse("") should include("/stride/sign-in")
     }
   }
 }

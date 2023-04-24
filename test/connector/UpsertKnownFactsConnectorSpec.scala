@@ -45,9 +45,8 @@ class UpsertKnownFactsConnectorSpec extends ConnectorSpecBase {
           any[ExecutionContext]))
         .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
 
-      val Right(statusCode) = connector.upsert(Eori("GB12349876"), HMRC_CUS_ORG, enrolment)
-        .futureValue
-      statusCode shouldBe NO_CONTENT
+      val statusCode = connector.upsert(Eori("GB12349876"), HMRC_CUS_ORG, enrolment).futureValue
+      statusCode shouldBe Right(NO_CONTENT)
     }
 
     "return an error message for an invalid upsert" in {
@@ -57,10 +56,10 @@ class UpsertKnownFactsConnectorSpec extends ConnectorSpecBase {
         (any[Writes[UpsertKnownFactsRequest]], any[HttpReads[HttpResponse]], any[HeaderCarrier], any[ExecutionContext]))
         .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
 
-      val Left(ErrorMessage(error)) = connector
+      val result = connector
         .upsert(Eori("GB9999999999"), HMRC_CUS_ORG, emptyEnrolment)
         .futureValue
-      error shouldBe "Upsert failed with HTTP status: 400"
+      result shouldBe Left(ErrorMessage("Upsert failed with HTTP status: 400"))
     }
   }
 }

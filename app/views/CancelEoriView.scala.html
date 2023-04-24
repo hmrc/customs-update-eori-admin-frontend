@@ -30,7 +30,7 @@
 
 @(form: Form[_])(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = Some("EORI number management service - Cancel")) {
+@layout(pageTitle = Some(messages("service.titleWithParam", "Cancel"))) {
     @formHelper(action = controllers.routes.CancelEoriController.continueCancelEori) {
 
                 @if(form.errors.nonEmpty) {

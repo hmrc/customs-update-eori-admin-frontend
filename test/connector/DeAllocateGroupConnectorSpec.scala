@@ -17,6 +17,7 @@
 package connector
 
 import models.EnrolmentKey.HMRC_CUS_ORG
+import models.EoriEventEnum.UPDATE
 import models.{Eori, ErrorMessage, GroupId}
 import org.mockito.ArgumentMatchers.{eq => meq, _}
 import org.mockito.Mockito._
@@ -39,7 +40,7 @@ class DeAllocateGroupConnectorSpec extends ConnectorSpecBase {
           any[ExecutionContext]))
         .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
       whenReady(
-        connector.deAllocateGroup("Update", Eori("GB1234567890"), HMRC_CUS_ORG, GroupId("90ccf333-65d2-4bf2-a008-01dfca702161"))) {
+        connector.deAllocateGroup(UPDATE, Eori("GB1234567890"), HMRC_CUS_ORG, GroupId("90ccf333-65d2-4bf2-a008-01dfca702161"))) {
         _ =>
           verify(mockHttpClient).DELETE(
             meq("http://localhost:1222/groups/90ccf333-65d2-4bf2-a008-01dfca702161/enrolments/HMRC-CUS-ORG~EORINumber~GB1234567890"),
@@ -59,9 +60,13 @@ class DeAllocateGroupConnectorSpec extends ConnectorSpecBase {
           any[HeaderCarrier],
           any[ExecutionContext]))
         .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
-      val Left(ErrorMessage(message)) = connector.deAllocateGroup("Update", Eori("GB1234566634"), HMRC_CUS_ORG, GroupId("90ccf333-65d2-4bf2-a008-01dfca706334"))
-        .futureValue
-      message shouldBe "Delete enrolment failed with HTTP status: 400"
+      val result = connector.deAllocateGroup(
+        UPDATE,
+        Eori("GB1234566634"),
+        HMRC_CUS_ORG,
+        GroupId("90ccf333-65d2-4bf2-a008-01dfca706334")
+      ).futureValue
+      result shouldBe Left(ErrorMessage("Delete enrolment failed with HTTP status: 400"))
     }
   }
 }

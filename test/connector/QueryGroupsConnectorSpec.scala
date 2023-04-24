@@ -54,8 +54,8 @@ class QueryGroupsConnectorSpec extends ConnectorSpecBase {
     }
 
     "return a Group ID for a valid EORI" in {
-      val Right(groupId) = connector.query(Eori("GB1234567890"), HMRC_CUS_ORG).futureValue
-      groupId shouldBe GroupId("90ccf333-65d2-4bf2-a008-01dfca702161")
+      val groupId = connector.query(Eori("GB1234567890"), HMRC_CUS_ORG).futureValue
+      groupId shouldBe Right(GroupId("90ccf333-65d2-4bf2-a008-01dfca702161"))
     }
 
     "return an error message for an invalid EORI" in {
@@ -64,9 +64,8 @@ class QueryGroupsConnectorSpec extends ConnectorSpecBase {
           any[HttpReads[Either[UpstreamErrorResponse, Groups]]],
           any[HeaderCarrier],
           any[ExecutionContext])).thenReturn(Future.successful(Left(UpstreamErrorResponse("failed", BAD_REQUEST))))
-      val Left(ErrorMessage(error)) =
-        connector.query(Eori("GB8888877777"), HMRC_CUS_ORG).futureValue
-      error shouldBe "Could not find Group for existing EORI: GB8888877777"
+      val result = connector.query(Eori("GB8888877777"), HMRC_CUS_ORG).futureValue
+      result shouldBe Left(ErrorMessage("Could not find Group for existing EORI: GB8888877777"))
     }
   }
 }

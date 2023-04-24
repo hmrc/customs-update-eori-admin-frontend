@@ -44,7 +44,7 @@
         @messages("eoriAction.successBannerEoriCancelHeading", paramExistingEoriNumber)
 }
 
-@layout(pageTitle = Some("EORI number management service - Success"), showBackLink = false) {
+@layout(pageTitle = Some(messages("service.titleWithParam", "Success")), showBackLink = false) {
     @formHelper(action = controllers.routes.EoriActionController.continueAction) {
 
         <!--Update Content-->

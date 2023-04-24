@@ -73,8 +73,8 @@ class EoriActionControllerSpec
     "redirect to STRIDE login for not logged-in user" in withNotSignedInUser {
       val result = controller.showPage(fakeRequest)
       status(result) shouldBe SEE_OTHER
-      val Some(redirectURL) = redirectLocation(result)
-      redirectURL should include("/stride/sign-in")
+      val maybeRedirectUrl = redirectLocation(result)
+      maybeRedirectUrl.getOrElse("") should include("/stride/sign-in")
     }
   }
 
@@ -101,8 +101,8 @@ class EoriActionControllerSpec
     "redirect to STRIDE login for not logged-in user" in withNotSignedInUser {
       val result = controller.showPageOnSuccess(Some(EoriActionEnum.UPDATE_EORI.toString), Some("GB123456789011"), Some("GB123456789012"), None,None, None,None)(fakeRequest)
       status(result) shouldBe SEE_OTHER
-      val Some(redirectURL) = redirectLocation(result)
-      redirectURL should include("/stride/sign-in")
+      val maybeRedirectUrl = redirectLocation(result)
+      maybeRedirectUrl.getOrElse("") should include("/stride/sign-in")
     }
   }
 
@@ -112,8 +112,8 @@ class EoriActionControllerSpec
         .withFormUrlEncodedBody("update-or-cancel-eori" -> EoriActionEnum.UPDATE_EORI.toString)
       val result = controller.continueAction(fakeRequestWithBody)
       status(result) shouldBe SEE_OTHER
-      val Some(redirectURL) = redirectLocation(result)
-      redirectURL should include("/update")
+      val maybeRedirectUrl = redirectLocation(result)
+      maybeRedirectUrl.getOrElse("") should include("/update")
     }
 
     "redirect to cancel page when user select update Eori number" in withSignedInUser {
@@ -121,15 +121,15 @@ class EoriActionControllerSpec
         .withFormUrlEncodedBody("update-or-cancel-eori" -> EoriActionEnum.CANCEL_EORI.toString)
       val result = controller.continueAction(fakeRequestWithBody)
       status(result) shouldBe SEE_OTHER
-      val Some(redirectURL) = redirectLocation(result)
-      redirectURL should include("/cancel")
+      val maybeRedirectUrl = redirectLocation(result)
+      maybeRedirectUrl.getOrElse("") should include("/cancel")
     }
 
     "redirect to STRIDE login for not logged-in user" in withNotSignedInUser {
       val result = controller.showPage(fakeRequest)
       status(result) shouldBe SEE_OTHER
-      val Some(redirectURL) = redirectLocation(result)
-      redirectURL should include("/stride/sign-in")
+      val maybeRedirectUrl = redirectLocation(result)
+      maybeRedirectUrl.getOrElse("") should include("/stride/sign-in")
     }
   }
 }

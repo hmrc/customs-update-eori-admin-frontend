@@ -46,8 +46,9 @@ class CustomsDataStoreConnectorSpec extends ConnectorSpecBase {
           any[ExecutionContext]))
         .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
 
-      val Right(statusCode) = connector.notify(Eori("GB12349876")).futureValue
-      statusCode shouldBe NO_CONTENT
+      val statusCode = connector.notify(Eori("GB12349876")).futureValue
+      statusCode.isRight shouldBe true
+      statusCode shouldBe Right(NO_CONTENT)
     }
 
     "return an error message for failed notification" in {
@@ -61,9 +62,9 @@ class CustomsDataStoreConnectorSpec extends ConnectorSpecBase {
           any[ExecutionContext]))
         .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, "")))
 
-      val Left(ErrorMessage(error)) =
-        connector.notify(Eori("GB9999999999")).futureValue
-      error shouldBe "Notification failed with HTTP status: 500"
+      val error = connector.notify(Eori("GB9999999999")).futureValue
+      error.isLeft shouldBe true
+      error shouldBe Left(ErrorMessage("Notification failed with HTTP status: 500"))
     }
 
     "Eori model object serializes correctly" in {

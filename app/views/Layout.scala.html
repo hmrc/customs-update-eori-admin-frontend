@@ -38,7 +38,7 @@
 @hmrcInternalHeader(
     InternalHeader(
         homepageUrl = "/manage-eori-number",
-        serviceName = Some("EORI Number Management Service"),
+        serviceName = Some(messages("service.title")),
         serviceUrl = "/manage-eori-number",
         language = En
     )
@@ -51,15 +51,12 @@
 
 @beforeContent = {
     @if(showBackLink) {
-        @govukBackLink(BackLink(href = "#", content = Text(messages("eori.backLinkText"))))
+        @govukBackLink(BackLink(href = "#", content = Text(messages("service.backLink"))))
     }
 }
 
 @head = {
-@hmrcHead(
-    nonce     = CSPNonce.get
-)
-
+@hmrcHead()
     <link rel="stylesheet" media="all" type="text/css" href='@routes.Assets.versioned("stylesheets/application.css")' />
 
     <!-- Google Tag Manager -->
@@ -77,12 +74,11 @@
     headerBlock = Some(header),
     beforeContentBlock = Some(beforeContent),
     scriptsBlock       = Some(hmrcScripts(
-        nonce        = CSPNonce.get,
         scriptsBlock = Some(additionalScripts)
     )),
     footerItems =  Seq(
-        FooterItem(href = Some("https://www.gov.uk/help/cookies"), text = Some("Cookies")),
-        FooterItem(href = Some("https://hmrc.sharepoint.com/:w:/r/teams/GRP088070693/Shared%20Documents/Accessibility%20Statements/EORI%20Toolkit%20-%20Internal%20Service%20Accessibility%20Statement.docx?d=w5ebb0892b79949b3bb18d22b0a321367&csf=1&web=1"), text = Some("Accessibility Statement"))
+        FooterItem(href = Some("https://www.gov.uk/help/cookies"), text = Some(messages("service.cookies"))),
+        FooterItem(href = Some("https://hmrc.sharepoint.com/:w:/r/teams/GRP088070693/Shared%20Documents/Accessibility%20Statements/EORI%20Toolkit%20-%20Internal%20Service%20Accessibility%20Statement.docx?d=w5ebb0892b79949b3bb18d22b0a321367&csf=1&web=1"), text = Some(messages("service.accessibilityStatement")))
     ),
 )(contentBlock)
 

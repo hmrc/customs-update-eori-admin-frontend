@@ -51,7 +51,7 @@
     </ul>
 }
 
-@layout(pageTitle = Some("EORI number management service - Main"), showBackLink = false) {
+@layout(pageTitle = Some(messages("service.titleWithParam", "Main")), showBackLink = false) {
     @formHelper(action = controllers.routes.EoriActionController.continueAction) {
 
         @if(cancelOrUpdate.getOrElse("NO_CONTENT").equalsIgnoreCase(EoriActionEnum.UPDATE_EORI.toString) && oldEoriNumber.isDefined && newEoriNumber.isDefined) {

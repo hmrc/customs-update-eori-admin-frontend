@@ -37,6 +37,8 @@ class EnrolmentService @Inject()(groupsConnector: QueryGroupsConnector,
                                  customsDataStoreConnector: CustomsDataStoreConnector
                                 )(implicit ec: ExecutionContext) {
 
+  private val ERROR_MESSAGE_PART = "date you have entered does not match"
+
   def getEnrolments(eoriAction: String, existingEori: Eori, date: LocalDate)(implicit hc: HeaderCarrier) = {
     Future.sequence(
       EnrolmentKey.values.toSeq.map(enrolmentKey => {
@@ -44,8 +46,10 @@ class EnrolmentService @Inject()(groupsConnector: QueryGroupsConnector,
           enrolmentResult <- knownFactsConnector.query(eoriAction, existingEori, enrolmentKey, date)
             .map(knowFacts =>
               if (knowFacts.isRight) ValidateEori.TRUE
-              else if (knowFacts.left.getOrElse(ErrorMessage("UNKNOWN")).message.contains("date you have entered does not match")) ValidateEori.ESTABLISHMENT_DATE_WRONG
-              else ValidateEori.FALSE
+              else {
+                if (knowFacts.left.getOrElse(ErrorMessage("UNKNOWN")).message.contains(ERROR_MESSAGE_PART)) ValidateEori.ESTABLISHMENT_DATE_WRONG
+                else ValidateEori.FALSE
+              }
             )
             .recover(_ => ValidateEori.FALSE)
           userResult <-

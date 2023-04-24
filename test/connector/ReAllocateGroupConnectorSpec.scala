@@ -64,13 +64,14 @@ class ReAllocateGroupConnectorSpec extends ConnectorSpecBase {
           any[HeaderCarrier],
           any[ExecutionContext]))
         .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
-      val Left(ErrorMessage(message)) = connector.reAllocate(
+      val result = connector.reAllocate(
         Eori("GB1234566634"),
         HMRC_CUS_ORG,
         UserId("AB234"),
         GroupId("90ccf333-65d2")
       ).futureValue
-      message should startWith("Allocate group failed with HTTP status: 400")
+      result.isLeft should be(true)
+      result.left.getOrElse(ErrorMessage("")).message should startWith("Allocate group failed with HTTP status: 400")
     }
   }
 }
