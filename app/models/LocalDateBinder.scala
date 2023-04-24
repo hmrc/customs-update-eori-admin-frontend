@@ -20,6 +20,7 @@ import play.api.mvc.PathBindable
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import scala.language.implicitConversions
 
 object LocalDateBinder {
   val dateTimePattern = "dd/MM/yyyy"

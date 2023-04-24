@@ -19,6 +19,7 @@ package controllers
 import audit.Auditable
 import config.AppConfig
 import mappings.Mappings
+import models.EoriEventEnum.UPDATE
 import models.ValidateEori.{ESTABLISHMENT_DATE_WRONG, TRUE}
 import models._
 import models.events.UpdateEoriEvent
@@ -49,7 +50,6 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
     with I18nSupport {
 
   private val SPLITTER_CHARACTER = ","
-  private val EORI_ACTION = "Update"
 
   val formEoriUpdate = Form(
     mapping(
@@ -88,7 +88,7 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
     formEoriUpdate.bindFromRequest().fold(
       formWithError => Future(BadRequest(viewUpdateEori(formWithError))),
       eoriUpdate => {
-        enrolmentService.getEnrolments(EORI_ACTION, Eori(eoriUpdate.existingEori), eoriUpdate.dateOfEstablishment)
+        enrolmentService.getEnrolments(UPDATE, Eori(eoriUpdate.existingEori), eoriUpdate.dateOfEstablishment)
           .map(enrolments => {
             if (enrolments.exists(_._2 == ESTABLISHMENT_DATE_WRONG)) {
               BadRequest(viewUpdateEori(formEoriUpdate.fill(eoriUpdate).withError(FormError("date-of-establishment", mcc.messagesApi.apply("eori.validation.establishmentDate.mustBeMatched")(Lang("en"))))))
@@ -133,7 +133,7 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
               oldEoriNumber = confirmEoriUpdate.existingEori,
               newEoriNumber = confirmEoriUpdate.newEori,
               dateOfEstablishment = LocalDateBinder.localDateToString(confirmEoriUpdate.dateOfEstablishment),
-              status = "FAILED",
+              status = AuditStatus.FAILED,
               failedServices = status.filter(_._2 == false).keys.toList,
               updatedServices = status.filter(_._2 == true).keys.toList
             ))
@@ -143,7 +143,7 @@ case class UpdateEoriController @Inject()(mcc: MessagesControllerComponents,
               oldEoriNumber = confirmEoriUpdate.existingEori,
               newEoriNumber = confirmEoriUpdate.newEori,
               dateOfEstablishment = LocalDateBinder.localDateToString(confirmEoriUpdate.dateOfEstablishment),
-              status = "OK",
+              status = AuditStatus.OK,
               updatedServices = status.filter(_._2 == true).keys.toList
             ))
             Redirect(controllers.routes.EoriActionController.showPageOnSuccess(

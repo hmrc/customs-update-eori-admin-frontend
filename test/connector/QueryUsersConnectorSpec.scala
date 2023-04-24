@@ -54,8 +54,8 @@ class QueryUsersConnectorSpec extends ConnectorSpecBase {
     }
 
     "return a User ID for a valid EORI" in {
-      val Right(userId) = connector.query(Eori("GB1234567890"), HMRC_CUS_ORG).futureValue
-      userId shouldBe UserId("ABCEDEFGI1234567")
+      val userId = connector.query(Eori("GB1234567890"), HMRC_CUS_ORG).futureValue
+      userId shouldBe Right(UserId("ABCEDEFGI1234567"))
     }
 
     "return an error message for an invalid EORI" in {
@@ -64,9 +64,8 @@ class QueryUsersConnectorSpec extends ConnectorSpecBase {
           any[HttpReads[Either[UpstreamErrorResponse, Users]]],
           any[HeaderCarrier],
           any[ExecutionContext])).thenReturn(Future.successful(Left(UpstreamErrorResponse("failed", BAD_REQUEST))))
-      val Left(ErrorMessage(error)) =
-        connector.query(Eori("GB8888877777"), HMRC_CUS_ORG).futureValue
-      error shouldBe "Could not find User for existing EORI: GB8888877777"
+      val result = connector.query(Eori("GB8888877777"), HMRC_CUS_ORG).futureValue
+      result shouldBe Left(ErrorMessage("Could not find User for existing EORI: GB8888877777"))
     }
   }
 }

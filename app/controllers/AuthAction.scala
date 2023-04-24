@@ -50,13 +50,11 @@ class AuthAction @Inject()(override val authConnector: AuthConnector,
     val retrievals = credentials and name and email and internalId and allEnrolments
     val roleAllowed = config.get[String]("role.allowed")
 
-    authorised(AuthProviders(PrivilegedApplication)).retrieve(retrievals) {
+    (authorised(AuthProviders(PrivilegedApplication)) retrieve retrievals) {
       case Some(credentials) ~ Some(name) ~ email ~ internalId ~ allEnrolments =>
         val role = allEnrolments.enrolments.find(_.key == roleAllowed) match {
           case Some(r) => r
-          case _ =>
-            throw InsufficientEnrolments(
-              s"$credentials, $name, $email, $allEnrolments")
+          case _ => throw InsufficientEnrolments(s"$credentials, $name, $email, $allEnrolments")
         }
         val user = SignedInUser(credentials.providerId,
                                 name,
@@ -66,6 +64,7 @@ class AuthAction @Inject()(override val authConnector: AuthConnector,
                                 allEnrolments)
         val authenticatedRequest = AuthenticatedRequest(request, user)
         Future.successful(Right(authenticatedRequest))
+      case _ => throw InsufficientEnrolments("InsufficientEnrolments")
     }
   } recover {
     case _: NoActiveSession =>

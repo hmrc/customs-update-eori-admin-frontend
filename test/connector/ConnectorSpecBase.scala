@@ -41,7 +41,8 @@ class ConnectorSpecBase
   protected val mockAuditable = mock[Auditable]
 
   override def beforeEach(): Unit = {
-    reset(mockAppConfig, mockHttpClient)
+    reset(mockAppConfig)
+    reset(mockHttpClient)
 
     when(mockAppConfig.enrolmentStoreProxyServiceUrl)
       .thenReturn("http://localhost:1234")

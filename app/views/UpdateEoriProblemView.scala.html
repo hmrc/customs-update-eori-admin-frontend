@@ -23,7 +23,7 @@
 
 @(successfulUpdateList: List[String], failedUpdateList: List[String], newEoriNumber: String)(implicit request: Request[_], messages: Messages)
 
-    @layout(pageTitle = Some("EORI number management service - Update Problem"), showBackLink = false) {
+    @layout(pageTitle = Some(messages("service.titleWithParam", "Update Problem")), showBackLink = false) {
                 <div class="govuk-grid-row">
                     <div class="govuk-grid-column-full">
                         <h1 class="govuk-heading-l">@messages("eoriUpdate.problem.heading")</h1>

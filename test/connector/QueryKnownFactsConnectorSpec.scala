@@ -17,6 +17,7 @@
 package connector
 
 import models.EnrolmentKey.HMRC_CUS_ORG
+import models.EoriEventEnum.UPDATE
 import models._
 import org.mockito.ArgumentMatchers.{eq => meq, _}
 import org.mockito.Mockito._
@@ -76,10 +77,12 @@ class QueryKnownFactsConnectorSpec extends ConnectorSpecBase {
           any[ExecutionContext]))
         .thenReturn(Future.successful(HttpResponse(OK, response)))
 
-      val Right(enrolment) = connector
-        .query("Update", Eori("GB1234567890"), HMRC_CUS_ORG, LocalDate.of(2011, 1, 1))
+      val maybeEnrolment = connector
+        .query(UPDATE, Eori("GB1234567890"), HMRC_CUS_ORG, LocalDate.of(2011, 1, 1))
         .futureValue
 
+      maybeEnrolment.isRight shouldBe true
+      val enrolment = maybeEnrolment.getOrElse(new Enrolment(Seq.empty, Seq.empty))
       enrolment.identifiers shouldBe Seq(KeyValue("EORINumber", "GB1234567890"))
       enrolment.verifiers shouldBe Seq(KeyValue("NINO", "NZ123456A"),
         KeyValue("Postcode", "BD99 3LZ"),
@@ -128,11 +131,11 @@ class QueryKnownFactsConnectorSpec extends ConnectorSpecBase {
           any[ExecutionContext]))
         .thenReturn(Future.successful(HttpResponse(OK, response)))
 
-      val Left(ErrorMessage(error)) = connector
-        .query("Update", Eori("GB1234567890"), HMRC_CUS_ORG, LocalDate.of(2010, 1, 1))
+      val result = connector
+        .query(UPDATE, Eori("GB1234567890"), HMRC_CUS_ORG, LocalDate.of(2010, 1, 1))
         .futureValue
 
-      error shouldBe "The date you have entered does not match our records, please try again"
+      result shouldBe Left(ErrorMessage("The date you have entered does not match our records, please try again"))
     }
 
     "return an error message for an invalid EORI" in {
@@ -148,10 +151,10 @@ class QueryKnownFactsConnectorSpec extends ConnectorSpecBase {
           any[ExecutionContext]))
         .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
 
-      val Left(ErrorMessage(error)) = connector
-        .query("Update", Eori("GB9999999999"), HMRC_CUS_ORG, LocalDate.now())
+      val result = connector
+        .query(UPDATE, Eori("GB9999999999"), HMRC_CUS_ORG, LocalDate.now())
         .futureValue
-      error shouldBe "Could not find Known Facts for existing EORI: GB9999999999"
+      result shouldBe Left(ErrorMessage("Could not find Known Facts for existing EORI: GB9999999999"))
     }
   }
 }

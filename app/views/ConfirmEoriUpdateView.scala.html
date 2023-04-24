@@ -25,7 +25,7 @@
 )
 @(form: Form[_], updatableEnrolments: List[String], notUpdatableEnrolments: List[String])(implicit request: Request[_], messages: Messages)
 
-    @layout(pageTitle = Some("EORI number management service - Confirm Update")) {
+    @layout(pageTitle = Some(messages("service.titleWithParam", "Confirm Update"))) {
         @formHelper(action = controllers.routes.UpdateEoriController.confirmUpdateEori) {
 
                     @if(updatableEnrolments.isEmpty) {

@@ -17,6 +17,7 @@
 package connector
 
 import models.EnrolmentKey.HMRC_CUS_ORG
+import models.EoriEventEnum.UPDATE
 import models.{Eori, ErrorMessage}
 import org.mockito.ArgumentMatchers.{eq => meq, _}
 import org.mockito.Mockito._
@@ -37,7 +38,9 @@ class RemoveKnownFactsConnectorSpec extends ConnectorSpecBase {
           any[HttpReads[HttpResponse]], any[HeaderCarrier], any[ExecutionContext]))
         .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
 
-      val Right(response) = connector.remove("Update", Eori("GB1234567890"), HMRC_CUS_ORG).futureValue
+      val result = connector.remove(UPDATE, Eori("GB1234567890"), HMRC_CUS_ORG).futureValue
+      result.isRight shouldBe true
+      val response = result.getOrElse(None)
       response shouldBe NO_CONTENT
       verify(mockHttpClient).DELETE(
         meq("http://localhost:1222/enrolments/HMRC-CUS-ORG~EORINumber~GB1234567890"),
@@ -55,8 +58,8 @@ class RemoveKnownFactsConnectorSpec extends ConnectorSpecBase {
         any[HeaderCarrier],
         any[ExecutionContext]))
         .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
-      val Left(ErrorMessage(message)) = connector.remove("Update", Eori("GB1122334455"), HMRC_CUS_ORG).futureValue
-      message shouldBe "Remove known facts failed with HTTP status: 400"
+      val result = connector.remove(UPDATE, Eori("GB1122334455"), HMRC_CUS_ORG).futureValue
+      result shouldBe Left(ErrorMessage("Remove known facts failed with HTTP status: 400"))
     }
   }
 }

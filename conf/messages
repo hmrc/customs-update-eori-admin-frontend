@@ -1,5 +1,10 @@
 service.name = manage-eori-number
 service.text = This is your new service
+service.title = EORI Number Management Service
+service.titleWithParam = EORI Number Management Service - {0}
+service.backLink = Back
+service.accessibilityStatement = Accessibility Statement
+service.cookies = Cookies
 
 # Common messages
 eori.replaceExistingEori = Replace an existing EORI number
@@ -15,7 +20,6 @@ eori.companyEstablishedDateQuestion = What date was the trader established?
 eori.currentEoriNumberQuestion = What is the trader’s current EORI number?
 eori.newEoriNumberQuestion = What is the trader’s new EORI number?
 eori.accountNumberHint = The first two letters are GB, followed by 12 digits. For example, GB123456123456.
-eori.backLinkText = Back
 eori.radioButtonYes = Yes
 eori.radioButtonNo = No
 eori.noEnrolment = The EORI number {0} does not have any subscriptions.

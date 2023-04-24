@@ -125,7 +125,7 @@ case class CancelEoriController @Inject()(mcc: MessagesControllerComponents,
             auditCall(CancelEoriEvent(
               eoriNumber = confirmEoriCancel.existingEori,
               dateOfEstablishment = LocalDateBinder.localDateToString(confirmEoriCancel.dateOfEstablishment),
-              status = "FAILED",
+              status = AuditStatus.FAILED,
               failedServices = status.filter(_._2 == false).keys.toList
             ))
             Ok(cancelEoriProblemView(status.filter(_._2 == true).keys.toList, status.filter(_._2 == false).keys.toList, confirmEoriCancel.existingEori))
@@ -133,7 +133,7 @@ case class CancelEoriController @Inject()(mcc: MessagesControllerComponents,
             auditCall(CancelEoriEvent(
               eoriNumber = confirmEoriCancel.existingEori,
               dateOfEstablishment = LocalDateBinder.localDateToString(confirmEoriCancel.dateOfEstablishment),
-              status = "OK",
+              status = AuditStatus.OK,
               cancelledServices = status.filter(_._2 == true).keys.toList
             ))
             Redirect(controllers.routes.EoriActionController.showPageOnSuccess(
