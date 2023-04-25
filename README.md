@@ -19,21 +19,21 @@ Start the required development services (make sure your service-manager-config f
 
     or
 
-    sm --start CUSTOMS_UPDATE_EORI_ADMIN_FRONTEND -r
+    sm --start CUSTOMS_UPDATE_EORI_ADMIN_FRONTEND_ALL -r
 
 Stop all running services
 
-    sm --stop CUSTOMS_UPDATE_EORI_ADMIN_FRONTEND
+    sm --stop CUSTOMS_UPDATE_EORI_ADMIN_FRONTEND_ALL
 
 ## Debugging
 
 You will need to start your local debugging session on the expected port
 
     sbt -jvm-debug 9999
-    run 9000
+    run 11120
 
     Or within an SBT Shell inside an IDE:
-    run -Dlogger.customs-update-eori-admin-frontend=DEBUG 9000
+    run -Dlogger.customs-update-eori-admin-frontend=DEBUG 11120
     then Click the DEBUG icon “Attach debugger to sbt shell”
 
 #### [Scoverage](https://github.com/scoverage/sbt-scoverage)
@@ -51,7 +51,7 @@ Or from with SBT using
 Adjust the following in `build.sbt` to configure Scoverage
 
     ...
-    ScoverageKeys.coverageMinimum := 70,
+    ScoverageKeys.coverageMinimum := 80,
     ScoverageKeys.coverageFailOnMinimum := false,
     ...
 
@@ -59,27 +59,38 @@ Adjust the following in `build.sbt` to configure Scoverage
     1. run `./run-services.sh` script
     2. launch `customs-update-eori-admin-frontend` via sbt using `sbt run` command
     3. set up known-facts and enrolments stubs as per examples bellow
-    4. navigate to `http://localhost:9000/manage-eori-number`
+    4. navigate to `http://localhost:11120/manage-eori-number`
     5. enter any String for `PID` field and enter `update-enrolment-eori` in `Roles` text-box
+
+### Test Data Creation
+
+To create test data in enrolment-store stub, known-facts and data request should be made. There are examples down 
+below for each one. These are the services can be created in stub environment: 
+
+- HMRC-CUS-ORG
+- HMRC-GVMS-ORG
+- HMRC-SS-ORG
+- HMRC-ESC-ORG
+- HMRC-CTS-ORG
 
 #### Example known-facts test data creation
 ```
 curl --location --request POST 'http://localhost:9595/enrolment-store-stub/known-facts' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-  "service": "HMRC-CUS-ORG",
-  "knownFacts": [
-    {
-      "key": "EORINumber",
-      "value": "GB123456789000",
-      "kfType": "identifier"
-    },
-    {
-    "key": "DateOfEstablishment",
-    "value": "03/11/1997",
-    "kfType": "verifier"
-    }
-  ]
+    "service": "HMRC-CUS-ORG",
+    "knownFacts": [
+        {
+            "key": "EORINumber",
+            "value": "GB111111111017",
+            "kfType": "identifier"
+        },
+        {
+            "key": "DateOfEstablishment",
+            "value": "03/11/1997",
+            "kfType": "verifier"
+        }
+    ]
 }
 ```
 
@@ -88,34 +99,32 @@ curl --location --request POST 'http://localhost:9595/enrolment-store-stub/known
 curl --location --request POST 'http://localhost:9595/enrolment-store-stub/data' \
 --header 'Content-Type: application/json' \
 --data-raw '{
- "groupId": "90ccf333-65d2-4bf2-a008-abc23783",
- "affinityGroup": "Organisation",
- "users": [
-  {
-   "credId": "0012236665",
-   "name": "Default User",
-   "email": "default@example.com",
-   "credentialRole": "Admin",
-   "description": "User Description"
-  }
- ],
- "enrolments": [
-  {
-   "serviceName": "HMRC-CUS-ORG",
-   "identifiers": [
-    {
-     "key": "EORINumber",
-     "value": "GB123456789000"
-    }
-   ],
-   "enrolmentFriendlyName": "Customs Enrolment",
-   "assignedUserCreds": [
-    "0012236665"
-   ],
-   "state": "Activated",
-   "enrolmentType": "principal",
-   "assignedToAll": false
-  }
- ]
+	"groupId": "90ccf333-65d2-4bf2-a008-01dfca70277",
+	"affinityGroup": "Organisation",
+	"users": [
+	    {
+	        "credId": "00000123467",
+	        "name": "Default User",
+	        "email": "default@example.com",
+	        "credentialRole": "Admin",
+	        "description": "User Description"
+	    }
+	],
+	"enrolments": [
+	    {
+	        "serviceName": "HMRC-CUS-ORG",
+	        "identifiers": [
+	            {
+	                "key": "EORINumber",
+	                "value": "GB111111111017"
+	            }
+	        ],
+	        "enrolmentFriendlyName": "Customs Enrolment",
+	        "assignedUserCreds": [],
+	        "state": "Activated",
+	        "enrolmentType": "principal",
+	        "assignedToAll": true
+        }
+    ]
 }
 ```
