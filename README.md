@@ -1,7 +1,37 @@
 
 # Customs Update EORI Admin Frontend
 
-This frontend service updates an EORI and corresponding enrolment.
+This frontend service updates an EORI and corresponding enrolments and also cancel an EORI and corresponding enrolment. 
+
+## API Calls:
+
+This service interacts with [Enrolment Store Proxy Service](https://github.com/hmrc/enrolment-store-proxy), 
+[Tax Enrolments Service](https://github.com/hmrc/tax-enrolments) and [Customs Data Store Service](https://github.com/hmrc/customs-data-store). 
+Tables which are given below show the api requests to these services and descriptions.
+
+
+#### API Calls to Enrolment Store Proxy Service
+
+| PATH                                  | Supported Methods | Description                                                                                                                   |
+|---------------------------------------|-------------------|-------------------------------------------------------------------------------------------------------------------------------|
+| ```/enrolments/:enrolmentKey/users``` | GET               | ES0 Get a list of credential IDs which are assigned a particular enrolment key, sorted by principal and delegated enrolments. |
+| ```enrolments/:enrolmentKey/groups``` | GET               | ES1 Get a list of group IDs which are allocated a particular enrolment key, sorted by principal and delegated enrolments.	    |
+| ```/enrolments```                     | GET               | ES20 Query known facts that match the supplied query parameters described in the table below. May return one or more records depending upon the specificity of the query. API will return a maximum of 50 records.|
+
+#### API Calls to Tax Enrolments Service
+
+| PATH                                                             | Supported Methods | Description |
+|------------------------------------------------------------------|-------------------|-------------|
+| ```/tax-enrolments/enrolments/:enrolmentKey```                   | PUT               | ES6 Insert or update an assigned or unassigned Enrolment (also referred to as Known Facts)|
+| ```ES7 Delete an Enrolment (also referred to as Known Facts)```  | DELETE            | ES7 Delete an Enrolment (also referred to as Known Facts)|
+| ```/tax-enrolments/groups/:groupId/enrolments/:enrolmentKey```   | POST              | ES8 Allocates an enrolment to the given group|
+| ```/tax-enrolments/groups/:groupId/enrolments/:enrolmentKey```   | DELETE            | ES9 De-allocate an Enrolment from a Group|
+
+#### API Calls to Customs Data Store Service
+
+| PATH                                           | Supported Methods | Description |
+|------------------------------------------------|-------------------|-------------|
+| ```/customs-data-store/update-eori-history```  | POST | Updates the eori history for a given EORI in the cache|
 
 ## Development
 
