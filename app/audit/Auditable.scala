@@ -27,16 +27,17 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class Auditable @Inject()(auditConnector: AuditConnector, config: AppConfig)(implicit ec: ExecutionContext) {
+class Auditable @Inject() (auditConnector: AuditConnector, config: AppConfig)(implicit ec: ExecutionContext) {
 
   private val auditSource: String = config.appName
 
-  def sendExtendedDataEvent(transactionName: String,
-                            path: String,
-                            tags: Map[String, String] = Map.empty,
-                            details: JsValue,
-                            eventType: String,
-                           )(implicit hc: HeaderCarrier): Unit =
+  def sendExtendedDataEvent(
+    transactionName: String,
+    path: String,
+    tags: Map[String, String] = Map.empty,
+    details: JsValue,
+    eventType: String
+  )(implicit hc: HeaderCarrier): Unit =
     auditConnector.sendExtendedEvent(
       ExtendedDataEvent(auditSource, eventType, tags = hc.toAuditTags(transactionName, path) ++ tags, detail = details)
     )

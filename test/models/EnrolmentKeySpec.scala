@@ -20,9 +20,7 @@ import models.EnrolmentKey._
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class EnrolmentKeySpec
-  extends AnyWordSpec
-  with Matchers {
+class EnrolmentKeySpec extends AnyWordSpec with Matchers {
 
   "EnrolmentKey getDescription" should {
     "return the correct description for valid keys" in {
@@ -62,7 +60,14 @@ class EnrolmentKeySpec
 
   "UpdatableEnrolments" should {
     "return correct enrolment list" in {
-      UpdatableEnrolments.values shouldBe List(HMRC_CUS_ORG, HMRC_ATAR_ORG, HMRC_GVMS_ORG, HMRC_SS_ORG, HMRC_CTS_ORG, HMRC_ESC_ORG).map(e => e.serviceName)
+      UpdatableEnrolments.values shouldBe List(
+        HMRC_CUS_ORG,
+        HMRC_ATAR_ORG,
+        HMRC_GVMS_ORG,
+        HMRC_SS_ORG,
+        HMRC_CTS_ORG,
+        HMRC_ESC_ORG
+      ).map(e => e.serviceName)
     }
   }
 

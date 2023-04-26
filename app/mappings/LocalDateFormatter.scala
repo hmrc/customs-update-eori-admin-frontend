@@ -22,18 +22,19 @@ import play.api.data.format.Formatter
 import java.time.LocalDate
 import scala.util.{Failure, Success, Try}
 
-private[mappings] class LocalDateFormatter(invalidKey: String,
-                                           invalidYear: String,
-                                           oneDateComponentMissingKey: String,
-                                           twoDateComponentsMissingKey: String,
-                                           threeDateComponentsMissingKey: String,
-                                           mustBeInPastKey: String,
-                                           args: Seq[String] = Seq.empty
-                                          ) extends Formatter[LocalDate] with Formatters {
+private[mappings] class LocalDateFormatter(
+  invalidKey: String,
+  invalidYear: String,
+  oneDateComponentMissingKey: String,
+  twoDateComponentsMissingKey: String,
+  threeDateComponentsMissingKey: String,
+  mustBeInPastKey: String,
+  args: Seq[String] = Seq.empty
+) extends Formatter[LocalDate] with Formatters {
 
   private val fieldKeys: List[String] = List("day", "month", "year")
 
-  private def toDate(key: String, day: Int, month: Int, year: Int): Either[Seq[FormError], LocalDate] = {
+  private def toDate(key: String, day: Int, month: Int, year: Int): Either[Seq[FormError], LocalDate] =
     if (year.toString.length < 4) {
       Left(Seq(FormError(key, invalidYear, args)))
     } else {
@@ -44,7 +45,6 @@ private[mappings] class LocalDateFormatter(invalidKey: String,
           Left(Seq(FormError(key, invalidKey, args)))
       }
     }
-  }
 
   private def formatDate(key: String, data: Map[String, String]): Either[Seq[FormError], LocalDate] = {
 
@@ -56,16 +56,16 @@ private[mappings] class LocalDateFormatter(invalidKey: String,
     )
 
     for {
-      day <- int.bind(s"$key.day", data)
+      day   <- int.bind(s"$key.day", data)
       month <- int.bind(s"$key.month", data)
-      year <- int.bind(s"$key.year", data)
-      date <- toDate(key, day, month, year)
+      year  <- int.bind(s"$key.year", data)
+      date  <- toDate(key, day, month, year)
     } yield date
   }
 
   override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], LocalDate] = {
 
-    val fields = fieldKeys.map { field => field -> data.get(s"$key.$field").filter(_.nonEmpty) }.toMap
+    val fields = fieldKeys.map(field => field -> data.get(s"$key.$field").filter(_.nonEmpty)).toMap
 
     lazy val missingFields = fields
       .withFilter(_._2.isEmpty)
@@ -78,8 +78,8 @@ private[mappings] class LocalDateFormatter(invalidKey: String,
           _.map(_.copy(key = key, args = args))
         }
         formattedDate match {
-          case errors@Left(_) => errors
-          case rightDate@Right(d) =>
+          case errors @ Left(_) => errors
+          case rightDate @ Right(d) =>
             val dateNow = LocalDate.now()
             if (d.isBefore(dateNow) || d.isEqual(dateNow)) {
               rightDate
@@ -98,8 +98,8 @@ private[mappings] class LocalDateFormatter(invalidKey: String,
 
   override def unbind(key: String, value: LocalDate): Map[String, String] =
     Map(
-      s"$key.day" -> value.getDayOfMonth.toString,
+      s"$key.day"   -> value.getDayOfMonth.toString,
       s"$key.month" -> value.getMonthValue.toString,
-      s"$key.year" -> value.getYear.toString
+      s"$key.year"  -> value.getYear.toString
     )
 }

@@ -20,12 +20,12 @@ Tables which are given below show the api requests to these services and descrip
 
 #### API Calls to Tax Enrolments Service
 
-| PATH                                                             | Supported Methods | Description |
-|------------------------------------------------------------------|-------------------|-------------|
-| ```/tax-enrolments/enrolments/:enrolmentKey```                   | PUT               | ES6 Insert or update an assigned or unassigned Enrolment (also referred to as Known Facts)|
-| ```ES7 Delete an Enrolment (also referred to as Known Facts)```  | DELETE            | ES7 Delete an Enrolment (also referred to as Known Facts)|
-| ```/tax-enrolments/groups/:groupId/enrolments/:enrolmentKey```   | POST              | ES8 Allocates an enrolment to the given group|
-| ```/tax-enrolments/groups/:groupId/enrolments/:enrolmentKey```   | DELETE            | ES9 De-allocate an Enrolment from a Group|
+| PATH                                                           | Supported Methods | Description |
+|----------------------------------------------------------------|-------------------|-------------|
+| ```/tax-enrolments/enrolments/:enrolmentKey```                 | PUT               | ES6 Insert or update an assigned or unassigned Enrolment (also referred to as Known Facts)|
+| ```/tax-enrolments/enrolments/:enrolmentKey```                 | DELETE            | ES7 Delete an Enrolment (also referred to as Known Facts)|
+| ```/tax-enrolments/groups/:groupId/enrolments/:enrolmentKey``` | POST              | ES8 Allocates an enrolment to the given group|
+| ```/tax-enrolments/groups/:groupId/enrolments/:enrolmentKey``` | DELETE            | ES9 De-allocate an Enrolment from a Group|
 
 #### API Calls to Customs Data Store Service
 
@@ -157,4 +157,25 @@ curl --location --request POST 'http://localhost:9595/enrolment-store-stub/data'
         }
     ]
 }
+```
+
+## Formatting code
+This frontend service uses Scalafmt, a code formatter for Scala. The formatting rules configured for this repository are defined within .scalafmt.conf. Prior to checking in any changes to this repository, please make sure all files are formatted correctly.
+
+To apply formatting to this repository using the configured rules in .scalafmt.conf execute:
+
+```
+sbt scalafmtAll
+```
+
+To check files have been formatted as expected execute:
+
+```
+sbt scalafmtCheckAll scalafmtSbtCheck
+```
+
+To apply formatting all and check formatting and tests with coverage report execute:
+
+```
+sbt clean scalafmt test:scalafmt it:test::scalafmt coverage test it:test scalafmtCheckAll coverageReport
 ```

@@ -25,10 +25,7 @@ import play.api.mvc.PathBindable
 
 import java.time.LocalDate
 
-class LocalDateBinderSpec
-  extends AnyWordSpec
-    with MockitoSugar
-    with Matchers {
+class LocalDateBinderSpec extends AnyWordSpec with MockitoSugar with Matchers {
 
   private val mockStringBinder = mock[PathBindable[String]]
   private val localDateBinder = LocalDateBinder.datePathBindable(mockStringBinder)

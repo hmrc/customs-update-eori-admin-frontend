@@ -27,12 +27,7 @@ import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
-class ConnectorSpecBase
-  extends AnyWordSpec
-    with Matchers
-    with ScalaFutures
-    with MockitoSugar
-    with BeforeAndAfterEach {
+class ConnectorSpecBase extends AnyWordSpec with Matchers with ScalaFutures with MockitoSugar with BeforeAndAfterEach {
 
   override implicit val patienceConfig: PatienceConfig = PatienceConfig(Span(5, Seconds))
   protected implicit val mockHeaderCarrier = mock[HeaderCarrier]

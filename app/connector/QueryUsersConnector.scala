@@ -33,17 +33,20 @@ object Users {
   implicit val reads: Reads[Users] = Json.reads[Users]
 }
 
-class QueryUsersConnector @Inject()(httpClient: HttpClient, config: AppConfig)(implicit ec: ExecutionContext) extends Logging {
+class QueryUsersConnector @Inject() (httpClient: HttpClient, config: AppConfig)(implicit ec: ExecutionContext)
+    extends Logging {
 
-  /**
-   * ES0 - API call to get users assigned to an enrolment
-   * @param eori
-   * @param enrolmentKey
-   * @param hc
-   * @return
-   */
-  def query(eori: Eori, enrolmentKey: EnrolmentKeyType)(implicit hc: HeaderCarrier): Future[Either[ErrorMessage, UserId]] = {
-    val url = s"${config.enrolmentStoreProxyServiceUrl}/enrolment-store/enrolments/${enrolmentKey.getEnrolmentKey(eori)}/users"
+  /** ES0 - API call to get users assigned to an enrolment
+    * @param eori
+    * @param enrolmentKey
+    * @param hc
+    * @return
+    */
+  def query(eori: Eori, enrolmentKey: EnrolmentKeyType)(implicit
+    hc: HeaderCarrier
+  ): Future[Either[ErrorMessage, UserId]] = {
+    val url =
+      s"${config.enrolmentStoreProxyServiceUrl}/enrolment-store/enrolments/${enrolmentKey.getEnrolmentKey(eori)}/users"
 
     httpClient.GET[Either[UpstreamErrorResponse, Users]](url).map { users =>
       users.map { gs =>

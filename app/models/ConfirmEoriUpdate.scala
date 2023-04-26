@@ -18,4 +18,10 @@ package models
 
 import java.time.LocalDate
 
-case class ConfirmEoriUpdate(existingEori: String, dateOfEstablishment: LocalDate, newEori: String, enrolmentList: String, notUpdatableEnrolmentList: String)
+case class ConfirmEoriUpdate(
+  existingEori: String,
+  dateOfEstablishment: LocalDate,
+  newEori: String,
+  enrolmentList: String,
+  notUpdatableEnrolmentList: String
+)

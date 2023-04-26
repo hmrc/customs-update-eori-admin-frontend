@@ -27,34 +27,42 @@ import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class EnrolmentService @Inject()(groupsConnector: QueryGroupsConnector,
-                                 usersConnector: connector.QueryUsersConnector,
-                                 knownFactsConnector: QueryKnownFactsConnector,
-                                 upsertKnownFactsConnector: UpsertKnownFactsConnector,
-                                 deAllocateGroupConnector: DeAllocateGroupConnector,
-                                 reAllocateGroupConnector: ReAllocateGroupConnector,
-                                 removeKnownFactsConnector: RemoveKnownFactsConnector,
-                                 customsDataStoreConnector: CustomsDataStoreConnector
-                                )(implicit ec: ExecutionContext) {
+class EnrolmentService @Inject() (
+  groupsConnector: QueryGroupsConnector,
+  usersConnector: connector.QueryUsersConnector,
+  knownFactsConnector: QueryKnownFactsConnector,
+  upsertKnownFactsConnector: UpsertKnownFactsConnector,
+  deAllocateGroupConnector: DeAllocateGroupConnector,
+  reAllocateGroupConnector: ReAllocateGroupConnector,
+  removeKnownFactsConnector: RemoveKnownFactsConnector,
+  customsDataStoreConnector: CustomsDataStoreConnector
+)(implicit ec: ExecutionContext) {
 
   private val ERROR_MESSAGE_PART = "date you have entered does not match"
 
-  def getEnrolments(eoriAction: String, existingEori: Eori, date: LocalDate)(implicit hc: HeaderCarrier) = {
+  def getEnrolments(eoriAction: String, existingEori: Eori, date: LocalDate)(implicit hc: HeaderCarrier) =
     Future.sequence(
-      EnrolmentKey.values.toSeq.map(enrolmentKey => {
+      EnrolmentKey.values.toSeq.map { enrolmentKey =>
         val checkEnrolments = for {
-          enrolmentResult <- knownFactsConnector.query(eoriAction, existingEori, enrolmentKey, date)
-            .map(knowFacts =>
-              if (knowFacts.isRight) ValidateEori.TRUE
-              else {
-                if (knowFacts.left.getOrElse(ErrorMessage("UNKNOWN")).message.contains(ERROR_MESSAGE_PART)) ValidateEori.ESTABLISHMENT_DATE_WRONG
-                else ValidateEori.FALSE
-              }
-            )
-            .recover(_ => ValidateEori.FALSE)
+          enrolmentResult <- knownFactsConnector
+                               .query(eoriAction, existingEori, enrolmentKey, date)
+                               .map(knowFacts =>
+                                 if (knowFacts.isRight) ValidateEori.TRUE
+                                 else {
+                                   if (
+                                     knowFacts.left
+                                       .getOrElse(ErrorMessage("UNKNOWN"))
+                                       .message
+                                       .contains(ERROR_MESSAGE_PART)
+                                   ) ValidateEori.ESTABLISHMENT_DATE_WRONG
+                                   else ValidateEori.FALSE
+                                 }
+                               )
+                               .recover(_ => ValidateEori.FALSE)
           userResult <-
             if (enrolmentResult.equals(ValidateEori.TRUE))
-              usersConnector.query(existingEori, enrolmentKey)
+              usersConnector
+                .query(existingEori, enrolmentKey)
                 .map(user =>
                   if (user.isRight) ValidateEori.TRUE
                   else ValidateEori.FALSE
@@ -65,7 +73,8 @@ class EnrolmentService @Inject()(groupsConnector: QueryGroupsConnector,
 
           finalResult <-
             if (enrolmentResult.equals(ValidateEori.TRUE) && userResult.equals(ValidateEori.TRUE))
-              groupsConnector.query(existingEori, enrolmentKey)
+              groupsConnector
+                .query(existingEori, enrolmentKey)
                 .map(group =>
                   if (group.isRight) ValidateEori.TRUE
                   else ValidateEori.FALSE
@@ -78,46 +87,46 @@ class EnrolmentService @Inject()(groupsConnector: QueryGroupsConnector,
         } yield finalResult
 
         checkEnrolments.map(check => enrolmentKey.serviceName -> check)
-      })
+      }
     )
-  }
 
-  def update(existingEori: Eori, date: LocalDate, newEori: Eori, enrolmentKey: EnrolmentKeyType)
-            (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Enrolment]] = {
+  def update(existingEori: Eori, date: LocalDate, newEori: Eori, enrolmentKey: EnrolmentKeyType)(implicit
+    hc: HeaderCarrier
+  ): Future[Either[ErrorMessage, Enrolment]] = {
     val queryGroups = groupsConnector.query(existingEori, enrolmentKey)
     val queryUsers = usersConnector.query(existingEori, enrolmentKey)
     val queryKnownFacts = knownFactsConnector.query(UPDATE, existingEori, enrolmentKey, date)
 
     val result = for {
       enrolment <- EitherT(queryKnownFacts) // ES20
-      userId <- EitherT(queryUsers) // ES0
-      groupId <- EitherT(queryGroups) // ES1
-      _ <- EitherT(upsertKnownFactsConnector.upsert(newEori, enrolmentKey, enrolment)) // ES6
-      _ <- EitherT(deAllocateGroupConnector.deAllocateGroup(UPDATE, existingEori, enrolmentKey, groupId)) // ES9
-      _ <- EitherT(removeKnownFactsConnector.remove(UPDATE, existingEori, enrolmentKey)) // ES7
-      _ <- EitherT(reAllocateGroupConnector.reAllocate(newEori, enrolmentKey, userId, groupId)) // ES8
-      _ <- EitherT(customsDataStoreConnector.notify(newEori)) // Notify Customs Data Store with new number
+      userId    <- EitherT(queryUsers) // ES0
+      groupId   <- EitherT(queryGroups) // ES1
+      _         <- EitherT(upsertKnownFactsConnector.upsert(newEori, enrolmentKey, enrolment)) // ES6
+      _         <- EitherT(deAllocateGroupConnector.deAllocateGroup(UPDATE, existingEori, enrolmentKey, groupId)) // ES9
+      _         <- EitherT(removeKnownFactsConnector.remove(UPDATE, existingEori, enrolmentKey)) // ES7
+      _         <- EitherT(reAllocateGroupConnector.reAllocate(newEori, enrolmentKey, userId, groupId)) // ES8
+      _         <- EitherT(customsDataStoreConnector.notify(newEori)) // Notify Customs Data Store with new number
     } yield enrolment
     result.value
   }
 
-  /**
-   * @param existingEori
-   * @param date
-   * @param enrolmentKey
-   * @param hc
-   * @return
-   */
-  def cancel(existingEori: Eori, date: LocalDate, enrolmentKey: EnrolmentKeyType)
-            (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Enrolment]] = {
+  /** @param existingEori
+    * @param date
+    * @param enrolmentKey
+    * @param hc
+    * @return
+    */
+  def cancel(existingEori: Eori, date: LocalDate, enrolmentKey: EnrolmentKeyType)(implicit
+    hc: HeaderCarrier
+  ): Future[Either[ErrorMessage, Enrolment]] = {
     val queryGroups = groupsConnector.query(existingEori, enrolmentKey)
     val queryKnownFacts = knownFactsConnector.query(CANCEL, existingEori, enrolmentKey, date)
 
     val result = for {
       enrolment <- EitherT(queryKnownFacts) // ES20
-      groupId <- EitherT(queryGroups) // ES1
-      _ <- EitherT(deAllocateGroupConnector.deAllocateGroup(CANCEL, existingEori, enrolmentKey, groupId)) // ES9
-      _ <- EitherT(removeKnownFactsConnector.remove(CANCEL, existingEori, enrolmentKey)) // ES7
+      groupId   <- EitherT(queryGroups) // ES1
+      _         <- EitherT(deAllocateGroupConnector.deAllocateGroup(CANCEL, existingEori, enrolmentKey, groupId)) // ES9
+      _         <- EitherT(removeKnownFactsConnector.remove(CANCEL, existingEori, enrolmentKey)) // ES7
     } yield enrolment
     result.value
   }

@@ -47,9 +47,9 @@ class LocalDateFormattersSpec extends AnyWordSpec with Matchers with OptionValue
       val result = localDateFormatter.bind(
         field,
         Map(
-          s"$field.day" -> "12",
+          s"$field.day"   -> "12",
           s"$field.month" -> "01",
-          s"$field.year" -> "2000"
+          s"$field.year"  -> "2000"
         )
       )
       result.toOption.get shouldBe LocalDate.parse("12/01/2000", LocalDateBinder.dateTimeFormatter)
@@ -60,7 +60,7 @@ class LocalDateFormattersSpec extends AnyWordSpec with Matchers with OptionValue
         field,
         Map(
           s"$field.month" -> "01",
-          s"$field.year" -> "2000"
+          s"$field.year"  -> "2000"
         )
       )
       result.left.toOption.get shouldBe Seq(FormError(field, oneDateComponentMissingKey, List("day")))
@@ -70,7 +70,7 @@ class LocalDateFormattersSpec extends AnyWordSpec with Matchers with OptionValue
       val result = localDateFormatter.bind(
         field,
         Map(
-          s"$field.day" -> "12",
+          s"$field.day"  -> "12",
           s"$field.year" -> "2000"
         )
       )
@@ -81,7 +81,7 @@ class LocalDateFormattersSpec extends AnyWordSpec with Matchers with OptionValue
       val result = localDateFormatter.bind(
         field,
         Map(
-          s"$field.day" -> "12",
+          s"$field.day"   -> "12",
           s"$field.month" -> "02"
         )
       )
@@ -117,9 +117,9 @@ class LocalDateFormattersSpec extends AnyWordSpec with Matchers with OptionValue
       val result = localDateFormatter.bind(
         field,
         Map(
-          s"$field.day" -> "AB",
+          s"$field.day"   -> "AB",
           s"$field.month" -> "01",
-          s"$field.year" -> "2000"
+          s"$field.year"  -> "2000"
         )
       )
       result.left.toOption.get shouldBe Seq(FormError(field, invalidKey))
@@ -130,9 +130,9 @@ class LocalDateFormattersSpec extends AnyWordSpec with Matchers with OptionValue
       val result = localDateFormatter.bind(
         field,
         Map(
-          s"$field.day" -> futureDate.getDayOfMonth.toString,
+          s"$field.day"   -> futureDate.getDayOfMonth.toString,
           s"$field.month" -> futureDate.getMonthValue.toString,
-          s"$field.year" -> futureDate.getYear.toString
+          s"$field.year"  -> futureDate.getYear.toString
         )
       )
       result.left.toOption.get shouldBe Seq(FormError(field, mustBeInPastKey))

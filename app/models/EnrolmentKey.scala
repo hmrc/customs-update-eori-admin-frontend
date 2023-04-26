@@ -16,8 +16,7 @@
 
 package models
 
-import models.EnrolmentKey.{HMRC_CUS_ORG, HMRC_ATAR_ORG, HMRC_GVMS_ORG, HMRC_SS_ORG, HMRC_CTS_ORG, HMRC_ESC_ORG}
-
+import models.EnrolmentKey.{HMRC_ATAR_ORG, HMRC_CTS_ORG, HMRC_CUS_ORG, HMRC_ESC_ORG, HMRC_GVMS_ORG, HMRC_SS_ORG}
 
 object EnrolmentKey extends Enumeration {
   type EnrolmentKeyType = EnrolmentKeyVal
@@ -29,7 +28,8 @@ object EnrolmentKey extends Enumeration {
   import scala.language.implicitConversions
   implicit def valueToEnrolmentKeyVal(x: Value): EnrolmentKeyVal = x.asInstanceOf[EnrolmentKeyVal]
 
-  def getDescription(serviceName: String): Option[String] = values.find(_.serviceName == serviceName).map(value => value.description)
+  def getDescription(serviceName: String): Option[String] =
+    values.find(_.serviceName == serviceName).map(value => value.description)
   def getEnrolmentKey(serviceName: String) = values.find(_.serviceName == serviceName)
 
   // HMRC-CUS-ORG* -> Customs Declaration Service (Existing Service from Old customs update eori)
@@ -63,9 +63,10 @@ object EnrolmentKeySubLists {
 }
 
 object UpdatableEnrolments {
-  val values = List(HMRC_CUS_ORG, HMRC_ATAR_ORG, HMRC_GVMS_ORG, HMRC_SS_ORG, HMRC_CTS_ORG, HMRC_ESC_ORG).map(e => e.serviceName)
+  val values =
+    List(HMRC_CUS_ORG, HMRC_ATAR_ORG, HMRC_GVMS_ORG, HMRC_SS_ORG, HMRC_CTS_ORG, HMRC_ESC_ORG).map(e => e.serviceName)
 }
 
 object CancelableEnrolments {
-    val values = List(HMRC_ATAR_ORG, HMRC_GVMS_ORG, HMRC_SS_ORG).map(e => e.serviceName)
+  val values = List(HMRC_ATAR_ORG, HMRC_GVMS_ORG, HMRC_SS_ORG).map(e => e.serviceName)
 }

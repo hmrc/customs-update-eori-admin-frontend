@@ -38,11 +38,10 @@ class UpsertKnownFactsConnectorSpec extends ConnectorSpecBase {
       when(
         mockHttpClient.PUT(
           meq("http://localhost:1222/enrolments/HMRC-CUS-ORG~EORINumber~GB12349876"),
-          meq(UpsertKnownFactsRequest(enrolment.verifiers)), any[Seq[(String, String)]])(
-          any[Writes[UpsertKnownFactsRequest]],
-          any[HttpReads[HttpResponse]],
-          any[HeaderCarrier],
-          any[ExecutionContext]))
+          meq(UpsertKnownFactsRequest(enrolment.verifiers)),
+          any[Seq[(String, String)]]
+        )(any[Writes[UpsertKnownFactsRequest]], any[HttpReads[HttpResponse]], any[HeaderCarrier], any[ExecutionContext])
+      )
         .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
 
       val statusCode = connector.upsert(Eori("GB12349876"), HMRC_CUS_ORG, enrolment).futureValue
@@ -52,8 +51,13 @@ class UpsertKnownFactsConnectorSpec extends ConnectorSpecBase {
     "return an error message for an invalid upsert" in {
       val emptyEnrolment = Enrolment(Seq.empty, Seq.empty)
       when(
-        mockHttpClient.PUT(anyString, meq(UpsertKnownFactsRequest(Seq.empty)), any[Seq[(String, String)]])
-        (any[Writes[UpsertKnownFactsRequest]], any[HttpReads[HttpResponse]], any[HeaderCarrier], any[ExecutionContext]))
+        mockHttpClient.PUT(anyString, meq(UpsertKnownFactsRequest(Seq.empty)), any[Seq[(String, String)]])(
+          any[Writes[UpsertKnownFactsRequest]],
+          any[HttpReads[HttpResponse]],
+          any[HeaderCarrier],
+          any[ExecutionContext]
+        )
+      )
         .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
 
       val result = connector

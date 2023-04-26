@@ -37,18 +37,17 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-case class CancelEoriController @Inject()(mcc: MessagesControllerComponents,
-                                          viewCancelEori: CancelEoriView,
-                                          viewConfirmCancelEori: ConfirmCancelEoriView,
-                                          cancelEoriProblemView: CancelEoriProblemView,
-                                          auth: AuthAction,
-                                          enrolmentService: EnrolmentService,
-                                          config: AppConfig,
-                                          audit: Auditable
-                                         )(implicit ec: ExecutionContext)
-  extends FrontendController(mcc)
-    with Mappings
-    with I18nSupport {
+case class CancelEoriController @Inject() (
+  mcc: MessagesControllerComponents,
+  viewCancelEori: CancelEoriView,
+  viewConfirmCancelEori: ConfirmCancelEoriView,
+  cancelEoriProblemView: CancelEoriProblemView,
+  auth: AuthAction,
+  enrolmentService: EnrolmentService,
+  config: AppConfig,
+  audit: Auditable
+)(implicit ec: ExecutionContext)
+    extends FrontendController(mcc) with Mappings with I18nSupport {
 
   private val SPLITTER_CHARACTER = ","
 
@@ -64,89 +63,129 @@ case class CancelEoriController @Inject()(mcc: MessagesControllerComponents,
         threeDateComponentsMissingKey = "eori.validation.establishmentDate.required.all",
         twoDateComponentsMissingKey = "eori.validation.establishmentDate.required.two",
         oneDateComponentMissingKey = "eori.validation.establishmentDate.required.one",
-        mustBeInPastKey = "eori.validation.establishmentDate.mustBeInPast",
+        mustBeInPastKey = "eori.validation.establishmentDate.mustBeInPast"
       )
-    )(EoriCancel.apply)(EoriCancel.unapply))
+    )(EoriCancel.apply)(EoriCancel.unapply)
+  )
 
   val formConfirmCancelEori = Form(
     mapping(
-      "existing-eori" -> text(),
-      "date-of-establishment" -> Forms.localDate(LocalDateBinder.dateTimePattern),
-      "enrolment-list" -> text(),
+      "existing-eori"                  -> text(),
+      "date-of-establishment"          -> Forms.localDate(LocalDateBinder.dateTimePattern),
+      "enrolment-list"                 -> text(),
       "not-cancellable-enrolment-list" -> text()
-    )(ConfirmEoriCancel.apply)(ConfirmEoriCancel.unapply))
+    )(ConfirmEoriCancel.apply)(ConfirmEoriCancel.unapply)
+  )
 
   def showPage = auth { implicit request =>
     Ok(viewCancelEori(formCancelEori))
   }
 
   def continueCancelEori = auth.async { implicit request =>
-    formCancelEori.bindFromRequest().fold(
-      formWithError => Future(BadRequest(viewCancelEori(formWithError))),
-      eoriCancel => enrolmentService.getEnrolments(CANCEL, Eori(eoriCancel.existingEori), eoriCancel.dateOfEstablishment)
-        .map(enrolments => {
-          if (enrolments.exists(_._2 == ESTABLISHMENT_DATE_WRONG)) {
-            BadRequest(viewCancelEori(formCancelEori.fill(eoriCancel).withError(FormError("date-of-establishment", mcc.messagesApi.apply("eori.validation.establishmentDate.mustBeMatched")(Lang("en"))))))
-          } else {
-            val enrolmentList = enrolments.filter(_._2 == TRUE).map(_._1).toList
-            val cancelableEnrolments = enrolmentList.filter(e => CancelableEnrolments.values.contains(e))
-            val notCancelableEnrolments = enrolmentList.filter(e => !CancelableEnrolments.values.contains(e))
-            Ok(viewConfirmCancelEori(
-              formConfirmCancelEori.fill(ConfirmEoriCancel(eoriCancel.existingEori, eoriCancel.dateOfEstablishment, cancelableEnrolments.mkString(SPLITTER_CHARACTER), notCancelableEnrolments.mkString(SPLITTER_CHARACTER))),
-              cancelableEnrolments,
-              notCancelableEnrolments
-            ))
-          }
-        })
-    )
+    formCancelEori
+      .bindFromRequest()
+      .fold(
+        formWithError => Future(BadRequest(viewCancelEori(formWithError))),
+        eoriCancel =>
+          enrolmentService
+            .getEnrolments(CANCEL, Eori(eoriCancel.existingEori), eoriCancel.dateOfEstablishment)
+            .map { enrolments =>
+              if (enrolments.exists(_._2 == ESTABLISHMENT_DATE_WRONG)) {
+                BadRequest(
+                  viewCancelEori(
+                    formCancelEori
+                      .fill(eoriCancel)
+                      .withError(
+                        FormError(
+                          "date-of-establishment",
+                          mcc.messagesApi.apply("eori.validation.establishmentDate.mustBeMatched")(Lang("en"))
+                        )
+                      )
+                  )
+                )
+              } else {
+                val enrolmentList = enrolments.filter(_._2 == TRUE).map(_._1).toList
+                val cancelableEnrolments = enrolmentList.filter(e => CancelableEnrolments.values.contains(e))
+                val notCancelableEnrolments = enrolmentList.filter(e => !CancelableEnrolments.values.contains(e))
+                Ok(
+                  viewConfirmCancelEori(
+                    formConfirmCancelEori.fill(
+                      ConfirmEoriCancel(
+                        eoriCancel.existingEori,
+                        eoriCancel.dateOfEstablishment,
+                        cancelableEnrolments.mkString(SPLITTER_CHARACTER),
+                        notCancelableEnrolments.mkString(SPLITTER_CHARACTER)
+                      )
+                    ),
+                    cancelableEnrolments,
+                    notCancelableEnrolments
+                  )
+                )
+              }
+            }
+      )
   }
 
   def confirmCancelEori = auth.async { implicit request =>
-    formConfirmCancelEori.bindFromRequest().fold(
-      _ => {
-        Future(Redirect(controllers.routes.CancelEoriController.showPage))
-      },
-      confirmEoriCancel => {
-        val cancelAllEnrolments = Future.sequence(
-          confirmEoriCancel.enrolmentList.split(SPLITTER_CHARACTER)
-            .toList
-            .map(EnrolmentKey.getEnrolmentKey(_).get)
-            .map(enrolment =>
-              enrolmentService.cancel(
-                Eori(confirmEoriCancel.existingEori),
-                confirmEoriCancel.dateOfEstablishment,
-                enrolment
-              ).map(enrolment.serviceName -> _)
-            )
-        )
-        cancelAllEnrolments.map { updates => {
-          val status = updates.map(either => either._1 -> either._2.isRight).toMap
-          if (status.exists(_._2 == false)) {
-            auditCall(CancelEoriEvent(
-              eoriNumber = confirmEoriCancel.existingEori,
-              dateOfEstablishment = LocalDateBinder.localDateToString(confirmEoriCancel.dateOfEstablishment),
-              status = AuditStatus.FAILED,
-              failedServices = status.filter(_._2 == false).keys.toList
-            ))
-            Ok(cancelEoriProblemView(status.filter(_._2 == true).keys.toList, status.filter(_._2 == false).keys.toList, confirmEoriCancel.existingEori))
-          } else {
-            auditCall(CancelEoriEvent(
-              eoriNumber = confirmEoriCancel.existingEori,
-              dateOfEstablishment = LocalDateBinder.localDateToString(confirmEoriCancel.dateOfEstablishment),
-              status = AuditStatus.OK,
-              cancelledServices = status.filter(_._2 == true).keys.toList
-            ))
-            Redirect(controllers.routes.EoriActionController.showPageOnSuccess(
-              cancelOrUpdate = Some(EoriActionEnum.CANCEL_EORI.toString),
-              oldEoriNumber = Some(confirmEoriCancel.existingEori),
-              cancelledEnrolments = Some(confirmEoriCancel.enrolmentList),
-              nonCancelableEnrolments = Some(confirmEoriCancel.notCancellableEnrolmentList)
-            ))
+    formConfirmCancelEori
+      .bindFromRequest()
+      .fold(
+        _ => Future(Redirect(controllers.routes.CancelEoriController.showPage)),
+        confirmEoriCancel => {
+          val cancelAllEnrolments = Future.sequence(
+            confirmEoriCancel.enrolmentList
+              .split(SPLITTER_CHARACTER)
+              .toList
+              .map(EnrolmentKey.getEnrolmentKey(_).get)
+              .map(enrolment =>
+                enrolmentService
+                  .cancel(
+                    Eori(confirmEoriCancel.existingEori),
+                    confirmEoriCancel.dateOfEstablishment,
+                    enrolment
+                  )
+                  .map(enrolment.serviceName -> _)
+              )
+          )
+          cancelAllEnrolments.map { updates =>
+            val status = updates.map(either => either._1 -> either._2.isRight).toMap
+            if (status.exists(_._2 == false)) {
+              auditCall(
+                CancelEoriEvent(
+                  eoriNumber = confirmEoriCancel.existingEori,
+                  dateOfEstablishment = LocalDateBinder.localDateToString(confirmEoriCancel.dateOfEstablishment),
+                  status = AuditStatus.FAILED,
+                  failedServices = status.filter(_._2 == false).keys.toList
+                )
+              )
+              Ok(
+                cancelEoriProblemView(
+                  status.filter(_._2 == true).keys.toList,
+                  status.filter(_._2 == false).keys.toList,
+                  confirmEoriCancel.existingEori
+                )
+              )
+            } else {
+              auditCall(
+                CancelEoriEvent(
+                  eoriNumber = confirmEoriCancel.existingEori,
+                  dateOfEstablishment = LocalDateBinder.localDateToString(confirmEoriCancel.dateOfEstablishment),
+                  status = AuditStatus.OK,
+                  cancelledServices = status.filter(_._2 == true).keys.toList
+                )
+              )
+              Redirect(
+                controllers.routes.EoriActionController.showPageOnSuccess(
+                  cancelOrUpdate = Some(EoriActionEnum.CANCEL_EORI.toString),
+                  oldEoriNumber = Some(confirmEoriCancel.existingEori),
+                  cancelledEnrolments = Some(confirmEoriCancel.enrolmentList),
+                  nonCancelableEnrolments = Some(confirmEoriCancel.notCancellableEnrolmentList)
+                )
+              )
+            }
           }
         }
-        }
-      }
-    )
+      )
   }
 
   private def auditCall(details: CancelEoriEvent)(implicit hc: HeaderCarrier): Unit =
@@ -154,7 +193,7 @@ case class CancelEoriController @Inject()(mcc: MessagesControllerComponents,
       transactionName = "CancelEoriNumber",
       path = s"https://${config.appName}.mdtp:443/confirm/confirm-cancel",
       details = Json.toJson(details),
-      eventType = "CancelEoriNumber",
+      eventType = "CancelEoriNumber"
     )
 
 }

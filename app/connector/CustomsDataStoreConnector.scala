@@ -30,13 +30,15 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CustomsDataStoreConnector @Inject()(httpClient: HttpClient, config: AppConfig, audit: Auditable)
-                                         (implicit ec: ExecutionContext) extends Logging {
+class CustomsDataStoreConnector @Inject() (httpClient: HttpClient, config: AppConfig, audit: Auditable)(implicit
+  ec: ExecutionContext
+) extends Logging {
 
   def notify(newEori: Eori)(implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
     val contentType = CONTENT_TYPE -> JSON
 
-    httpClient.POST[Eori, HttpResponse](config.customsDataStoreUrl, newEori, Seq(contentType))
+    httpClient
+      .POST[Eori, HttpResponse](config.customsDataStoreUrl, newEori, Seq(contentType))
       .map { response =>
         auditCall(config.customsDataStoreUrl, newEori.toString, response)
         response.status match {
@@ -59,10 +61,10 @@ class CustomsDataStoreConnector @Inject()(httpClient: HttpClient, config: AppCon
       path = url,
       details = Json.toJson(
         Map(
-          "request" -> Map("newEori" -> newEori),
+          "request"  -> Map("newEori" -> newEori),
           "response" -> Map("status" -> s"${response.status}", "message" -> s"${response.body}")
         )
       ),
-      eventType = "CustomDataStoreCall",
+      eventType = "CustomDataStoreCall"
     )
 }

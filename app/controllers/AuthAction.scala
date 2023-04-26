@@ -32,18 +32,16 @@ import javax.inject.Singleton
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class AuthAction @Inject()(override val authConnector: AuthConnector,
-                           override val config: Configuration,
-                           override val env: Environment,
-                           val parser: BodyParsers.Default)(
-    implicit val executionContext: ExecutionContext)
-    extends ActionBuilder[AuthenticatedRequest, AnyContent]
-    with ActionRefiner[Request, AuthenticatedRequest]
-    with AuthorisedFunctions
-    with AuthRedirects {
+class AuthAction @Inject() (
+  override val authConnector: AuthConnector,
+  override val config: Configuration,
+  override val env: Environment,
+  val parser: BodyParsers.Default
+)(implicit val executionContext: ExecutionContext)
+    extends ActionBuilder[AuthenticatedRequest, AnyContent] with ActionRefiner[Request, AuthenticatedRequest]
+    with AuthorisedFunctions with AuthRedirects {
 
-  override protected def refine[A](
-      request: Request[A]): Future[Either[Result, AuthenticatedRequest[A]]] = {
+  override protected def refine[A](request: Request[A]): Future[Either[Result, AuthenticatedRequest[A]]] = {
     implicit val hc: HeaderCarrier =
       HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
@@ -54,14 +52,9 @@ class AuthAction @Inject()(override val authConnector: AuthConnector,
       case Some(credentials) ~ Some(name) ~ email ~ internalId ~ allEnrolments =>
         val role = allEnrolments.enrolments.find(_.key == roleAllowed) match {
           case Some(r) => r
-          case _ => throw InsufficientEnrolments(s"$credentials, $name, $email, $allEnrolments")
+          case _       => throw InsufficientEnrolments(s"$credentials, $name, $email, $allEnrolments")
         }
-        val user = SignedInUser(credentials.providerId,
-                                name,
-                                role.key,
-                                email,
-                                internalId,
-                                allEnrolments)
+        val user = SignedInUser(credentials.providerId, name, role.key, email, internalId, allEnrolments)
         val authenticatedRequest = AuthenticatedRequest(request, user)
         Future.successful(Right(authenticatedRequest))
       case _ => throw InsufficientEnrolments("InsufficientEnrolments")
@@ -77,12 +70,13 @@ class AuthAction @Inject()(override val authConnector: AuthConnector,
   }
 }
 
-case class AuthenticatedRequest[A](request: Request[A], user: SignedInUser)
-    extends WrappedRequest[A](request)
+case class AuthenticatedRequest[A](request: Request[A], user: SignedInUser) extends WrappedRequest[A](request)
 
-case class SignedInUser(pid: String,
-                        name: Name,
-                        role: String,
-                        email: Option[String],
-                        internalId: Option[String],
-                        enrolments: Enrolments)
+case class SignedInUser(
+  pid: String,
+  name: Name,
+  role: String,
+  email: Option[String],
+  internalId: Option[String],
+  enrolments: Enrolments
+)

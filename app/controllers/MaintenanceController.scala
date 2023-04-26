@@ -25,9 +25,8 @@ import views.html.ShutterView
 import scala.concurrent.Future
 
 @Singleton
-case class MaintenanceController @Inject()(mcc: MessagesControllerComponents,
-                                           viewShutter: ShutterView)
-  extends FrontendController(mcc) with I18nSupport {
+case class MaintenanceController @Inject() (mcc: MessagesControllerComponents, viewShutter: ShutterView)
+    extends FrontendController(mcc) with I18nSupport {
 
   def get: Action[AnyContent] = Action.async { implicit request =>
     Future.successful(ServiceUnavailable(viewShutter()))

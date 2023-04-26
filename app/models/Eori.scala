@@ -25,4 +25,3 @@ case class Eori(eori: String) {
 object Eori {
   implicit val formats = Json.format[Eori]
 }
-

@@ -35,8 +35,8 @@ import java.time.LocalDate
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-
-class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures with MockitoSugar with BeforeAndAfterEach {
+class EnrolmentServiceSpec
+    extends AnyWordSpec with Matchers with ScalaFutures with MockitoSugar with BeforeAndAfterEach {
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
   private val mockQueryGroups = mock[QueryGroupsConnector]
@@ -59,7 +59,7 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
     mockCustomsDataStore
   )
 
-  override def beforeEach(): Unit = {
+  override def beforeEach(): Unit =
     reset(
       mockQueryGroups,
       mockQueryUsers,
@@ -70,7 +70,6 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       mockRemoveKnownFacts,
       mockCustomsDataStore
     )
-  }
 
   val mockGroupIdData: GroupId = GroupId("11111111-1111-1111-1111-111111111111")
   val mockUserIdData: UserId = UserId("1111111111111111")
@@ -81,7 +80,10 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       val oldEori = Eori("GB123456789000")
       val dateOfEstablishment = "03/11/1997"
 
-      val mockData: Enrolment = Enrolment(Seq(KeyValue("EORINumber", oldEori.toString)), Seq(KeyValue("DateOfEstablishment", dateOfEstablishment)))
+      val mockData: Enrolment = Enrolment(
+        Seq(KeyValue("EORINumber", oldEori.toString)),
+        Seq(KeyValue("DateOfEstablishment", dateOfEstablishment))
+      )
 
       when(mockQueryGroups.query(meq(oldEori), any[EnrolmentKeyType])(any[HeaderCarrier]))
         .thenReturn(Future.successful(Right(mockGroupIdData)))
@@ -89,25 +91,53 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       when(mockQueryUsers.query(meq(oldEori), any[EnrolmentKeyType])(any[HeaderCarrier]))
         .thenReturn(Future.successful(Right(mockUserIdData)))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Right(mockData)))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_ATAR_ORG), meq(LocalDate.of(1997, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_ATAR_ORG), meq(LocalDate.of(1997, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Right(mockData)))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_SS_ORG), meq(LocalDate.of(1997, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_SS_ORG), meq(LocalDate.of(1997, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Right(mockData)))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_GVMS_ORG), meq(LocalDate.of(1997, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_GVMS_ORG), meq(LocalDate.of(1997, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Right(mockData)))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CTS_ORG), meq(LocalDate.of(1997, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CTS_ORG), meq(LocalDate.of(1997, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Right(mockData)))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_ESC_ORG), meq(LocalDate.of(1997, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_ESC_ORG), meq(LocalDate.of(1997, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Right(mockData)))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CTC_ORG), meq(LocalDate.of(1997, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CTC_ORG), meq(LocalDate.of(1997, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Right(mockData)))
 
       val result = service.getEnrolments(UPDATE, oldEori, LocalDate.of(1997, 11, 3)).futureValue
@@ -118,12 +148,23 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       val oldEori = Eori("GB123456789001")
       val dateOfEstablishment = "03/11/1998"
 
-      val mockData: Enrolment = Enrolment(Seq(KeyValue("EORINumber", oldEori.toString)), Seq(KeyValue("DateOfEstablishment", dateOfEstablishment)))
+      val mockData: Enrolment = Enrolment(
+        Seq(KeyValue("EORINumber", oldEori.toString)),
+        Seq(KeyValue("DateOfEstablishment", dateOfEstablishment))
+      )
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_ATAR_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_ATAR_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Right(mockData)))
 
       when(mockQueryGroups.query(meq(oldEori), meq(HMRC_ATAR_ORG))(any[HeaderCarrier]))
@@ -132,19 +173,39 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       when(mockQueryUsers.query(meq(oldEori), meq(HMRC_ATAR_ORG))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Right(mockUserIdData)))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_SS_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_SS_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_GVMS_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_GVMS_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CTS_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CTS_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_ESC_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_ESC_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CTC_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CTC_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
       val result = service.getEnrolments(UPDATE, oldEori, LocalDate.of(1998, 11, 3)).futureValue
@@ -156,15 +217,30 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       val oldEori = Eori("GB123456789002")
       val dateOfEstablishment = "03/11/1998"
 
-      val mockData: Enrolment = Enrolment(Seq(KeyValue("EORINumber", oldEori.toString)), Seq(KeyValue("DateOfEstablishment", dateOfEstablishment)))
+      val mockData: Enrolment = Enrolment(
+        Seq(KeyValue("EORINumber", oldEori.toString)),
+        Seq(KeyValue("DateOfEstablishment", dateOfEstablishment))
+      )
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_ATAR_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_ATAR_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_SS_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_SS_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Right(mockData)))
 
       when(mockQueryGroups.query(meq(oldEori), meq(HMRC_SS_ORG))(any[HeaderCarrier]))
@@ -173,7 +249,11 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       when(mockQueryUsers.query(meq(oldEori), meq(HMRC_SS_ORG))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Right(mockUserIdData)))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_GVMS_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_GVMS_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Right(mockData)))
 
       when(mockQueryGroups.query(meq(oldEori), meq(HMRC_GVMS_ORG))(any[HeaderCarrier]))
@@ -182,13 +262,25 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       when(mockQueryUsers.query(meq(oldEori), meq(HMRC_GVMS_ORG))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Right(mockUserIdData)))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CTS_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CTS_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_ESC_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_ESC_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CTC_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CTC_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
       val result = service.getEnrolments(UPDATE, oldEori, LocalDate.of(1998, 11, 3)).futureValue
@@ -200,18 +292,37 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       val oldEori = Eori("GB123456789002")
       val dateOfEstablishment = "03/11/1998"
 
-      val mockData: Enrolment = Enrolment(Seq(KeyValue("EORINumber", oldEori.toString)), Seq(KeyValue("DateOfEstablishment", dateOfEstablishment)))
+      val mockData: Enrolment = Enrolment(
+        Seq(KeyValue("EORINumber", oldEori.toString)),
+        Seq(KeyValue("DateOfEstablishment", dateOfEstablishment))
+      )
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_ATAR_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_ATAR_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_SS_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_SS_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_GVMS_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_GVMS_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Right(mockData)))
 
       when(mockQueryGroups.query(meq(oldEori), meq(HMRC_GVMS_ORG))(any[HeaderCarrier]))
@@ -220,13 +331,25 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       when(mockQueryUsers.query(meq(oldEori), meq(HMRC_GVMS_ORG))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Right(mockUserIdData)))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CTS_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CTS_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_ESC_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_ESC_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CTC_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CTC_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
       val result = service.getEnrolments(UPDATE, oldEori, LocalDate.of(1998, 11, 3)).futureValue
@@ -247,7 +370,11 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
       when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_GVMS_ORG), any())(any[HeaderCarrier]))
-        .thenReturn(Future.successful(Left(ErrorMessage("The date you have entered does not match our records, please try again"))))
+        .thenReturn(
+          Future.successful(
+            Left(ErrorMessage("The date you have entered does not match our records, please try again"))
+          )
+        )
 
       when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CTS_ORG), any())(any[HeaderCarrier]))
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
@@ -267,9 +394,16 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       val oldEori = Eori("GB123456789003")
       val dateOfEstablishment = "03/11/1998"
 
-      val mockData: Enrolment = Enrolment(Seq(KeyValue("EORINumber", oldEori.toString)), Seq(KeyValue("DateOfEstablishment", dateOfEstablishment)))
+      val mockData: Enrolment = Enrolment(
+        Seq(KeyValue("EORINumber", oldEori.toString)),
+        Seq(KeyValue("DateOfEstablishment", dateOfEstablishment))
+      )
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Right(mockData)))
 
       when(mockQueryGroups.query(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
@@ -278,16 +412,32 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       when(mockQueryUsers.query(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Group for existing EORI: $oldEori"))))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_ATAR_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_ATAR_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_SS_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_SS_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_GVMS_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_GVMS_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CTS_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CTS_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Right(mockData)))
 
       when(mockQueryGroups.query(meq(oldEori), meq(HMRC_CTS_ORG))(any[HeaderCarrier]))
@@ -296,10 +446,18 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       when(mockQueryUsers.query(meq(oldEori), meq(HMRC_CTS_ORG))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Right(mockUserIdData)))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_ESC_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_ESC_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CTC_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CTC_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
       val result = service.getEnrolments(UPDATE, oldEori, LocalDate.of(1998, 11, 3)).futureValue
@@ -311,9 +469,16 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       val oldEori = Eori("GB123456789004")
       val dateOfEstablishment = "03/11/1998"
 
-      val mockData: Enrolment = Enrolment(Seq(KeyValue("EORINumber", oldEori.toString)), Seq(KeyValue("DateOfEstablishment", dateOfEstablishment)))
+      val mockData: Enrolment = Enrolment(
+        Seq(KeyValue("EORINumber", oldEori.toString)),
+        Seq(KeyValue("DateOfEstablishment", dateOfEstablishment))
+      )
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Right(mockData)))
 
       when(mockQueryGroups.query(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
@@ -322,16 +487,32 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       when(mockQueryUsers.query(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Right(mockUserIdData)))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_ATAR_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_ATAR_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_SS_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_SS_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_GVMS_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_GVMS_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CTS_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CTS_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Right(mockData)))
 
       when(mockQueryGroups.query(meq(oldEori), meq(HMRC_CTS_ORG))(any[HeaderCarrier]))
@@ -340,10 +521,18 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       when(mockQueryUsers.query(meq(oldEori), meq(HMRC_CTS_ORG))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Group for existing EORI: $oldEori"))))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_ESC_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_ESC_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CTC_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CTC_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
       val result = service.getEnrolments(UPDATE, oldEori, LocalDate.of(1998, 11, 3)).futureValue
@@ -355,9 +544,16 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       val oldEori = Eori("GB123456789004")
       val dateOfEstablishment = "03/11/1998"
 
-      val mockData: Enrolment = Enrolment(Seq(KeyValue("EORINumber", oldEori.toString)), Seq(KeyValue("DateOfEstablishment", dateOfEstablishment)))
+      val mockData: Enrolment = Enrolment(
+        Seq(KeyValue("EORINumber", oldEori.toString)),
+        Seq(KeyValue("DateOfEstablishment", dateOfEstablishment))
+      )
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Right(mockData)))
 
       when(mockQueryGroups.query(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
@@ -366,16 +562,32 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       when(mockQueryUsers.query(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Right(mockUserIdData)))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_ATAR_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_ATAR_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_SS_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_SS_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_GVMS_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_GVMS_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CTS_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CTS_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Right(mockData)))
 
       when(mockQueryGroups.query(meq(oldEori), meq(HMRC_CTS_ORG))(any[HeaderCarrier]))
@@ -384,10 +596,18 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       when(mockQueryUsers.query(meq(oldEori), meq(HMRC_CTS_ORG))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Right(mockUserIdData)))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_ESC_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_ESC_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CTC_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CTC_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
       val result = service.getEnrolments(UPDATE, oldEori, LocalDate.of(1998, 11, 3)).futureValue
@@ -398,25 +618,53 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
     "return empty list if there is no enrolment" in {
       val oldEori = Eori("GB123456789005")
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_ATAR_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_ATAR_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_SS_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_SS_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_GVMS_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_GVMS_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CTS_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CTS_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_ESC_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_ESC_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CTC_ORG), meq(LocalDate.of(1998, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CTC_ORG), meq(LocalDate.of(1998, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $oldEori"))))
 
       val result = service.getEnrolments(UPDATE, oldEori, LocalDate.of(1998, 11, 3)).futureValue
@@ -430,9 +678,16 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       val newEori = Eori("GB9866255332")
       val dateOfEstablishment = "03/11/1997"
 
-      val mockData: Enrolment = Enrolment(Seq(KeyValue("EORINumber", oldEori.toString)), Seq(KeyValue("DateOfEstablishment", dateOfEstablishment)))
+      val mockData: Enrolment = Enrolment(
+        Seq(KeyValue("EORINumber", oldEori.toString)),
+        Seq(KeyValue("DateOfEstablishment", dateOfEstablishment))
+      )
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Right(mockData)))
       when(mockQueryUsers.query(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Right(UserId("0012236665"))))
@@ -442,10 +697,24 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       when(mockUpsertKnownFacts.upsert(meq(newEori), meq(HMRC_CUS_ORG), meq(mockData))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Right(NO_CONTENT)))
 
-      when(mockDeAllocateGroup.deAllocateGroup(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783")))(any[HeaderCarrier]))
+      when(
+        mockDeAllocateGroup.deAllocateGroup(
+          meq(UPDATE),
+          meq(oldEori),
+          meq(HMRC_CUS_ORG),
+          meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783"))
+        )(any[HeaderCarrier])
+      )
         .thenReturn(Future.successful(Right(NO_CONTENT)))
 
-      when(mockReAllocateGroup.reAllocate(meq(newEori), meq(HMRC_CUS_ORG), meq(UserId("0012236665")), meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783")))(any[HeaderCarrier]))
+      when(
+        mockReAllocateGroup.reAllocate(
+          meq(newEori),
+          meq(HMRC_CUS_ORG),
+          meq(UserId("0012236665")),
+          meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783"))
+        )(any[HeaderCarrier])
+      )
         .thenReturn(Future.successful(Right(NO_CONTENT)))
 
       when(mockRemoveKnownFacts.remove(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
@@ -463,9 +732,16 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       val newEori = Eori("GB9866255332")
       val dateOfEstablishment = "03/11/1997"
 
-      val mockData: Enrolment = Enrolment(Seq(KeyValue("EORINumber", oldEori.toString)), Seq(KeyValue("DateOfEstablishment", dateOfEstablishment)))
+      val mockData: Enrolment = Enrolment(
+        Seq(KeyValue("EORINumber", oldEori.toString)),
+        Seq(KeyValue("DateOfEstablishment", dateOfEstablishment))
+      )
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Right(mockData)))
       when(mockQueryUsers.query(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Right(UserId("0012236665"))))
@@ -475,10 +751,24 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       when(mockUpsertKnownFacts.upsert(meq(newEori), meq(HMRC_CUS_ORG), meq(mockData))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Right(NO_CONTENT)))
 
-      when(mockDeAllocateGroup.deAllocateGroup(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783")))(any[HeaderCarrier]))
+      when(
+        mockDeAllocateGroup.deAllocateGroup(
+          meq(UPDATE),
+          meq(oldEori),
+          meq(HMRC_CUS_ORG),
+          meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783"))
+        )(any[HeaderCarrier])
+      )
         .thenReturn(Future.successful(Right(NO_CONTENT)))
 
-      when(mockReAllocateGroup.reAllocate(meq(newEori), meq(HMRC_CUS_ORG), meq(UserId("0012236665")), meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783")))(any[HeaderCarrier]))
+      when(
+        mockReAllocateGroup.reAllocate(
+          meq(newEori),
+          meq(HMRC_CUS_ORG),
+          meq(UserId("0012236665")),
+          meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783"))
+        )(any[HeaderCarrier])
+      )
         .thenReturn(Future.successful(Right(NO_CONTENT)))
 
       when(mockRemoveKnownFacts.remove(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
@@ -496,9 +786,16 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       val newEori = Eori("GB9866255332")
       val dateOfEstablishment = "03/11/1997"
 
-      val mockData: Enrolment = Enrolment(Seq(KeyValue("EORINumber", oldEori.toString)), Seq(KeyValue("DateOfEstablishment", dateOfEstablishment)))
+      val mockData: Enrolment = Enrolment(
+        Seq(KeyValue("EORINumber", oldEori.toString)),
+        Seq(KeyValue("DateOfEstablishment", dateOfEstablishment))
+      )
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Right(mockData)))
       when(mockQueryUsers.query(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Left(ErrorMessage(s"Could not find User for existing EORI: $oldEori"))))
@@ -512,9 +809,16 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       val newEori = Eori("GB9866255332")
       val dateOfEstablishment = "03/11/1997"
 
-      val mockData: Enrolment = Enrolment(Seq(KeyValue("EORINumber", oldEori.toString)), Seq(KeyValue("DateOfEstablishment", dateOfEstablishment)))
+      val mockData: Enrolment = Enrolment(
+        Seq(KeyValue("EORINumber", oldEori.toString)),
+        Seq(KeyValue("DateOfEstablishment", dateOfEstablishment))
+      )
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Right(mockData)))
       when(mockQueryUsers.query(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Right(UserId("0012236665"))))
@@ -530,9 +834,16 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       val newEori = Eori("GB9866255332")
       val dateOfEstablishment = "03/11/1997"
 
-      val mockData: Enrolment = Enrolment(Seq(KeyValue("EORINumber", oldEori.toString)), Seq(KeyValue("DateOfEstablishment", dateOfEstablishment)))
+      val mockData: Enrolment = Enrolment(
+        Seq(KeyValue("EORINumber", oldEori.toString)),
+        Seq(KeyValue("DateOfEstablishment", dateOfEstablishment))
+      )
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Right(mockData)))
       when(mockQueryUsers.query(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Right(UserId("0012236665"))))
@@ -551,9 +862,16 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       val newEori = Eori("GB9866255332")
       val dateOfEstablishment = "03/11/1997"
 
-      val mockData: Enrolment = Enrolment(Seq(KeyValue("EORINumber", oldEori.toString)), Seq(KeyValue("DateOfEstablishment", dateOfEstablishment)))
+      val mockData: Enrolment = Enrolment(
+        Seq(KeyValue("EORINumber", oldEori.toString)),
+        Seq(KeyValue("DateOfEstablishment", dateOfEstablishment))
+      )
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Right(mockData)))
       when(mockQueryUsers.query(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Right(UserId("0012236665"))))
@@ -563,7 +881,14 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       when(mockUpsertKnownFacts.upsert(meq(newEori), meq(HMRC_CUS_ORG), meq(mockData))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Right(NO_CONTENT)))
 
-      when(mockDeAllocateGroup.deAllocateGroup(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783")))(any[HeaderCarrier]))
+      when(
+        mockDeAllocateGroup.deAllocateGroup(
+          meq(UPDATE),
+          meq(oldEori),
+          meq(HMRC_CUS_ORG),
+          meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783"))
+        )(any[HeaderCarrier])
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Delete enrolment failed with HTTP status: 500"))))
 
       val result = service.update(oldEori, LocalDate.of(1997, 11, 3), newEori, HMRC_CUS_ORG).futureValue
@@ -575,9 +900,16 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       val newEori = Eori("GB9866255332")
       val dateOfEstablishment = "03/11/1997"
 
-      val mockData: Enrolment = Enrolment(Seq(KeyValue("EORINumber", oldEori.toString)), Seq(KeyValue("DateOfEstablishment", dateOfEstablishment)))
+      val mockData: Enrolment = Enrolment(
+        Seq(KeyValue("EORINumber", oldEori.toString)),
+        Seq(KeyValue("DateOfEstablishment", dateOfEstablishment))
+      )
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Right(mockData)))
       when(mockQueryUsers.query(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Right(UserId("0012236665"))))
@@ -587,13 +919,27 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       when(mockUpsertKnownFacts.upsert(meq(newEori), meq(HMRC_CUS_ORG), meq(mockData))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Right(NO_CONTENT)))
 
-      when(mockDeAllocateGroup.deAllocateGroup(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783")))(any[HeaderCarrier]))
+      when(
+        mockDeAllocateGroup.deAllocateGroup(
+          meq(UPDATE),
+          meq(oldEori),
+          meq(HMRC_CUS_ORG),
+          meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783"))
+        )(any[HeaderCarrier])
+      )
         .thenReturn(Future.successful(Right(NO_CONTENT)))
 
       when(mockRemoveKnownFacts.remove(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Right(NO_CONTENT)))
 
-      when(mockReAllocateGroup.reAllocate(meq(newEori), meq(HMRC_CUS_ORG), meq(UserId("0012236665")), meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783")))(any[HeaderCarrier]))
+      when(
+        mockReAllocateGroup.reAllocate(
+          meq(newEori),
+          meq(HMRC_CUS_ORG),
+          meq(UserId("0012236665")),
+          meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783"))
+        )(any[HeaderCarrier])
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Allocate group failed with HTTP status: 500 (Some Text)"))))
 
       val result = service.update(oldEori, LocalDate.of(1997, 11, 3), newEori, HMRC_CUS_ORG).futureValue
@@ -605,9 +951,16 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       val newEori = Eori("GB9866255332")
       val dateOfEstablishment = "03/11/1997"
 
-      val mockData: Enrolment = Enrolment(Seq(KeyValue("EORINumber", oldEori.toString)), Seq(KeyValue("DateOfEstablishment", dateOfEstablishment)))
+      val mockData: Enrolment = Enrolment(
+        Seq(KeyValue("EORINumber", oldEori.toString)),
+        Seq(KeyValue("DateOfEstablishment", dateOfEstablishment))
+      )
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Right(mockData)))
       when(mockQueryUsers.query(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Right(UserId("0012236665"))))
@@ -617,10 +970,24 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       when(mockUpsertKnownFacts.upsert(meq(newEori), meq(HMRC_CUS_ORG), meq(mockData))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Right(NO_CONTENT)))
 
-      when(mockDeAllocateGroup.deAllocateGroup(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783")))(any[HeaderCarrier]))
+      when(
+        mockDeAllocateGroup.deAllocateGroup(
+          meq(UPDATE),
+          meq(oldEori),
+          meq(HMRC_CUS_ORG),
+          meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783"))
+        )(any[HeaderCarrier])
+      )
         .thenReturn(Future.successful(Right(NO_CONTENT)))
 
-      when(mockReAllocateGroup.reAllocate(meq(newEori), meq(HMRC_CUS_ORG), meq(UserId("0012236665")), meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783")))(any[HeaderCarrier]))
+      when(
+        mockReAllocateGroup.reAllocate(
+          meq(newEori),
+          meq(HMRC_CUS_ORG),
+          meq(UserId("0012236665")),
+          meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783"))
+        )(any[HeaderCarrier])
+      )
         .thenReturn(Future.successful(Right(NO_CONTENT)))
 
       when(mockRemoveKnownFacts.remove(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
@@ -635,9 +1002,16 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       val newEori = Eori("GB9866255332")
       val dateOfEstablishment = "03/11/1997"
 
-      val mockData: Enrolment = Enrolment(Seq(KeyValue("EORINumber", oldEori.toString)), Seq(KeyValue("DateOfEstablishment", dateOfEstablishment)))
+      val mockData: Enrolment = Enrolment(
+        Seq(KeyValue("EORINumber", oldEori.toString)),
+        Seq(KeyValue("DateOfEstablishment", dateOfEstablishment))
+      )
 
-      when(mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Right(mockData)))
       when(mockQueryUsers.query(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Right(UserId("0012236665"))))
@@ -647,10 +1021,24 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       when(mockUpsertKnownFacts.upsert(meq(newEori), meq(HMRC_CUS_ORG), meq(mockData))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Right(NO_CONTENT)))
 
-      when(mockDeAllocateGroup.deAllocateGroup(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG), meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783")))(any[HeaderCarrier]))
+      when(
+        mockDeAllocateGroup.deAllocateGroup(
+          meq(UPDATE),
+          meq(oldEori),
+          meq(HMRC_CUS_ORG),
+          meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783"))
+        )(any[HeaderCarrier])
+      )
         .thenReturn(Future.successful(Right(NO_CONTENT)))
 
-      when(mockReAllocateGroup.reAllocate(meq(newEori), meq(HMRC_CUS_ORG), meq(UserId("0012236665")), meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783")))(any[HeaderCarrier]))
+      when(
+        mockReAllocateGroup.reAllocate(
+          meq(newEori),
+          meq(HMRC_CUS_ORG),
+          meq(UserId("0012236665")),
+          meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783"))
+        )(any[HeaderCarrier])
+      )
         .thenReturn(Future.successful(Right(NO_CONTENT)))
 
       when(mockRemoveKnownFacts.remove(meq(UPDATE), meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
@@ -670,14 +1058,28 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       val oldEori = Eori("GB123456789006")
       val dateOfEstablishment = "03/11/1997"
 
-      val mockData: Enrolment = Enrolment(Seq(KeyValue("EORINumber", oldEori.toString)), Seq(KeyValue("DateOfEstablishment", dateOfEstablishment)))
+      val mockData: Enrolment = Enrolment(
+        Seq(KeyValue("EORINumber", oldEori.toString)),
+        Seq(KeyValue("DateOfEstablishment", dateOfEstablishment))
+      )
 
-      when(mockQueryKnownFacts.query(meq(CANCEL), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(CANCEL), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Right(mockData)))
       when(mockQueryGroups.query(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Right(GroupId("90ccf333-65d2-4bf2-a008-abc23783"))))
 
-      when(mockDeAllocateGroup.deAllocateGroup(meq(CANCEL), meq(oldEori), meq(HMRC_CUS_ORG), meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783")))(any[HeaderCarrier]))
+      when(
+        mockDeAllocateGroup.deAllocateGroup(
+          meq(CANCEL),
+          meq(oldEori),
+          meq(HMRC_CUS_ORG),
+          meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783"))
+        )(any[HeaderCarrier])
+      )
         .thenReturn(Future.successful(Right(NO_CONTENT)))
 
       when(mockRemoveKnownFacts.remove(meq(CANCEL), meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
@@ -691,14 +1093,28 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       val oldEori = Eori("GB123456789006")
       val dateOfEstablishment = "03/11/1997"
 
-      val mockData: Enrolment = Enrolment(Seq(KeyValue("EORINumber", oldEori.toString)), Seq(KeyValue("DateOfEstablishment", dateOfEstablishment)))
+      val mockData: Enrolment = Enrolment(
+        Seq(KeyValue("EORINumber", oldEori.toString)),
+        Seq(KeyValue("DateOfEstablishment", dateOfEstablishment))
+      )
 
-      when(mockQueryKnownFacts.query(meq(CANCEL), meq(oldEori), meq(HMRC_ATAR_ORG), meq(LocalDate.of(1997, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(CANCEL), meq(oldEori), meq(HMRC_ATAR_ORG), meq(LocalDate.of(1997, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Right(mockData)))
       when(mockQueryGroups.query(meq(oldEori), meq(HMRC_ATAR_ORG))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Right(GroupId("90ccf333-65d2-4bf2-a008-abc23783"))))
 
-      when(mockDeAllocateGroup.deAllocateGroup(meq(CANCEL), meq(oldEori), meq(HMRC_ATAR_ORG), meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783")))(any[HeaderCarrier]))
+      when(
+        mockDeAllocateGroup.deAllocateGroup(
+          meq(CANCEL),
+          meq(oldEori),
+          meq(HMRC_ATAR_ORG),
+          meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783"))
+        )(any[HeaderCarrier])
+      )
         .thenReturn(Future.successful(Right(NO_CONTENT)))
 
       when(mockRemoveKnownFacts.remove(meq(CANCEL), meq(oldEori), meq(HMRC_ATAR_ORG))(any[HeaderCarrier]))
@@ -712,9 +1128,16 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       val oldEori = Eori("GB123456789006")
       val dateOfEstablishment = "03/11/1997"
 
-      val mockData: Enrolment = Enrolment(Seq(KeyValue("EORINumber", oldEori.toString)), Seq(KeyValue("DateOfEstablishment", dateOfEstablishment)))
+      val mockData: Enrolment = Enrolment(
+        Seq(KeyValue("EORINumber", oldEori.toString)),
+        Seq(KeyValue("DateOfEstablishment", dateOfEstablishment))
+      )
 
-      when(mockQueryKnownFacts.query(meq(CANCEL), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(CANCEL), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Right(mockData)))
 
       when(mockQueryGroups.query(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
@@ -728,15 +1151,29 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       val oldEori = Eori("GB123456789006")
       val dateOfEstablishment = "03/11/1997"
 
-      val mockData: Enrolment = Enrolment(Seq(KeyValue("EORINumber", oldEori.toString)), Seq(KeyValue("DateOfEstablishment", dateOfEstablishment)))
+      val mockData: Enrolment = Enrolment(
+        Seq(KeyValue("EORINumber", oldEori.toString)),
+        Seq(KeyValue("DateOfEstablishment", dateOfEstablishment))
+      )
 
-      when(mockQueryKnownFacts.query(meq(CANCEL), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(CANCEL), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Right(mockData)))
 
       when(mockQueryGroups.query(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Right(GroupId("90ccf333-65d2-4bf2-a008-abc23783"))))
 
-      when(mockDeAllocateGroup.deAllocateGroup(meq(CANCEL), meq(oldEori), meq(HMRC_CUS_ORG), meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783")))(any[HeaderCarrier]))
+      when(
+        mockDeAllocateGroup.deAllocateGroup(
+          meq(CANCEL),
+          meq(oldEori),
+          meq(HMRC_CUS_ORG),
+          meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783"))
+        )(any[HeaderCarrier])
+      )
         .thenReturn(Future.successful(Left(ErrorMessage(s"Delete enrolment failed with HTTP status: 500"))))
 
       val result = service.cancel(oldEori, LocalDate.of(1997, 11, 3), HMRC_CUS_ORG).futureValue
@@ -747,15 +1184,29 @@ class EnrolmentServiceSpec extends AnyWordSpec with Matchers with ScalaFutures w
       val oldEori = Eori("GB123456789006")
       val dateOfEstablishment = "03/11/1997"
 
-      val mockData: Enrolment = Enrolment(Seq(KeyValue("EORINumber", oldEori.toString)), Seq(KeyValue("DateOfEstablishment", dateOfEstablishment)))
+      val mockData: Enrolment = Enrolment(
+        Seq(KeyValue("EORINumber", oldEori.toString)),
+        Seq(KeyValue("DateOfEstablishment", dateOfEstablishment))
+      )
 
-      when(mockQueryKnownFacts.query(meq(CANCEL), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(any[HeaderCarrier]))
+      when(
+        mockQueryKnownFacts.query(meq(CANCEL), meq(oldEori), meq(HMRC_CUS_ORG), meq(LocalDate.of(1997, 11, 3)))(
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Right(mockData)))
 
       when(mockQueryGroups.query(meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Right(GroupId("90ccf333-65d2-4bf2-a008-abc23783"))))
 
-      when(mockDeAllocateGroup.deAllocateGroup(meq(CANCEL), meq(oldEori), meq(HMRC_CUS_ORG), meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783")))(any[HeaderCarrier]))
+      when(
+        mockDeAllocateGroup.deAllocateGroup(
+          meq(CANCEL),
+          meq(oldEori),
+          meq(HMRC_CUS_ORG),
+          meq(GroupId("90ccf333-65d2-4bf2-a008-abc23783"))
+        )(any[HeaderCarrier])
+      )
         .thenReturn(Future.successful(Right(NO_CONTENT)))
 
       when(mockRemoveKnownFacts.remove(meq(CANCEL), meq(oldEori), meq(HMRC_CUS_ORG))(any[HeaderCarrier]))

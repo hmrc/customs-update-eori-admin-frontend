@@ -24,26 +24,26 @@ import play.api.mvc._
 import javax.inject.Inject
 import scala.concurrent.Future
 
-class ShutteringFilter @Inject()(implicit val mat: Materializer, mcc: MessagesControllerComponents, appConfig: AppConfig)
-  extends BaseController with Filter {
+class ShutteringFilter @Inject() (implicit
+  val mat: Materializer,
+  mcc: MessagesControllerComponents,
+  appConfig: AppConfig
+) extends BaseController with Filter {
 
   val isShuttered = appConfig.isShuttered
 
-  def apply(nextFilter: RequestHeader => Future[Result])(requestHeader: RequestHeader): Future[Result] = {
+  def apply(nextFilter: RequestHeader => Future[Result])(requestHeader: RequestHeader): Future[Result] =
     if (isShuttered && !RequestIsValid(requestHeader)) {
       Future.successful(Redirect(routes.MaintenanceController.get))
     } else {
       nextFilter(requestHeader)
     }
-  }
 
-  private def RequestIsValid(requestHeader: RequestHeader) = {
+  private def RequestIsValid(requestHeader: RequestHeader) =
     requestHeader.uri.contains(routes.MaintenanceController.get.url) || RequestUrlContainsAFileExtension(requestHeader)
-  }
 
-  private def RequestUrlContainsAFileExtension(requestHeader: RequestHeader) = {
+  private def RequestUrlContainsAFileExtension(requestHeader: RequestHeader) =
     requestHeader.uri.contains(".")
-  }
 
   override protected def controllerComponents: ControllerComponents = mcc
 }
