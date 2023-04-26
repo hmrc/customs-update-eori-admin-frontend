@@ -20,12 +20,12 @@ Tables which are given below show the api requests to these services and descrip
 
 #### API Calls to Tax Enrolments Service
 
-| PATH                                                             | Supported Methods | Description |
-|------------------------------------------------------------------|-------------------|-------------|
-| ```/tax-enrolments/enrolments/:enrolmentKey```                   | PUT               | ES6 Insert or update an assigned or unassigned Enrolment (also referred to as Known Facts)|
-| ```ES7 Delete an Enrolment (also referred to as Known Facts)```  | DELETE            | ES7 Delete an Enrolment (also referred to as Known Facts)|
-| ```/tax-enrolments/groups/:groupId/enrolments/:enrolmentKey```   | POST              | ES8 Allocates an enrolment to the given group|
-| ```/tax-enrolments/groups/:groupId/enrolments/:enrolmentKey```   | DELETE            | ES9 De-allocate an Enrolment from a Group|
+| PATH                                                           | Supported Methods | Description |
+|----------------------------------------------------------------|-------------------|-------------|
+| ```/tax-enrolments/enrolments/:enrolmentKey```                 | PUT               | ES6 Insert or update an assigned or unassigned Enrolment (also referred to as Known Facts)|
+| ```/tax-enrolments/enrolments/:enrolmentKey```                 | DELETE            | ES7 Delete an Enrolment (also referred to as Known Facts)|
+| ```/tax-enrolments/groups/:groupId/enrolments/:enrolmentKey``` | POST              | ES8 Allocates an enrolment to the given group|
+| ```/tax-enrolments/groups/:groupId/enrolments/:enrolmentKey``` | DELETE            | ES9 De-allocate an Enrolment from a Group|
 
 #### API Calls to Customs Data Store Service
 
