@@ -34,22 +34,21 @@ class ReAllocateGroupConnectorSpec extends ConnectorSpecBase {
   "The ReEnrolment Connector" should {
     "call the re-enrolment service with a POST command with the correct url" in {
       when(
-        mockHttpClient.POST(any[String],
-          any[ReEnrolRequest],
-          any[Seq[(String, String)]])(
+        mockHttpClient.POST(any[String], any[ReEnrolRequest], any[Seq[(String, String)]])(
           any[Writes[ReEnrolRequest]],
           any[HttpReads[HttpResponse]],
           any[HeaderCarrier],
-          any[ExecutionContext]))
+          any[ExecutionContext]
+        )
+      )
         .thenReturn(Future.successful(HttpResponse(CREATED, "")))
-      whenReady(connector.reAllocate(Eori("GB1234567890"), HMRC_CUS_ORG, UserId("AB123"), GroupId("90ccf333-65d2"))) { _ =>
-        verify(mockHttpClient).POST(
-          meq("http://localhost:1222/groups/90ccf333-65d2/enrolments/HMRC-CUS-ORG~EORINumber~GB1234567890"),
-          meq(ReEnrolRequest("AB123")),
-          any[Seq[(String, String)]])(any[Writes[ReEnrolRequest]],
-          any[HttpReads[HttpResponse]],
-          any[HeaderCarrier],
-          any[ExecutionContext])
+      whenReady(connector.reAllocate(Eori("GB1234567890"), HMRC_CUS_ORG, UserId("AB123"), GroupId("90ccf333-65d2"))) {
+        _ =>
+          verify(mockHttpClient).POST(
+            meq("http://localhost:1222/groups/90ccf333-65d2/enrolments/HMRC-CUS-ORG~EORINumber~GB1234567890"),
+            meq(ReEnrolRequest("AB123")),
+            any[Seq[(String, String)]]
+          )(any[Writes[ReEnrolRequest]], any[HttpReads[HttpResponse]], any[HeaderCarrier], any[ExecutionContext])
       }
     }
 
@@ -58,18 +57,18 @@ class ReAllocateGroupConnectorSpec extends ConnectorSpecBase {
         mockHttpClient.POST(
           meq("http://localhost:1222/groups/90ccf333-65d2/enrolments/HMRC-CUS-ORG~EORINumber~GB1234566634"),
           meq(ReEnrolRequest("AB234")),
-          any[Seq[(String, String)]])(
-          any[Writes[ReEnrolRequest]],
-          any[HttpReads[HttpResponse]],
-          any[HeaderCarrier],
-          any[ExecutionContext]))
+          any[Seq[(String, String)]]
+        )(any[Writes[ReEnrolRequest]], any[HttpReads[HttpResponse]], any[HeaderCarrier], any[ExecutionContext])
+      )
         .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
-      val result = connector.reAllocate(
-        Eori("GB1234566634"),
-        HMRC_CUS_ORG,
-        UserId("AB234"),
-        GroupId("90ccf333-65d2")
-      ).futureValue
+      val result = connector
+        .reAllocate(
+          Eori("GB1234566634"),
+          HMRC_CUS_ORG,
+          UserId("AB234"),
+          GroupId("90ccf333-65d2")
+        )
+        .futureValue
       result.isLeft should be(true)
       result.left.getOrElse(ErrorMessage("")).message should startWith("Allocate group failed with HTTP status: 400")
     }

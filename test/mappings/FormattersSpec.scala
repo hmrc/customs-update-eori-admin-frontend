@@ -30,8 +30,8 @@ class FormattersSpec extends AnyWordSpec with Matchers with OptionValues with Ma
 
   "stringFormatter" should {
     "bind a valid string" in {
-        val result = stringFormatter(requiredKey).bind(field, Map(field -> "TestString"))
-        result.toOption.get shouldBe "TestString"
+      val result = stringFormatter(requiredKey).bind(field, Map(field -> "TestString"))
+      result.toOption.get shouldBe "TestString"
     }
 
     "return requiredKey error when trimmed string is empty" in {

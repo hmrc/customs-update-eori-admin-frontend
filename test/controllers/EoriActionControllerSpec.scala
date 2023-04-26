@@ -32,16 +32,12 @@ import play.api.test.Helpers._
 import views.html.{EoriActionView, EoriOperationSuccessfulView}
 
 class EoriActionControllerSpec
-  extends AnyWordSpec
-    with Matchers
-    with GuiceOneAppPerSuite
-    with AuthenticationBehaviours
-    with MockitoSugar
+    extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with AuthenticationBehaviours with MockitoSugar
     with BeforeAndAfterEach {
   override def fakeApplication(): Application =
     new GuiceApplicationBuilder()
       .configure(
-        "metrics.jvm" -> false,
+        "metrics.jvm"     -> false,
         "metrics.enabled" -> false
       )
       .build()
@@ -52,11 +48,10 @@ class EoriActionControllerSpec
   private val view = app.injector.instanceOf[EoriActionView]
   private val eoriOpView = app.injector.instanceOf[EoriOperationSuccessfulView]
 
-  private val controller = EoriActionController(mcc, view,eoriOpView, testAuthAction)
+  private val controller = EoriActionController(mcc, view, eoriOpView, testAuthAction)
 
-  override def beforeEach(): Unit = {
+  override def beforeEach(): Unit =
     reset(mockAuthConnector)
-  }
 
   "Show Page" should {
     "return 200" in withSignedInUser {
@@ -82,7 +77,15 @@ class EoriActionControllerSpec
     "return HTML for update success" in withSignedInUser {
       val oldEoriNumber = "GB123456789011"
       val newEoriNumber = "GB123456789012"
-      val result = controller.showPageOnSuccess(Some(EoriActionEnum.UPDATE_EORI.toString), Some(oldEoriNumber), Some(newEoriNumber), Some(newEoriNumber), None,None,None)(fakeRequest)
+      val result = controller.showPageOnSuccess(
+        Some(EoriActionEnum.UPDATE_EORI.toString),
+        Some(oldEoriNumber),
+        Some(newEoriNumber),
+        Some(newEoriNumber),
+        None,
+        None,
+        None
+      )(fakeRequest)
       status(result) shouldBe OK
       contentType(result) shouldBe Some("text/html")
       charset(result) shouldBe Some("utf-8")
@@ -91,7 +94,15 @@ class EoriActionControllerSpec
 
     "return HTML for cancel success" in withSignedInUser {
       val eoriNumber = "GB123456789011"
-      val result = controller.showPageOnSuccess(Some(EoriActionEnum.CANCEL_EORI.toString), Some(eoriNumber), None,None,None,Some("HMRC-GVMS-ORG"),Some("HMRC-CTC-ORG"))(fakeRequest)
+      val result = controller.showPageOnSuccess(
+        Some(EoriActionEnum.CANCEL_EORI.toString),
+        Some(eoriNumber),
+        None,
+        None,
+        None,
+        Some("HMRC-GVMS-ORG"),
+        Some("HMRC-CTC-ORG")
+      )(fakeRequest)
       status(result) shouldBe OK
       contentType(result) shouldBe Some("text/html")
       charset(result) shouldBe Some("utf-8")
@@ -99,7 +110,15 @@ class EoriActionControllerSpec
     }
 
     "redirect to STRIDE login for not logged-in user" in withNotSignedInUser {
-      val result = controller.showPageOnSuccess(Some(EoriActionEnum.UPDATE_EORI.toString), Some("GB123456789011"), Some("GB123456789012"), None,None, None,None)(fakeRequest)
+      val result = controller.showPageOnSuccess(
+        Some(EoriActionEnum.UPDATE_EORI.toString),
+        Some("GB123456789011"),
+        Some("GB123456789012"),
+        None,
+        None,
+        None,
+        None
+      )(fakeRequest)
       status(result) shouldBe SEE_OTHER
       val maybeRedirectUrl = redirectLocation(result)
       maybeRedirectUrl.getOrElse("") should include("/stride/sign-in")

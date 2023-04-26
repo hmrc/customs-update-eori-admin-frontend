@@ -31,16 +31,12 @@ import play.api.test.Helpers._
 import views.html.ShutterView
 
 class MaintenanceControllerSpec
-  extends AnyWordSpec
-    with Matchers
-    with GuiceOneAppPerSuite
-    with AuthenticationBehaviours
-    with MockitoSugar
+    extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with AuthenticationBehaviours with MockitoSugar
     with BeforeAndAfterEach {
   override def fakeApplication(): Application =
     new GuiceApplicationBuilder()
       .configure(
-        "metrics.jvm" -> false,
+        "metrics.jvm"     -> false,
         "metrics.enabled" -> false
       )
       .build()
@@ -52,16 +48,17 @@ class MaintenanceControllerSpec
 
   private val controller = MaintenanceController(mcc, view)
 
-  override def beforeEach(): Unit = {
+  override def beforeEach(): Unit =
     reset(mockAuthConnector)
-  }
 
   "Get /maintenance" should {
     "return 503" in {
       val result = controller.get(fakeRequest)
       status(result) shouldBe Status.SERVICE_UNAVAILABLE
       contentType(result) shouldBe Some("text/html")
-      contentAsString(result) should include(s"Eori toolkit service is under maintenance. The service will be available soon.")
+      contentAsString(result) should include(
+        s"Eori toolkit service is under maintenance. The service will be available soon."
+      )
     }
   }
 }

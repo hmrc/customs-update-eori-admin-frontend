@@ -29,7 +29,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait AuthenticationBehaviours {this: MockitoSugar =>
+trait AuthenticationBehaviours { this: MockitoSugar =>
 
   val env = Environment.simple()
   val config = Configuration.load(env)
@@ -37,13 +37,25 @@ trait AuthenticationBehaviours {this: MockitoSugar =>
   val mockAuthConnector: AuthConnector = mock[AuthConnector]
   val testAuthAction: AuthAction = new AuthAction(mockAuthConnector, config, env, mockParser)
 
-  def withSignedInUser(test: => Unit): Unit = {
+  def withSignedInUser(test: => Unit): Unit =
     withSignedInUser(someUser)(test)
-  }
 
   private def withSignedInUser[T](user: SignedInUser)(test: => T): T = {
-    when(mockAuthConnector.authorise(any(), ameq(credentials and name and email and internalId and allEnrolments))(any(), any()))
-      .thenReturn(Future.successful(new ~(new ~(new ~(new ~(Some(Credentials(user.pid, "PrivilegedApplication")), Some(user.name)), user.email), user.internalId), user.enrolments)))
+    when(
+      mockAuthConnector
+        .authorise(any(), ameq(credentials and name and email and internalId and allEnrolments))(any(), any())
+    )
+      .thenReturn(
+        Future.successful(
+          new ~(
+            new ~(
+              new ~(new ~(Some(Credentials(user.pid, "PrivilegedApplication")), Some(user.name)), user.email),
+              user.internalId
+            ),
+            user.enrolments
+          )
+        )
+      )
     test
   }
 

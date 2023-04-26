@@ -30,10 +30,13 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class RemoveKnownFactsConnector @Inject()(httpClient: HttpClient, config: AppConfig, audit: Auditable)(implicit ec: ExecutionContext) extends Logging {
+class RemoveKnownFactsConnector @Inject() (httpClient: HttpClient, config: AppConfig, audit: Auditable)(implicit
+  ec: ExecutionContext
+) extends Logging {
 
-  def remove(eoriAction: String, eori: Eori, enrolmentKey: EnrolmentKeyType)
-            (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
+  def remove(eoriAction: String, eori: Eori, enrolmentKey: EnrolmentKeyType)(implicit
+    hc: HeaderCarrier
+  ): Future[Either[ErrorMessage, Int]] = {
     val strEnrolmentKey = enrolmentKey.getEnrolmentKey(eori)
     val url = s"${config.taxEnrolmentsServiceUrl}/enrolments/$strEnrolmentKey"
     httpClient.DELETE[HttpResponse](url) map { resp =>
@@ -41,15 +44,18 @@ class RemoveKnownFactsConnector @Inject()(httpClient: HttpClient, config: AppCon
         case NO_CONTENT =>
           auditCall(url, eoriAction, eori.toString, strEnrolmentKey)
           Right(NO_CONTENT)
-        case failStatus => {
-          logger.error(s"Remove known facts failed with HTTP status: $failStatus for existing EORI: $eori. Response: ${resp.body}")
+        case failStatus =>
+          logger.error(
+            s"Remove known facts failed with HTTP status: $failStatus for existing EORI: $eori. Response: ${resp.body}"
+          )
           Left(ErrorMessage(s"Remove known facts failed with HTTP status: $failStatus"))
-        }
       }
     }
   }
 
-  private def auditCall(url: String, eoriAction: String, eoriNumber: String, enrolmentKey: String)(implicit hc: HeaderCarrier): Unit =
+  private def auditCall(url: String, eoriAction: String, eoriNumber: String, enrolmentKey: String)(implicit
+    hc: HeaderCarrier
+  ): Unit =
     audit.sendExtendedDataEvent(
       transactionName = "Tax-Enrolments-Call",
       path = url,

@@ -35,7 +35,11 @@ class RemoveKnownFactsConnectorSpec extends ConnectorSpecBase {
     "call the remove known facts service with a DELETE command with the correct url" in {
       when(
         mockHttpClient.DELETE(any[String], any[Seq[(String, String)]])(
-          any[HttpReads[HttpResponse]], any[HeaderCarrier], any[ExecutionContext]))
+          any[HttpReads[HttpResponse]],
+          any[HeaderCarrier],
+          any[ExecutionContext]
+        )
+      )
         .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
 
       val result = connector.remove(UPDATE, Eori("GB1234567890"), HMRC_CUS_ORG).futureValue
@@ -44,19 +48,17 @@ class RemoveKnownFactsConnectorSpec extends ConnectorSpecBase {
       response shouldBe NO_CONTENT
       verify(mockHttpClient).DELETE(
         meq("http://localhost:1222/enrolments/HMRC-CUS-ORG~EORINumber~GB1234567890"),
-        any[Seq[(String, String)]])(
-        any[HttpReads[HttpResponse]],
-        any[HeaderCarrier],
-        any[ExecutionContext])
+        any[Seq[(String, String)]]
+      )(any[HttpReads[HttpResponse]], any[HeaderCarrier], any[ExecutionContext])
     }
 
     "return an error message if the delete request fails " in {
-      when(mockHttpClient.DELETE(
-        meq("http://localhost:1222/enrolments/HMRC-CUS-ORG~EORINumber~GB1122334455"),
-        any[Seq[(String, String)]])(
-        any[HttpReads[HttpResponse]],
-        any[HeaderCarrier],
-        any[ExecutionContext]))
+      when(
+        mockHttpClient.DELETE(
+          meq("http://localhost:1222/enrolments/HMRC-CUS-ORG~EORINumber~GB1122334455"),
+          any[Seq[(String, String)]]
+        )(any[HttpReads[HttpResponse]], any[HeaderCarrier], any[ExecutionContext])
+      )
         .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
       val result = connector.remove(UPDATE, Eori("GB1122334455"), HMRC_CUS_ORG).futureValue
       result shouldBe Left(ErrorMessage("Remove known facts failed with HTTP status: 400"))

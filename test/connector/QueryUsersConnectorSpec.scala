@@ -33,23 +33,23 @@ class QueryUsersConnectorSpec extends ConnectorSpecBase {
   override def beforeEach(): Unit = {
     super.beforeEach()
 
-    when(mockHttpClient.GET(endsWith("GB1234567890/users"), any[Seq[(String, String)]], any[Seq[(String, String)]])(
-      any[HttpReads[Either[UpstreamErrorResponse, Users]]],
-      any[HeaderCarrier],
-      any[ExecutionContext])).thenReturn(
-      Future.successful(Right(Users(Seq("ABCEDEFGI1234567"), Seq.empty))))
+    when(
+      mockHttpClient.GET(endsWith("GB1234567890/users"), any[Seq[(String, String)]], any[Seq[(String, String)]])(
+        any[HttpReads[Either[UpstreamErrorResponse, Users]]],
+        any[HeaderCarrier],
+        any[ExecutionContext]
+      )
+    ).thenReturn(Future.successful(Right(Users(Seq("ABCEDEFGI1234567"), Seq.empty))))
   }
 
   "The Query Users Connector" should {
     "call the query users service with a GET command with the correct url" in {
       whenReady(connector.query(Eori("GB1234567890"), HMRC_CUS_ORG)) { _ =>
-        verify(mockHttpClient).GET(meq(
-          "http://localhost:1234/enrolment-store/enrolments/HMRC-CUS-ORG~EORINumber~GB1234567890/users"),
+        verify(mockHttpClient).GET(
+          meq("http://localhost:1234/enrolment-store/enrolments/HMRC-CUS-ORG~EORINumber~GB1234567890/users"),
           any[Seq[(String, String)]],
-          any[Seq[(String, String)]])(
-          any[HttpReads[Either[UpstreamErrorResponse, Users]]],
-          any[HeaderCarrier],
-          any[ExecutionContext])
+          any[Seq[(String, String)]]
+        )(any[HttpReads[Either[UpstreamErrorResponse, Users]]], any[HeaderCarrier], any[ExecutionContext])
       }
     }
 
@@ -63,7 +63,9 @@ class QueryUsersConnectorSpec extends ConnectorSpecBase {
         mockHttpClient.GET(endsWith("GB8888877777/users"), any[Seq[(String, String)]], any[Seq[(String, String)]])(
           any[HttpReads[Either[UpstreamErrorResponse, Users]]],
           any[HeaderCarrier],
-          any[ExecutionContext])).thenReturn(Future.successful(Left(UpstreamErrorResponse("failed", BAD_REQUEST))))
+          any[ExecutionContext]
+        )
+      ).thenReturn(Future.successful(Left(UpstreamErrorResponse("failed", BAD_REQUEST))))
       val result = connector.query(Eori("GB8888877777"), HMRC_CUS_ORG).futureValue
       result shouldBe Left(ErrorMessage("Could not find User for existing EORI: GB8888877777"))
     }

@@ -49,28 +49,31 @@ object QueryKnownFactsRequest {
     Json.writes[QueryKnownFactsRequest]
 }
 
-class QueryKnownFactsConnector @Inject()(httpClient: HttpClient, config: AppConfig, audit: Auditable)(implicit ec: ExecutionContext) extends Logging {
+class QueryKnownFactsConnector @Inject() (httpClient: HttpClient, config: AppConfig, audit: Auditable)(implicit
+  ec: ExecutionContext
+) extends Logging {
 
-  /**
-   * ES20 API call - to validate if EORI and key verifiers match. Data validate API call
-   *
-   * @param eori
-   * @param enrolmentKey
-   * @param dateOfEstablishment
-   * @param hc
-   * @return
-   */
-  def query(eoriAction: String, eori: Eori, enrolmentKey: EnrolmentKeyType, dateOfEstablishment: LocalDate)
-           (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Enrolment]] = {
+  /** ES20 API call - to validate if EORI and key verifiers match. Data validate API call
+    *
+    * @param eori
+    * @param enrolmentKey
+    * @param dateOfEstablishment
+    * @param hc
+    * @return
+    */
+  def query(eoriAction: String, eori: Eori, enrolmentKey: EnrolmentKeyType, dateOfEstablishment: LocalDate)(implicit
+    hc: HeaderCarrier
+  ): Future[Either[ErrorMessage, Enrolment]] = {
     val url = s"${config.enrolmentStoreProxyServiceUrl}/enrolment-store/enrolments"
     val key = "DateOfEstablishment"
     val strEoriNumber = eori.toString
     val serviceName = enrolmentKey.serviceName
     val req = QueryKnownFactsRequest(serviceName, Seq(KeyValue("EORINumber", strEoriNumber)))
 
-    httpClient.POST[QueryKnownFactsRequest, HttpResponse](url, req)
-      .map {
-        case response => response.status match {
+    httpClient
+      .POST[QueryKnownFactsRequest, HttpResponse](url, req)
+      .map { case response =>
+        response.status match {
           case OK =>
             val queryKnownFactsResponse = Json.parse(response.body).as[QueryKnownFactsResponse]
             auditCall(url, eoriAction, strEoriNumber, serviceName, queryKnownFactsResponse)
@@ -82,25 +85,34 @@ class QueryKnownFactsConnector @Inject()(httpClient: HttpClient, config: AppConf
             }
           case NO_CONTENT => Left(ErrorMessage(s"Could not find Known Facts for existing EORI: $eori"))
           case failStatus =>
-            logger.error(s"Query known facts failed with HTTP status:$failStatus for EORI: $eori. Service: $serviceName")
+            logger.error(
+              s"Query known facts failed with HTTP status:$failStatus for EORI: $eori. Service: $serviceName"
+            )
             Left(ErrorMessage(s"Query known facts failed with HTTP status: $failStatus"))
         }
       }
   }
 
-  private def verifyDateOfEstablishment(dateOfEstablishment: LocalDate,
-                                        key: String,
-                                        queryKnownFactsResponse: QueryKnownFactsResponse): Option[Boolean] = {
+  private def verifyDateOfEstablishment(
+    dateOfEstablishment: LocalDate,
+    key: String,
+    queryKnownFactsResponse: QueryKnownFactsResponse
+  ): Option[Boolean] =
     queryKnownFactsResponse.enrolments.head.verifiers
       .find(_.key == key)
       .map(d => stringToLocalDate(d.value) == dateOfEstablishment)
-  }
 
-  private def auditCall(url: String, eoriAction: String, eoriNumber: String, serviceName: String, response: QueryKnownFactsResponse)(implicit hc: HeaderCarrier): Unit =
+  private def auditCall(
+    url: String,
+    eoriAction: String,
+    eoriNumber: String,
+    serviceName: String,
+    response: QueryKnownFactsResponse
+  )(implicit hc: HeaderCarrier): Unit =
     audit.sendExtendedDataEvent(
       transactionName = "Enrolment-Store-Proxy-Call",
       path = url,
       details = Json.toJson(EnrolmentStoreProxyEvent(eoriNumber, serviceName, response.enrolments.toList)),
-      eventType = s"EnrolmentStoreProxyCallFor$eoriAction",
+      eventType = s"EnrolmentStoreProxyCallFor$eoriAction"
     )
 }

@@ -40,32 +40,32 @@ object UpsertKnownFactsRequest {
     UpsertKnownFactsRequest(e.verifiers)
 }
 
-class UpsertKnownFactsConnector @Inject()(httpClient: HttpClient, config: AppConfig, audit: Auditable)(implicit ec: ExecutionContext) extends Logging {
+class UpsertKnownFactsConnector @Inject() (httpClient: HttpClient, config: AppConfig, audit: Auditable)(implicit
+  ec: ExecutionContext
+) extends Logging {
 
-  /**
-   * ES6 API call - update enrolment key (old eori with new eori number)
-   *
-   * @param eori
-   * @param enrolmentKey
-   * @param enrolment
-   * @param hc
-   * @return
-   */
-  def upsert(eori: Eori, enrolmentKey: EnrolmentKeyType, enrolment: Enrolment)
-            (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
+  /** ES6 API call - update enrolment key (old eori with new eori number)
+    *
+    * @param eori
+    * @param enrolmentKey
+    * @param enrolment
+    * @param hc
+    * @return
+    */
+  def upsert(eori: Eori, enrolmentKey: EnrolmentKeyType, enrolment: Enrolment)(implicit
+    hc: HeaderCarrier
+  ): Future[Either[ErrorMessage, Int]] = {
     val strEnrolmentKey = enrolmentKey.getEnrolmentKey(eori)
     val url = s"${config.taxEnrolmentsServiceUrl}/enrolments/$strEnrolmentKey"
-    httpClient.PUT[UpsertKnownFactsRequest, HttpResponse](url, UpsertKnownFactsRequest(enrolment)) map {
-      resp =>
-        resp.status match {
-          case NO_CONTENT =>
-            auditCall(url, strEnrolmentKey, enrolment.verifiers)
-            Right(NO_CONTENT)
-          case failStatus => {
-            logger.error(s"Upsert failed with HTTP status: $failStatus for existing EORI: $eori. Response: ${resp.body}")
-            Left(ErrorMessage(s"Upsert failed with HTTP status: $failStatus"))
-          }
-        }
+    httpClient.PUT[UpsertKnownFactsRequest, HttpResponse](url, UpsertKnownFactsRequest(enrolment)) map { resp =>
+      resp.status match {
+        case NO_CONTENT =>
+          auditCall(url, strEnrolmentKey, enrolment.verifiers)
+          Right(NO_CONTENT)
+        case failStatus =>
+          logger.error(s"Upsert failed with HTTP status: $failStatus for existing EORI: $eori. Response: ${resp.body}")
+          Left(ErrorMessage(s"Upsert failed with HTTP status: $failStatus"))
+      }
     }
   }
 
@@ -74,6 +74,6 @@ class UpsertKnownFactsConnector @Inject()(httpClient: HttpClient, config: AppCon
       transactionName = "Tax-Enrolments-Call",
       path = url,
       details = Json.toJson(UpsertKnownFactsEvent(enrolmentKey, verifiers)),
-      eventType = s"TaxEnrolmentsInsertKnownFactsCall",
+      eventType = s"TaxEnrolmentsInsertKnownFactsCall"
     )
 }

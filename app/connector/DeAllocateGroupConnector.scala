@@ -30,17 +30,20 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class DeAllocateGroupConnector @Inject()(httpClient: HttpClient, config: AppConfig, audit: Auditable)(implicit ec: ExecutionContext) extends Logging{
+class DeAllocateGroupConnector @Inject() (httpClient: HttpClient, config: AppConfig, audit: Auditable)(implicit
+  ec: ExecutionContext
+) extends Logging {
 
-  /**
-   * ES9 api call to TES - delete an enrolment or known fact
-   * @param eori
-   * @param enrolmentKey
-   * @param groupId
-   * @param hc
-   * @return
-   */
-  def deAllocateGroup(eoriAction: String, eori: Eori, enrolmentKey: EnrolmentKeyType, groupId: GroupId)(implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
+  /** ES9 api call to TES - delete an enrolment or known fact
+    * @param eori
+    * @param enrolmentKey
+    * @param groupId
+    * @param hc
+    * @return
+    */
+  def deAllocateGroup(eoriAction: String, eori: Eori, enrolmentKey: EnrolmentKeyType, groupId: GroupId)(implicit
+    hc: HeaderCarrier
+  ): Future[Either[ErrorMessage, Int]] = {
     val strEnrolmentKey = enrolmentKey.getEnrolmentKey(eori)
     val url = s"${config.taxEnrolmentsServiceUrl}/groups/$groupId/enrolments/$strEnrolmentKey"
     httpClient.DELETE[HttpResponse](url) map { resp =>
@@ -48,19 +51,22 @@ class DeAllocateGroupConnector @Inject()(httpClient: HttpClient, config: AppConf
         case NO_CONTENT =>
           auditCall(url, eoriAction, groupId.toString, strEnrolmentKey)
           Right(NO_CONTENT)
-        case failStatus => {
-          logger.error(s"Delete enrolment failed with HTTP status: $failStatus for existing EORI: $eori. Response: ${resp.body}")
+        case failStatus =>
+          logger.error(
+            s"Delete enrolment failed with HTTP status: $failStatus for existing EORI: $eori. Response: ${resp.body}"
+          )
           Left(ErrorMessage(s"Delete enrolment failed with HTTP status: $failStatus"))
-        }
       }
     }
   }
 
-  private def auditCall(url: String, eoriAction: String, groupId: String, enrolmentKey: String)(implicit hc: HeaderCarrier): Unit =
+  private def auditCall(url: String, eoriAction: String, groupId: String, enrolmentKey: String)(implicit
+    hc: HeaderCarrier
+  ): Unit =
     audit.sendExtendedDataEvent(
       transactionName = "Tax-Enrolments-Call",
       path = url,
       details = Json.toJson(DeAllocateGroupEvent(groupId, enrolmentKey)),
-      eventType = s"TaxEnrolmentsDeAllocateGroupCallFor$eoriAction",
+      eventType = s"TaxEnrolmentsDeAllocateGroupCallFor$eoriAction"
     )
 }

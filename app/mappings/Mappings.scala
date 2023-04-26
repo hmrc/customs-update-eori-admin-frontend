@@ -23,29 +23,37 @@ import java.time.LocalDate
 
 trait Mappings extends Formatters {
 
-  protected def localDate(invalidKey: String,
-                          invalidYear: String,
-                          oneDateComponentMissingKey: String,
-                          twoDateComponentsMissingKey: String,
-                          threeDateComponentsMissingKey: String,
-                          mustBeInPastKey: String,
-                          args: Seq[String] = Seq.empty): FieldMapping[LocalDate] =
-    of(new LocalDateFormatter(
-      invalidKey,
-      invalidYear,
-      oneDateComponentMissingKey,
-      twoDateComponentsMissingKey,
-      threeDateComponentsMissingKey,
-      mustBeInPastKey,
-      args
-    ))
+  protected def localDate(
+    invalidKey: String,
+    invalidYear: String,
+    oneDateComponentMissingKey: String,
+    twoDateComponentsMissingKey: String,
+    threeDateComponentsMissingKey: String,
+    mustBeInPastKey: String,
+    args: Seq[String] = Seq.empty
+  ): FieldMapping[LocalDate] =
+    of(
+      new LocalDateFormatter(
+        invalidKey,
+        invalidYear,
+        oneDateComponentMissingKey,
+        twoDateComponentsMissingKey,
+        threeDateComponentsMissingKey,
+        mustBeInPastKey,
+        args
+      )
+    )
 
-  protected def eoriNumber(requiredKey: String,
-                           patternNotMatchingKey: String,
-                           args: Seq[String] = Seq.empty): FieldMapping[String] =
-    of(new EoriNumberFormatter(
-      requiredKey,
-      patternNotMatchingKey,
-      args
-    ))
+  protected def eoriNumber(
+    requiredKey: String,
+    patternNotMatchingKey: String,
+    args: Seq[String] = Seq.empty
+  ): FieldMapping[String] =
+    of(
+      new EoriNumberFormatter(
+        requiredKey,
+        patternNotMatchingKey,
+        args
+      )
+    )
 }

@@ -30,8 +30,8 @@ class EoriNumberFormattersSpec extends AnyWordSpec with Matchers with OptionValu
 
   "EoriNumberFormatter" should {
     "bind if EORI Number is valid" in {
-        val result = eoriNumberFormatter.bind(field, Map(field -> "GB123456789012"))
-        result.toOption.get shouldBe "GB123456789012"
+      val result = eoriNumberFormatter.bind(field, Map(field -> "GB123456789012"))
+      result.toOption.get shouldBe "GB123456789012"
     }
 
     "return requiredKey error when EORI number string is empty" in {

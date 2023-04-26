@@ -36,20 +36,20 @@ class QueryGroupsConnectorSpec extends ConnectorSpecBase {
       mockHttpClient.GET(endsWith("GB1234567890/groups"), any[Seq[(String, String)]], any[Seq[(String, String)]])(
         any[HttpReads[Either[UpstreamErrorResponse, Groups]]],
         any[HeaderCarrier],
-        any[ExecutionContext]))
+        any[ExecutionContext]
+      )
+    )
       .thenReturn(Future.successful(Right(Groups(Seq("90ccf333-65d2-4bf2-a008-01dfca702161"), Seq.empty))))
   }
 
   "The Query Groups Connector" should {
     "call the query groups service with a GET command with the correct url" in {
       whenReady(connector.query(Eori("GB1234567890"), HMRC_CUS_ORG)) { _ =>
-        verify(mockHttpClient).GET(meq(
-          "http://localhost:1234/enrolment-store/enrolments/HMRC-CUS-ORG~EORINumber~GB1234567890/groups"),
+        verify(mockHttpClient).GET(
+          meq("http://localhost:1234/enrolment-store/enrolments/HMRC-CUS-ORG~EORINumber~GB1234567890/groups"),
           any[Seq[(String, String)]],
-          any[Seq[(String, String)]])(
-          any[HttpReads[Either[UpstreamErrorResponse, Groups]]],
-          any[HeaderCarrier],
-          any[ExecutionContext])
+          any[Seq[(String, String)]]
+        )(any[HttpReads[Either[UpstreamErrorResponse, Groups]]], any[HeaderCarrier], any[ExecutionContext])
       }
     }
 
@@ -63,7 +63,9 @@ class QueryGroupsConnectorSpec extends ConnectorSpecBase {
         mockHttpClient.GET(endsWith("GB8888877777/groups"), any[Seq[(String, String)]], any[Seq[(String, String)]])(
           any[HttpReads[Either[UpstreamErrorResponse, Groups]]],
           any[HeaderCarrier],
-          any[ExecutionContext])).thenReturn(Future.successful(Left(UpstreamErrorResponse("failed", BAD_REQUEST))))
+          any[ExecutionContext]
+        )
+      ).thenReturn(Future.successful(Left(UpstreamErrorResponse("failed", BAD_REQUEST))))
       val result = connector.query(Eori("GB8888877777"), HMRC_CUS_ORG).futureValue
       result shouldBe Left(ErrorMessage("Could not find Group for existing EORI: GB8888877777"))
     }

@@ -30,18 +30,19 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-case class ReEnrolRequest(userId: String,
-                          `type`: String = "principal",
-                          action: String = "enrolAndActivate")
+case class ReEnrolRequest(userId: String, `type`: String = "principal", action: String = "enrolAndActivate")
 
 object ReEnrolRequest {
   implicit val writes: OWrites[ReEnrolRequest] = Json.writes[ReEnrolRequest]
 }
 
-class ReAllocateGroupConnector @Inject()(httpClient: HttpClient, config: AppConfig, audit: Auditable)(implicit ec: ExecutionContext) extends Logging{
+class ReAllocateGroupConnector @Inject() (httpClient: HttpClient, config: AppConfig, audit: Auditable)(implicit
+  ec: ExecutionContext
+) extends Logging {
 
-  def reAllocate(eori: Eori, enrolmentKey: EnrolmentKeyType, userId: UserId, groupId: GroupId)
-                        (implicit hc: HeaderCarrier): Future[Either[ErrorMessage, Int]] = {
+  def reAllocate(eori: Eori, enrolmentKey: EnrolmentKeyType, userId: UserId, groupId: GroupId)(implicit
+    hc: HeaderCarrier
+  ): Future[Either[ErrorMessage, Int]] = {
     val req = ReEnrolRequest(userId.id)
     val strEnrolmentKey = enrolmentKey.getEnrolmentKey(eori)
     val url = s"${config.taxEnrolmentsServiceUrl}/groups/$groupId/enrolments/$strEnrolmentKey"
@@ -51,19 +52,22 @@ class ReAllocateGroupConnector @Inject()(httpClient: HttpClient, config: AppConf
         case CREATED =>
           auditCall(url, groupId.toString, userId.toString, strEnrolmentKey)
           Right(CREATED)
-        case failStatus =>{
-          logger.error(s"Allocate group failed with HTTP status: $failStatus for existing EORI: $eori. Result: ${resp.body}")
+        case failStatus =>
+          logger.error(
+            s"Allocate group failed with HTTP status: $failStatus for existing EORI: $eori. Result: ${resp.body}"
+          )
           Left(ErrorMessage(s"Allocate group failed with HTTP status: $failStatus (${resp.body})"))
-        }
       }
     }
   }
 
-  private def auditCall(url: String, groupId: String, userId: String, enrolmentKey: String)(implicit hc: HeaderCarrier): Unit =
+  private def auditCall(url: String, groupId: String, userId: String, enrolmentKey: String)(implicit
+    hc: HeaderCarrier
+  ): Unit =
     audit.sendExtendedDataEvent(
       transactionName = "Tax-Enrolments-Call",
       path = url,
       details = Json.toJson(ReAllocateGroupEvent(groupId, userId, enrolmentKey)),
-      eventType = s"TaxEnrolmentsReAllocateGroupCall",
+      eventType = s"TaxEnrolmentsReAllocateGroupCall"
     )
 }

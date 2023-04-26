@@ -18,13 +18,14 @@ package models.events
 
 import play.api.libs.json.Json
 
-case class UpdateEoriEvent(oldEoriNumber: String,
-                           newEoriNumber: String,
-                           dateOfEstablishment: String,
-                           status: String,
-                           failedServices: List[String] = List.empty,
-                           updatedServices: List[String] = List.empty
-                          )
+case class UpdateEoriEvent(
+  oldEoriNumber: String,
+  newEoriNumber: String,
+  dateOfEstablishment: String,
+  status: String,
+  failedServices: List[String] = List.empty,
+  updatedServices: List[String] = List.empty
+)
 
 object UpdateEoriEvent {
   implicit val format = Json.format[UpdateEoriEvent]

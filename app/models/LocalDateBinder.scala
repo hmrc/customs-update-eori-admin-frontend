@@ -31,7 +31,7 @@ object LocalDateBinder {
       override def bind(key: String, value: String): Either[String, LocalDate] =
         stringBinder.bind(key, value) match {
           case Right(right) => Right(LocalDate.from(dateTimeFormatter.parse(right)))
-          case _ => Left("LocalDate binding failed")
+          case _            => Left("LocalDate binding failed")
         }
 
       override def unbind(key: String, value: LocalDate): String =
@@ -44,5 +44,3 @@ object LocalDateBinder {
   implicit def stringToLocalDate(date: String): LocalDate =
     LocalDate.from(dateTimeFormatter.parse(date))
 }
-
-

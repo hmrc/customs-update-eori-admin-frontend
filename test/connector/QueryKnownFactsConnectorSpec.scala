@@ -29,7 +29,6 @@ import java.time.LocalDate
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
-
 class QueryKnownFactsConnectorSpec extends ConnectorSpecBase {
 
   private val connector = new QueryKnownFactsConnector(mockHttpClient, mockAppConfig, mockAuditable)
@@ -68,13 +67,13 @@ class QueryKnownFactsConnectorSpec extends ConnectorSpecBase {
       val request = QueryKnownFactsRequest("HMRC-CUS-ORG", Seq(KeyValue("EORINumber", "GB1234567890")))
 
       when(
-        mockHttpClient.POST(anyString,
-          meq(request),
-          any[Seq[(String, String)]])(
+        mockHttpClient.POST(anyString, meq(request), any[Seq[(String, String)]])(
           any[Writes[QueryKnownFactsRequest]],
           any[HttpReads[HttpResponse]],
           any[HeaderCarrier],
-          any[ExecutionContext]))
+          any[ExecutionContext]
+        )
+      )
         .thenReturn(Future.successful(HttpResponse(OK, response)))
 
       val maybeEnrolment = connector
@@ -84,9 +83,11 @@ class QueryKnownFactsConnectorSpec extends ConnectorSpecBase {
       maybeEnrolment.isRight shouldBe true
       val enrolment = maybeEnrolment.getOrElse(new Enrolment(Seq.empty, Seq.empty))
       enrolment.identifiers shouldBe Seq(KeyValue("EORINumber", "GB1234567890"))
-      enrolment.verifiers shouldBe Seq(KeyValue("NINO", "NZ123456A"),
+      enrolment.verifiers shouldBe Seq(
+        KeyValue("NINO", "NZ123456A"),
         KeyValue("Postcode", "BD99 3LZ"),
-        KeyValue("DateOfEstablishment", "01/01/2011"))
+        KeyValue("DateOfEstablishment", "01/01/2011")
+      )
     }
 
     "return error for a valid EORI but date not matched" in {
@@ -122,13 +123,13 @@ class QueryKnownFactsConnectorSpec extends ConnectorSpecBase {
       val request = QueryKnownFactsRequest("HMRC-CUS-ORG", Seq(KeyValue("EORINumber", "GB1234567890")))
 
       when(
-        mockHttpClient.POST(anyString,
-          meq(request),
-          any[Seq[(String, String)]])(
+        mockHttpClient.POST(anyString, meq(request), any[Seq[(String, String)]])(
           any[Writes[QueryKnownFactsRequest]],
           any[HttpReads[HttpResponse]],
           any[HeaderCarrier],
-          any[ExecutionContext]))
+          any[ExecutionContext]
+        )
+      )
         .thenReturn(Future.successful(HttpResponse(OK, response)))
 
       val result = connector
@@ -142,13 +143,13 @@ class QueryKnownFactsConnectorSpec extends ConnectorSpecBase {
       val request = QueryKnownFactsRequest("HMRC-CUS-ORG", Seq(KeyValue("EORINumber", "GB9999999999")))
 
       when(
-        mockHttpClient.POST(anyString,
-          meq(request),
-          any[Seq[(String, String)]])(
+        mockHttpClient.POST(anyString, meq(request), any[Seq[(String, String)]])(
           any[Writes[QueryKnownFactsRequest]],
           any[HttpReads[HttpResponse]],
           any[HeaderCarrier],
-          any[ExecutionContext]))
+          any[ExecutionContext]
+        )
+      )
         .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
 
       val result = connector

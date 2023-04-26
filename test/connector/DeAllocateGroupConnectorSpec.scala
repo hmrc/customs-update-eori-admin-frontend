@@ -37,35 +37,41 @@ class DeAllocateGroupConnectorSpec extends ConnectorSpecBase {
         mockHttpClient.DELETE[HttpResponse](any[String], any[Seq[(String, String)]])(
           any[HttpReads[HttpResponse]],
           any[HeaderCarrier],
-          any[ExecutionContext]))
+          any[ExecutionContext]
+        )
+      )
         .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
       whenReady(
-        connector.deAllocateGroup(UPDATE, Eori("GB1234567890"), HMRC_CUS_ORG, GroupId("90ccf333-65d2-4bf2-a008-01dfca702161"))) {
-        _ =>
-          verify(mockHttpClient).DELETE(
-            meq("http://localhost:1222/groups/90ccf333-65d2-4bf2-a008-01dfca702161/enrolments/HMRC-CUS-ORG~EORINumber~GB1234567890"),
-            any[Seq[(String, String)]]
-          )(any[HttpReads[HttpResponse]],
-            any[HeaderCarrier],
-            any[ExecutionContext])
+        connector
+          .deAllocateGroup(UPDATE, Eori("GB1234567890"), HMRC_CUS_ORG, GroupId("90ccf333-65d2-4bf2-a008-01dfca702161"))
+      ) { _ =>
+        verify(mockHttpClient).DELETE(
+          meq(
+            "http://localhost:1222/groups/90ccf333-65d2-4bf2-a008-01dfca702161/enrolments/HMRC-CUS-ORG~EORINumber~GB1234567890"
+          ),
+          any[Seq[(String, String)]]
+        )(any[HttpReads[HttpResponse]], any[HeaderCarrier], any[ExecutionContext])
       }
     }
 
     "return an error message if the delete request fails " in {
       when(
         mockHttpClient.DELETE(
-          meq("http://localhost:1222/groups/90ccf333-65d2-4bf2-a008-01dfca706334/enrolments/HMRC-CUS-ORG~EORINumber~GB1234566634"),
+          meq(
+            "http://localhost:1222/groups/90ccf333-65d2-4bf2-a008-01dfca706334/enrolments/HMRC-CUS-ORG~EORINumber~GB1234566634"
+          ),
           any[Seq[(String, String)]]
-        )(any[HttpReads[HttpResponse]],
-          any[HeaderCarrier],
-          any[ExecutionContext]))
+        )(any[HttpReads[HttpResponse]], any[HeaderCarrier], any[ExecutionContext])
+      )
         .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
-      val result = connector.deAllocateGroup(
-        UPDATE,
-        Eori("GB1234566634"),
-        HMRC_CUS_ORG,
-        GroupId("90ccf333-65d2-4bf2-a008-01dfca706334")
-      ).futureValue
+      val result = connector
+        .deAllocateGroup(
+          UPDATE,
+          Eori("GB1234566634"),
+          HMRC_CUS_ORG,
+          GroupId("90ccf333-65d2-4bf2-a008-01dfca706334")
+        )
+        .futureValue
       result shouldBe Left(ErrorMessage("Delete enrolment failed with HTTP status: 400"))
     }
   }

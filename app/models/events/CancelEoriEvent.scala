@@ -18,12 +18,13 @@ package models.events
 
 import play.api.libs.json.Json
 
-case class CancelEoriEvent(eoriNumber: String,
-                           dateOfEstablishment: String,
-                           status: String,
-                           failedServices: List[String] = List.empty,
-                           cancelledServices: List[String] = List.empty
-                          )
+case class CancelEoriEvent(
+  eoriNumber: String,
+  dateOfEstablishment: String,
+  status: String,
+  failedServices: List[String] = List.empty,
+  cancelledServices: List[String] = List.empty
+)
 
 object CancelEoriEvent {
   implicit val format = Json.format[CancelEoriEvent]

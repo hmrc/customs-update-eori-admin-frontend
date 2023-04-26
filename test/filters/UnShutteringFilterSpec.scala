@@ -26,7 +26,8 @@ import play.api.test.Helpers._
 import play.api.test.{FakeRequest, Injecting}
 import views.html.ShutterView
 
-class UnShutteringFilterSpec extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with OptionValues with Injecting {
+class UnShutteringFilterSpec
+    extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with OptionValues with Injecting {
 
   override lazy val app: Application = new GuiceApplicationBuilder()
     .configure("shuttered" -> false)
@@ -40,7 +41,9 @@ class UnShutteringFilterSpec extends AnyWordSpec with Matchers with GuiceOneAppP
       val result = route(app, FakeRequest(GET, controllers.routes.EoriActionController.showPage.url)).value
 
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result) shouldBe Some("/stride/sign-in?successURL=%2Fmanage-eori-number&origin=customs-update-eori-admin-frontend")
+      redirectLocation(result) shouldBe Some(
+        "/stride/sign-in?successURL=%2Fmanage-eori-number&origin=customs-update-eori-admin-frontend"
+      )
     }
   }
 }

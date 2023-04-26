@@ -19,21 +19,21 @@ package mappings
 import play.api.data.FormError
 import play.api.data.format.Formatter
 
-private[mappings] class EoriNumberFormatter(requiredKey: String,
-                                            patternNotMatchingKey: String,
-                                            args: Seq[String] = Seq.empty
-                                           ) extends Formatter[String] with Formatters {
+private[mappings] class EoriNumberFormatter(
+  requiredKey: String,
+  patternNotMatchingKey: String,
+  args: Seq[String] = Seq.empty
+) extends Formatter[String] with Formatters {
   private val EORI_NUMBER_PATTERN = "^[G][B][0-9]{12}$"
 
   override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], String] = {
     val stringFormatted = stringFormatter(requiredKey, args).bind(key, data)
     stringFormatted.flatMap {
       case str if str.matches(EORI_NUMBER_PATTERN) => Right(str)
-      case _ => Left(List(FormError(key, patternNotMatchingKey, args)))
+      case _                                       => Left(List(FormError(key, patternNotMatchingKey, args)))
     }
   }
 
-  override def unbind(key: String, value: String): Map[String, String] = {
+  override def unbind(key: String, value: String): Map[String, String] =
     Map(key -> value)
-  }
 }
