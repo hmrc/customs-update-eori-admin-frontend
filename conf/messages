@@ -22,7 +22,6 @@ eori.newEoriNumberQuestion = What is the trader’s new EORI number?
 eori.accountNumberHint = The first two letters are GB, followed by 12 digits. For example, GB123456123456.
 eori.radioButtonYes = Yes
 eori.radioButtonNo = No
-eori.noEnrolment = The EORI number {0} does not have any subscriptions.
 eori.noEnrolment.goBack = Go back to
 eori.noEnrolment.replaceCancelHomePageLink = replace an existing EORI number or cancel subscriptions to HMRC services
 eori.problem.homePageLink = Replace another EORI number or cancel subscriptions to HMRC services
@@ -49,6 +48,8 @@ eoriUpdate.confirmPage.heading = Review changes before replacing existing EORI n
 eoriUpdate.confirm.details = Existing EORI number {0} will be replaced with {1} for the following subscriptions:
 eoriUpdate.confirm.replaceWith = Are you sure you want to replace the current EORI number with {0}?
 eoriUpdate.confirmPage.section2 = You will not be able to replace existing EORI number {0} for:
+eoriUpdate.noEnrolment = The EORI number {0} does not have any subscriptions that can be updated.
+eoriUpdate.notUpdatableEnrolments = It is currently subscribed to the following subscriptions:
 
 # Update Eori Problem
 eoriUpdate.problem.heading = There was a problem replacing the EORI number
@@ -89,6 +90,8 @@ eoriCancel.success.section2 = EORI number {0} remains subscribed to and cannot b
 eoriCancel.success.section3 = What happens next
 eoriCancel.success.section4 = You will need to email the trader to confirm which EORI number {0} subscriptions have been successfully cancelled.
 eoriCancel.success.section5 = You can get help with your email in the guidance.
+eoriCancel.noEnrolment = The EORI number {0} does not have any subscriptions that can be cancelled.
+eoriCancel.notCancelableEnrolments = It is currently subscribed to the following subscriptions:
 
 # Validation Messages
 eori.validation.summary.heading = There is a problem
