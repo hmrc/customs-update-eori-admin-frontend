@@ -18,7 +18,7 @@ package controllers
 
 import audit.Auditable
 import config.AppConfig
-import models.EoriEventEnum.{CANCEL, UPDATE}
+import models.EoriEventEnum.{UPDATE}
 import models.{Enrolment, EnrolmentKey, Eori, ErrorMessage, ValidateEori}
 import models.LocalDateBinder.stringToLocalDate
 import org.mockito.ArgumentMatchers.{any, eq => meq}
