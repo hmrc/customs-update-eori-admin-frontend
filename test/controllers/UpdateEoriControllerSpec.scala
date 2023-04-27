@@ -318,17 +318,19 @@ class UpdateEoriControllerSpec
     "show no enrolment page if existing EORI number is part of notUpdatableEnrolments " in withSignedInUser {
       val fakeRequestWithBody = FakeRequest("POST", "/")
         .withFormUrlEncodedBody(
-          "existing-eori" -> "GB123456789012",
-          "date-of-establishment.day" -> "04",
+          "existing-eori"         -> "GB123456789012",
+          "date-of-establishment.day"   -> "04",
           "date-of-establishment.month" -> "11",
-          "date-of-establishment.year" -> "1997"
+          "date-of-establishment.year"  -> "1997",
+          "new-eori"                    -> "GB944494423492"
         )
-      when(enrolmentService.getEnrolments(meq(CANCEL), meq(Eori("GB123456789012")), meq(stringToLocalDate("04/11/1997")))(any()))
+      when(enrolmentService.getEnrolments(meq(UPDATE), meq(Eori("GB123456789012")), meq(stringToLocalDate("04/11/1997")))(any()))
         .thenReturn(Future.successful(Seq(("HMRC_CTC_ORG", ValidateEori.TRUE))))
       val result = controller.continueUpdateEori(fakeRequestWithBody)
 
       status(result) shouldBe OK
-      contentAsString(result) should include("The EORI number GB123456789012 does not have any subscriptions that can be updated.")
+      contentAsString(result) should include("The EORI number GB123456789012 does not have any subscriptions that can be replaced.")
+      contentAsString(result) should include("It is currently subscribed to the following subscriptions:")
     }
 
     "redirect to STRIDE login for not logged-in user" in withNotSignedInUser {

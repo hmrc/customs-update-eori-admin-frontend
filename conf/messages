@@ -48,7 +48,7 @@ eoriUpdate.confirmPage.heading = Review changes before replacing existing EORI n
 eoriUpdate.confirm.details = Existing EORI number {0} will be replaced with {1} for the following subscriptions:
 eoriUpdate.confirm.replaceWith = Are you sure you want to replace the current EORI number with {0}?
 eoriUpdate.confirmPage.section2 = You will not be able to replace existing EORI number {0} for:
-eoriUpdate.noEnrolment = The EORI number {0} does not have any subscriptions that can be updated.
+eoriUpdate.noEnrolment = The EORI number {0} does not have any subscriptions that can be replaced.
 eoriUpdate.notUpdatableEnrolments = It is currently subscribed to the following subscriptions:
 
 # Update Eori Problem

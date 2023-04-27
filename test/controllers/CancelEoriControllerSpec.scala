@@ -287,6 +287,7 @@ class CancelEoriControllerSpec
 
       status(result) shouldBe OK
       contentAsString(result) should include("The EORI number GB123456789012 does not have any subscriptions that can be cancelled.")
+      contentAsString(result) should include("It is currently subscribed to the following subscriptions:")
     }
 
     "redirect to STRIDE login for not logged-in user" in withNotSignedInUser {
