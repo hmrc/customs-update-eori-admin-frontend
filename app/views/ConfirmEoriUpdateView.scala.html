@@ -30,7 +30,23 @@
 
                     @if(updatableEnrolments.isEmpty) {
                         <h1 class="govuk-heading-l">@messages("eoriUpdate.noEnrolmentPage.heading", form("existing-eori").value.getOrElse("ERROR"))</h1>
-                        <p class="govuk-body">@messages("eori.noEnrolment", form("existing-eori").value.getOrElse("ERROR"))</p>
+                        <p class="govuk-body">@messages("eoriUpdate.noEnrolment", form("existing-eori").value.getOrElse("ERROR"))</p>
+
+                        @if(notUpdatableEnrolments.nonEmpty) {
+                        <p class="govuk-body">@messages("eoriUpdate.notUpdatableEnrolments")</p>
+                        <ul class="govuk-list govuk-list--bullet">
+                            @for(enrolment <- notUpdatableEnrolments) {
+                                @if(enrolment.equals("HMRC-CTS-ORG")) {
+                                    @for(cts <- EnrolmentKeySubLists.ctsList) {
+                                        <li>@cts</li>
+                                    }
+                            } else {
+                                <li>@EnrolmentKey.getDescription(enrolment).getOrElse(enrolment)</li>
+                            }
+                        }
+                        </ul>
+                        }
+
                         <p class="govuk-body">@messages("eori.noEnrolment.goBack")
                             <a href="/manage-eori-number"
                                 class="govuk-link">@messages("eori.noEnrolment.replaceCancelHomePageLink")</a>.
