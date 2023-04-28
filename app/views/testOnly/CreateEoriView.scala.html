@@ -1,0 +1,127 @@
+@*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import views.html.Layout
+@import uk.gov.hmrc.govukfrontend.views.html.components.{ErrorMessage => Err, _}
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+
+@this(
+        layout: Layout,
+        formHelper: FormWithCSRF,
+        govukInsetText: GovukInsetText,
+        govukInput: GovukInput,
+        govukDateInput: GovukDateInput,
+        govukNotificationBanner: GovukNotificationBanner,
+        govukErrorSummary: GovukErrorSummary,
+        submitButton: GovukButton
+)
+@(form: Form[_], displayMessage: Option[Boolean] = None)(implicit request: Request[_], messages: Messages)
+
+@layout(pageTitle = Some(messages("service.titleWithParam", "Test-Only")), showBackLink = false) {
+    @formHelper(action = controllers.testOnly.routes.StubDataController.submitCreateRequest) {
+        <h1 class="govuk-heading-l">@messages("testOnly.heading")</h1>
+
+        @if(displayMessage.isDefined) {
+            @if(displayMessage.get) {
+                @govukNotificationBanner(
+                    NotificationBanner(
+                        bannerType = Some("success"),
+                        content = Text(messages("testOnly.notification.success"))
+                    )
+                )
+            } else {
+                @govukErrorSummary(
+                    ErrorSummary(
+                        title = Text(messages("testOnly.notification.fail"))
+                    )
+                )
+            }
+        }
+
+        @govukInput(Input(
+            id = form("eori-number").name,
+            name = form("eori-number").name,
+            value = form("eori-number").value,
+            classes = "govuk-input govuk-input--width-20",
+            hint = Some(Hint(
+                content = Text(messages("testOnly.eori.hint"))
+            )),
+            label = Label(
+                classes = "govuk-label govuk-label--m",
+                content = Text(messages("testOnly.eori.label"))
+            ),
+            errorMessage = form.errors("eori-number").headOption.map(formError => Err(
+                content = Text(messages(formError.message)))
+            )
+        ))
+
+        @govukDateInput(DateInput(
+            id = "enrolment-date",
+            fieldset = Some(Fieldset(
+                legend = Some(Legend(
+                    content = Text(messages("testOnly.establishedDate.label")),
+                    classes = "govuk-fieldset__legend--m",
+                    isPageHeading = true
+                ))
+            )),
+            hint = Some(Hint(
+                content = Text(messages("testOnly.establishedDate.example"))
+            )),
+            items = Seq(
+                InputItem(
+                    name = "date-of-establishment.day",
+                    id = "txtDateOfEstablishmentDay",
+                    label = Some(messages("eori.companyEstablishedDay")),
+                    classes = "govuk-input--width-2"
+                ),
+                InputItem(
+                    name = "date-of-establishment.month",
+                    id = "txtDateOfEstablishmentMonth",
+                    label = Some(messages("eori.companyEstablishedMonth")),
+                    classes = "govuk-input govuk-date-input__input govuk-input--width-2"
+                ),
+                InputItem(
+                    name = "date-of-establishment.year",
+                    id = "txtDateOfEstablishmentYear",
+                    label = Some(messages("eori.companyEstablishedYear")),
+                    classes = "govuk-input govuk-date-input__input govuk-input--width-4"
+                )
+            )
+        ).withFormField(form("date-of-establishment")))
+
+        @govukInput(Input(
+            id = form("enrolments").name,
+            name = form("enrolments").name,
+            value = form("enrolments").value,
+            classes = "govuk-input govuk-input--width-20",
+            hint = Some(Hint(
+                content = Text(messages("testOnly.enrolments.hint"))
+            )),
+            label = Label(
+                classes = "govuk-label govuk-label--m",
+                content = Text(messages("testOnly.enrolments.label"))
+            ),
+            errorMessage = form.errors("enrolments").headOption.map(formError => Err(
+                content = Text(messages(formError.message)))
+            )
+        ))
+
+        @govukInsetText(InsetText(content = Text(messages("testOnly.enrolments.hint.all"))))
+
+        @submitButton(Button(content = Text(messages("testOnly.submitButton"))))
+    }
+}
