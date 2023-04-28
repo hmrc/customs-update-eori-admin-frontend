@@ -108,3 +108,24 @@ eori.validation.establishmentDate.invalid = The date the trader was established 
 eori.validation.establishmentDate.invalidYear = Year must include 4 numbers
 eori.validation.establishmentDate.mustBeInPast = The date the trader was established must be in the past
 eori.validation.establishmentDate.mustBeMatched = The trader’s establishment date must match establishment date of the current EORI number
+
+# Test-Only Messages
+testOnly.heading = Create Eori Number for Testing
+testOnly.submitButton = Create Eori Number
+testOnly.eori.label = Enter an EORI number
+testOnly.eori.hint = The first two letters are GB, followed by 12 digits. For example, GB123456123456.
+testOnly.eori.validation.required = Enter the EORI number
+testOnly.eori.validation.format = Enter an EORI number in the correct format
+testOnly.establishmentDate.validation.required.all = Enter the establishment date
+testOnly.establishmentDate.validation.required.two = Established must be a real date. Enter a {0} and a {1}
+testOnly.establishmentDate.validation.required.one = Established must include a {0}
+testOnly.establishmentDate.validation.invalid = Established must be a real date
+testOnly.establishmentDate.validation.invalidYear = Year must include 4 numbers
+testOnly.establishmentDate.validation.mustBeInPast = Established must be in the past
+testOnly.establishedDate.label = Enter the Date of Establishment
+testOnly.establishedDate.example = For example, 27 3 2007
+testOnly.enrolments.label = Enter Enrolments
+testOnly.enrolments.hint = For a single enrolment just enter valid service name. Ex: HMRC-CUS-ORG. To enter multiple enrolments please use comma between service names. Ex: HMRC-CUS-ORG,HMRC-ATAR-ORG.
+testOnly.enrolments.hint.all = These services can be enrolled: HMRC-CUS-ORG, HMRC-ATAR-ORG, HMRC-GVMS-ORG, HMRC-SS-ORG, HMRC-CTS-ORG, HMRC-ESC-ORG, HMRC-CTC-ORG.
+testOnly.notification.success = EORI number is created successfully
+testOnly.notification.fail = EORI number creation is failed!

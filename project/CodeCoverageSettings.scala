@@ -13,7 +13,8 @@ object CodeCoverageSettings {
     "testOnly.*",
     "testOnlyDoNotUseInAppConf.*",
     "audit.*",
-    "views.*"
+    "views.*",
+    ".testOnly.*",
   )
 
   val settings: Seq[Setting[_]] = Seq(

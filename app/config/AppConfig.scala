@@ -27,6 +27,7 @@ class AppConfig @Inject() (
   @Named("appName") val appName: String
 ) {
   lazy val isShuttered: Boolean = config.get[Boolean]("shuttered")
+  val enrolmentStoreProxyBaseServiceUrl: String = servicesConfig.baseUrl("enrolment-store-proxy")
   val enrolmentStoreProxyServiceUrl: String =
     s"${servicesConfig.baseUrl("enrolment-store-proxy")}/enrolment-store-proxy"
   val taxEnrolmentsServiceUrl: String = s"${servicesConfig.baseUrl("tax-enrolments")}/tax-enrolments"
