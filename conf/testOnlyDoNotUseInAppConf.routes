@@ -10,7 +10,7 @@
 # Failing to follow this rule may result in test routes deployed in production.
 
 # Add all the application routes to the prod.routes file
-GET        /test-only/create-eori-number    controllers.testOnly.StubDataController.showPage
-POST       /test-only/create-eori-number    controllers.testOnly.StubDataController.submitCreateRequest
+GET        /manage-eori-number/test-only/create-eori-number     controllers.testOnly.StubDataController.showPage
+POST       /manage-eori-number/test-only/create-eori-number     controllers.testOnly.StubDataController.submitCreateRequest
 
-->         /                                prod.Routes
+->         /                                                    prod.Routes
