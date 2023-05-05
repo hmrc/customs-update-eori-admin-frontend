@@ -19,7 +19,7 @@ package controllers
 import com.google.inject.Inject
 import play.api.mvc.Results._
 import play.api.mvc._
-import play.api.{Configuration, Environment, Mode}
+import play.api.{Configuration, Environment}
 import uk.gov.hmrc.auth.core.AuthProvider.PrivilegedApplication
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
 import uk.gov.hmrc.auth.core.retrieve.{Name, ~}
@@ -40,6 +40,7 @@ class AuthAction @Inject() (
 )(implicit val executionContext: ExecutionContext)
     extends ActionBuilder[AuthenticatedRequest, AnyContent] with ActionRefiner[Request, AuthenticatedRequest]
     with AuthorisedFunctions with AuthRedirects {
+  private val isLocal: Boolean = config.get[Boolean]("microservice.services.stride-auth-local")
 
   override protected def refine[A](request: Request[A]): Future[Either[Result, AuthenticatedRequest[A]]] = {
     implicit val hc: HeaderCarrier =
@@ -61,10 +62,14 @@ class AuthAction @Inject() (
     }
   } recover {
     case _: NoActiveSession =>
-      val redirectUrl =
-        if (env.mode.equals(Mode.Dev)) s"http://${request.host}${request.uri}"
-        else s"${request.uri}"
-      Left(toStrideLogin(redirectUrl))
+      Left(toStrideLogin {
+        if (isLocal) {
+          s"http://${request.host}${request.uri}"
+        }
+        else {
+          s"${request.uri}"
+        }
+      })
     case _: InsufficientEnrolments =>
       Left(Ok("You are not authorised."))
   }
