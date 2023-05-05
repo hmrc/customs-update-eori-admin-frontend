@@ -42,7 +42,7 @@ class UnShutteringFilterSpec
 
       status(result) shouldBe SEE_OTHER
       redirectLocation(result) shouldBe Some(
-        "/stride/sign-in?successURL=%2Fmanage-eori-number&origin=customs-update-eori-admin-frontend"
+        "/stride/sign-in?successURL=http%3A%2F%2Flocalhost%2Fmanage-eori-number&origin=customs-update-eori-admin-frontend"
       )
     }
   }
