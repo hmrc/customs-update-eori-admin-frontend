@@ -31,8 +31,9 @@ eori.doeExample = For example, 27 3 2007
 
 # Shutter View
 eori.shutter.title = Service not available
-eori.shutter.heading = Service not available
-eori.shutter.message = Eori toolkit service is under maintenance. The service will be available soon.
+eori.shutter.heading = Sorry, there is a problem with the service
+eori.shutter.tryAgain = Try again later.
+eori.shutter.message = We have not saved your answers. When the service is available, you will have to start again.
 
 # Eori Action
 eoriAction.successBannerEoriUpdateContent = EORI number {0} has been replaced with {1}
