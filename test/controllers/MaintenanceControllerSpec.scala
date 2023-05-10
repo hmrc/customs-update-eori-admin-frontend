@@ -57,7 +57,7 @@ class MaintenanceControllerSpec
       status(result) shouldBe Status.SERVICE_UNAVAILABLE
       contentType(result) shouldBe Some("text/html")
       contentAsString(result) should include(
-        s"Eori toolkit service is under maintenance. The service will be available soon."
+        s"Sorry, there is a problem with the service"
       )
     }
   }
