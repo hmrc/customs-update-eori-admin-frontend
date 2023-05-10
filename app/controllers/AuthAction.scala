@@ -65,8 +65,7 @@ class AuthAction @Inject() (
       Left(toStrideLogin {
         if (isLocal) {
           s"http://${request.host}${request.uri}"
-        }
-        else {
+        } else {
           s"${request.uri}"
         }
       })

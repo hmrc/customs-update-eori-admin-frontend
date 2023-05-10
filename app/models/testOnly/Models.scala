@@ -19,20 +19,20 @@ package models.testOnly
 import play.api.libs.json.Json
 
 case class User(
-                 credId: String,
-                 name: String = "Default User",
-                 email: String = "default@example.com",
-                 credentialRole: String = "Admin",
-                 description: Option[String] = Some("User Description"),
-                 owningUserId: Option[String] = None,
-                 credentialCreatedDate: Option[String] = None,
-                 lastSuccessfulAuthentication: Option[String]= None,
-                 lastUnsuccessfulAuthentication: Option[String]= None,
-                 lastPasswordChange: Option[String]= None,
-                 accountLocked: Option[String]= None,
-                 accountLockedExpiry: Option[String] = None,
-                 suspended: Option[Boolean] = None
-               )
+  credId: String,
+  name: String = "Default User",
+  email: String = "default@example.com",
+  credentialRole: String = "Admin",
+  description: Option[String] = Some("User Description"),
+  owningUserId: Option[String] = None,
+  credentialCreatedDate: Option[String] = None,
+  lastSuccessfulAuthentication: Option[String] = None,
+  lastUnsuccessfulAuthentication: Option[String] = None,
+  lastPasswordChange: Option[String] = None,
+  accountLocked: Option[String] = None,
+  accountLockedExpiry: Option[String] = None,
+  suspended: Option[Boolean] = None
+)
 object User {
   implicit val reads = Json.reads[User]
   implicit val writes = Json.writes[User]
@@ -44,8 +44,6 @@ object KnownFact {
   implicit val writes = Json.writes[KnownFact]
 }
 
-
-
 case class Identifier(key: String, value: String, maskedValue: Option[String] = None)
 object Identifier {
   implicit val reads = Json.reads[Identifier]
@@ -53,15 +51,15 @@ object Identifier {
 }
 
 case class Enrolment(
-                      serviceName: String,
-                      identifiers: Seq[Identifier],
-                      enrolmentFriendlyName: Option[String] = Some("Customs Enrolment"),
-                      assignedUserCreds: Seq[String] = Seq.empty,
-                      state: String = "Activated",
-                      enrolmentType: String = "principal",
-                      assignedToAll: Boolean = true,
-                      enrolmentTokenExpiryDate: Option[String] = None
-                    )
+  serviceName: String,
+  identifiers: Seq[Identifier],
+  enrolmentFriendlyName: Option[String] = Some("Customs Enrolment"),
+  assignedUserCreds: Seq[String] = Seq.empty,
+  state: String = "Activated",
+  enrolmentType: String = "principal",
+  assignedToAll: Boolean = true,
+  enrolmentTokenExpiryDate: Option[String] = None
+)
 
 object Enrolment {
   implicit val reads = Json.reads[Enrolment]
@@ -69,16 +67,15 @@ object Enrolment {
 }
 
 case class GroupPersona(
-                         groupId: String,
-                         affinityGroup: String = "Organisation",
-                         users: Seq[User],
-                         enrolments: Seq[Enrolment],
-                         agentCode: Option[String] = None,
-                         agentId: Option[String] = None,
-                         agentName: Option[String] = None,
-                         suspended: Option[Boolean] = None
-                       ) {
-}
+  groupId: String,
+  affinityGroup: String = "Organisation",
+  users: Seq[User],
+  enrolments: Seq[Enrolment],
+  agentCode: Option[String] = None,
+  agentId: Option[String] = None,
+  agentName: Option[String] = None,
+  suspended: Option[Boolean] = None
+) {}
 
 object GroupPersona {
   implicit val formats = Json.format[GroupPersona]
@@ -89,4 +86,3 @@ case class KnownFactPersona(service: String, knownFacts: Seq[KnownFact])
 object KnownFactPersona {
   implicit val formats = Json.format[KnownFactPersona]
 }
-

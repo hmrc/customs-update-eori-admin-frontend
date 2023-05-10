@@ -30,12 +30,12 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-case class StubDataController @Inject()(
-                                         mcc: MessagesControllerComponents,
-                                         createEoriView: CreateEoriView,
-                                         stubDataService: StubDataService
-                                       )(implicit ec: ExecutionContext)
-  extends FrontendController(mcc) with I18nSupport with Mappings {
+case class StubDataController @Inject() (
+  mcc: MessagesControllerComponents,
+  createEoriView: CreateEoriView,
+  stubDataService: StubDataService
+)(implicit ec: ExecutionContext)
+    extends FrontendController(mcc) with I18nSupport with Mappings {
 
   val form: Form[CreateEori] = Form(
     mapping(
@@ -60,16 +60,19 @@ case class StubDataController @Inject()(
   }
 
   def submitCreateRequest: Action[AnyContent] = Action.async { implicit request =>
-    form.bindFromRequest()
+    form
+      .bindFromRequest()
       .fold(
         formWithError => Future(BadRequest(createEoriView(formWithError))),
-        createEori => {
-          stubDataService.createEoriNumber(createEori).map { _ =>
-            Ok(createEoriView(form, Some(true)))
-          }.recoverWith {
-            case _ => Future(BadRequest(createEoriView(form, Some(false))))
-          }
-        }
+        createEori =>
+          stubDataService
+            .createEoriNumber(createEori)
+            .map { _ =>
+              Ok(createEoriView(form, Some(true)))
+            }
+            .recoverWith { case _ =>
+              Future(BadRequest(createEoriView(form, Some(false))))
+            }
       )
   }
 
