@@ -26,10 +26,7 @@ import java.util.UUID
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-
-class StubDataService @Inject()(httpClient: HttpClient,
-                                config: AppConfig
-                               )(implicit ec: ExecutionContext) {
+class StubDataService @Inject() (httpClient: HttpClient, config: AppConfig)(implicit ec: ExecutionContext) {
   def createEoriNumber(createEori: CreateEori)(implicit hc: HeaderCarrier) = {
     val seq = createKnownFacts(createEori).toSeq :+ createGroupPersona(createEori)
     Future.sequence(seq)
@@ -37,11 +34,14 @@ class StubDataService @Inject()(httpClient: HttpClient,
 
   private def createKnownFacts(createEori: CreateEori)(implicit hc: HeaderCarrier) = {
     val enrolments = createEori.enrolments.split(",").map(_.replaceAll(" ", ""))
-    enrolments.map(enrolment => {
-      val knownFactPersona = KnownFactPersona(enrolment, Seq(
-        KnownFact("EORINumber", createEori.eoriNumber, "identifier"),
-        KnownFact("DateOfEstablishment", localDateToString(createEori.dateOfEstablishment), "verifier")
-      ))
+    enrolments.map { enrolment =>
+      val knownFactPersona = KnownFactPersona(
+        enrolment,
+        Seq(
+          KnownFact("EORINumber", createEori.eoriNumber, "identifier"),
+          KnownFact("DateOfEstablishment", localDateToString(createEori.dateOfEstablishment), "verifier")
+        )
+      )
 
       httpClient
         .POST[KnownFactPersona, HttpResponse](
@@ -50,28 +50,28 @@ class StubDataService @Inject()(httpClient: HttpClient,
           Seq(("content-type", "application/json"))
         )
         .flatMap { result =>
-          if(result.status == CREATED)
+          if (result.status == CREATED)
             Future.successful(result.status)
           else
             Future.failed(new Exception("Failed"))
         }
-    })
+    }
   }
 
   private def createGroupPersona(createEori: CreateEori)(implicit hc: HeaderCarrier) = {
     val enrolments = createEori.enrolments.split(",").map(_.replaceAll(" ", ""))
-    val seqOfEnrolments = enrolments.map(enrolment => {
+    val seqOfEnrolments = enrolments.map { enrolment =>
       Enrolment(
         serviceName = enrolment,
         identifiers = Seq(Identifier("EORINumber", createEori.eoriNumber))
       )
-    }).toSeq
+    }.toSeq
 
     val groupPersona = GroupPersona(
       groupId = UUID.randomUUID().toString,
       users = Seq(
         User(
-          credId = UUID.randomUUID().toString,
+          credId = UUID.randomUUID().toString
         )
       ),
       enrolments = seqOfEnrolments
@@ -81,11 +81,12 @@ class StubDataService @Inject()(httpClient: HttpClient,
         s"${config.enrolmentStoreProxyBaseServiceUrl}/enrolment-store-stub/data",
         groupPersona,
         Seq(("content-type", "application/json"))
-      ).flatMap { result =>
-      if (result.status == NO_CONTENT)
-        Future.successful(result.status)
-      else
-        Future.failed(new Exception("Failed"))
-    }
+      )
+      .flatMap { result =>
+        if (result.status == NO_CONTENT)
+          Future.successful(result.status)
+        else
+          Future.failed(new Exception("Failed"))
+      }
   }
 }
