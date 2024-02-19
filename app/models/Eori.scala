@@ -16,12 +16,12 @@
 
 package models
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class Eori(eori: String) {
   override def toString: String = eori
 }
 
 object Eori {
-  implicit val formats = Json.format[Eori]
+  implicit val formats: OFormat[Eori] = Json.format[Eori]
 }

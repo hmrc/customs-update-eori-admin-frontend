@@ -27,7 +27,7 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class StubDataService @Inject() (httpClient: HttpClient, config: AppConfig)(implicit ec: ExecutionContext) {
-  def createEoriNumber(createEori: CreateEori)(implicit hc: HeaderCarrier) = {
+  def createEoriNumber(createEori: CreateEori)(implicit hc: HeaderCarrier): Future[Seq[Int]] = {
     val seq = createKnownFacts(createEori).toSeq :+ createGroupPersona(createEori)
     Future.sequence(seq)
   }

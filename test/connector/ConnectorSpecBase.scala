@@ -30,10 +30,10 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 class ConnectorSpecBase extends AnyWordSpec with Matchers with ScalaFutures with MockitoSugar with BeforeAndAfterEach {
 
   override implicit val patienceConfig: PatienceConfig = PatienceConfig(Span(5, Seconds))
-  protected implicit val mockHeaderCarrier = mock[HeaderCarrier]
-  protected val mockHttpClient = mock[HttpClient]
-  protected val mockAppConfig = mock[AppConfig]
-  protected val mockAuditable = mock[Auditable]
+  protected implicit val mockHeaderCarrier: HeaderCarrier = mock[HeaderCarrier]
+  protected val mockHttpClient: HttpClient = mock[HttpClient]
+  protected val mockAppConfig: AppConfig = mock[AppConfig]
+  protected val mockAuditable: Auditable = mock[Auditable]
 
   override def beforeEach(): Unit = {
     reset(mockAppConfig)
