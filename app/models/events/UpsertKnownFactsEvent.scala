@@ -23,5 +23,5 @@ case class UpsertKnownFactsEvent(enrolmentKey: String, verifiers: Seq[KeyValue])
 
 object UpsertKnownFactsEvent {
   implicit val jsonKeyValueFormat: OFormat[KeyValue] = Json.format[KeyValue]
-  implicit val format = Json.format[UpsertKnownFactsEvent]
+  implicit val format: OFormat[UpsertKnownFactsEvent] = Json.format[UpsertKnownFactsEvent]
 }

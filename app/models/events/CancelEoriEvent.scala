@@ -16,7 +16,7 @@
 
 package models.events
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class CancelEoriEvent(
   eoriNumber: String,
@@ -27,5 +27,5 @@ case class CancelEoriEvent(
 )
 
 object CancelEoriEvent {
-  implicit val format = Json.format[CancelEoriEvent]
+  implicit val format: OFormat[CancelEoriEvent] = Json.format[CancelEoriEvent]
 }

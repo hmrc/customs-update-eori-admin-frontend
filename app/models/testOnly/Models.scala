@@ -16,7 +16,7 @@
 
 package models.testOnly
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat, OWrites, Reads}
 
 case class User(
   credId: String,
@@ -34,20 +34,20 @@ case class User(
   suspended: Option[Boolean] = None
 )
 object User {
-  implicit val reads = Json.reads[User]
-  implicit val writes = Json.writes[User]
+  implicit val reads: Reads[User] = Json.reads[User]
+  implicit val writes: OWrites[User] = Json.writes[User]
 }
 
 case class KnownFact(key: String, value: String, kfType: String)
 object KnownFact {
-  implicit val reads = Json.reads[KnownFact]
-  implicit val writes = Json.writes[KnownFact]
+  implicit val reads: Reads[KnownFact] = Json.reads[KnownFact]
+  implicit val writes: OWrites[KnownFact] = Json.writes[KnownFact]
 }
 
 case class Identifier(key: String, value: String, maskedValue: Option[String] = None)
 object Identifier {
-  implicit val reads = Json.reads[Identifier]
-  implicit val writes = Json.writes[Identifier]
+  implicit val reads: Reads[Identifier] = Json.reads[Identifier]
+  implicit val writes: OWrites[Identifier] = Json.writes[Identifier]
 }
 
 case class Enrolment(
@@ -62,8 +62,8 @@ case class Enrolment(
 )
 
 object Enrolment {
-  implicit val reads = Json.reads[Enrolment]
-  implicit val writes = Json.writes[Enrolment]
+  implicit val reads: Reads[Enrolment] = Json.reads[Enrolment]
+  implicit val writes: OWrites[Enrolment] = Json.writes[Enrolment]
 }
 
 case class GroupPersona(
@@ -78,11 +78,11 @@ case class GroupPersona(
 ) {}
 
 object GroupPersona {
-  implicit val formats = Json.format[GroupPersona]
+  implicit val formats: OFormat[GroupPersona] = Json.format[GroupPersona]
 }
 
 case class KnownFactPersona(service: String, knownFacts: Seq[KnownFact])
 
 object KnownFactPersona {
-  implicit val formats = Json.format[KnownFactPersona]
+  implicit val formats: OFormat[KnownFactPersona] = Json.format[KnownFactPersona]
 }

@@ -16,10 +16,10 @@
 
 package models.events
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class RemoveKnownFactsEvent(eoriNumber: String, enrolmentKey: String)
 
 object RemoveKnownFactsEvent {
-  implicit val format = Json.format[RemoveKnownFactsEvent]
+  implicit val format: OFormat[RemoveKnownFactsEvent] = Json.format[RemoveKnownFactsEvent]
 }

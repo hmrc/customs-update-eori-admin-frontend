@@ -17,10 +17,10 @@
 package models.events
 
 import models.Enrolment
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class EnrolmentStoreProxyEvent(eoriNumber: String, serviceName: String, enrolments: List[Enrolment])
 
 object EnrolmentStoreProxyEvent {
-  implicit val format = Json.format[EnrolmentStoreProxyEvent]
+  implicit val format: OFormat[EnrolmentStoreProxyEvent] = Json.format[EnrolmentStoreProxyEvent]
 }

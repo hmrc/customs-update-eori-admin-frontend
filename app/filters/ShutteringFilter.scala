@@ -16,7 +16,7 @@
 
 package filters
 
-import akka.stream.Materializer
+import org.apache.pekko.stream.Materializer
 import config.AppConfig
 import controllers.routes
 import play.api.mvc._

@@ -16,10 +16,10 @@
 
 package models.events
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class DeAllocateGroupEvent(groupId: String, enrolmentKey: String)
 
 object DeAllocateGroupEvent {
-  implicit val format = Json.format[DeAllocateGroupEvent]
+  implicit val format: OFormat[DeAllocateGroupEvent] = Json.format[DeAllocateGroupEvent]
 }

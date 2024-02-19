@@ -16,7 +16,7 @@
 
 package models.events
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class UpdateEoriEvent(
   oldEoriNumber: String,
@@ -28,5 +28,5 @@ case class UpdateEoriEvent(
 )
 
 object UpdateEoriEvent {
-  implicit val format = Json.format[UpdateEoriEvent]
+  implicit val format: OFormat[UpdateEoriEvent] = Json.format[UpdateEoriEvent]
 }

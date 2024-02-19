@@ -16,10 +16,10 @@
 
 package models.events
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class ReAllocateGroupEvent(groupId: String, userId: String, enrolmentKey: String)
 
 object ReAllocateGroupEvent {
-  implicit val format = Json.format[ReAllocateGroupEvent]
+  implicit val format: OFormat[ReAllocateGroupEvent] = Json.format[ReAllocateGroupEvent]
 }

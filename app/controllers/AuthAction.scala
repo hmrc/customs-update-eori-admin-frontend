@@ -17,15 +17,15 @@
 package controllers
 
 import com.google.inject.Inject
+import config.AppConfig
 import play.api.mvc.Results._
 import play.api.mvc._
-import play.api.{Configuration, Environment}
+import play.api.Configuration
 import uk.gov.hmrc.auth.core.AuthProvider.PrivilegedApplication
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
 import uk.gov.hmrc.auth.core.retrieve.{Name, ~}
 import uk.gov.hmrc.auth.core.{Enrolments, _}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.config.AuthRedirects
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import javax.inject.Singleton
@@ -34,13 +34,22 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class AuthAction @Inject() (
   override val authConnector: AuthConnector,
-  override val config: Configuration,
-  override val env: Environment,
+  config: Configuration,
+  appConfig: AppConfig,
   val parser: BodyParsers.Default
 )(implicit val executionContext: ExecutionContext)
     extends ActionBuilder[AuthenticatedRequest, AnyContent] with ActionRefiner[Request, AuthenticatedRequest]
-    with AuthorisedFunctions with AuthRedirects {
+    with AuthorisedFunctions {
   private val isLocal: Boolean = config.get[Boolean]("microservice.services.stride-auth-local")
+
+  private def toStrideLogin(successUrl: String, failureUrl: Option[String] = None): Result =
+    Redirect(
+      appConfig.strideLoginUrl,
+      Map(
+        "successURL" -> Seq(successUrl),
+        "origin"     -> Seq(appConfig.defaultOrigin)
+      ) ++ failureUrl.map(f => Map("failureURL" -> Seq(f))).getOrElse(Map())
+    )
 
   override protected def refine[A](request: Request[A]): Future[Either[Result, AuthenticatedRequest[A]]] = {
     implicit val hc: HeaderCarrier =
