@@ -16,6 +16,7 @@
 
 package controllers
 
+import config.AppConfig
 import org.mockito.ArgumentMatchers.{any, eq => ameq}
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
@@ -25,17 +26,20 @@ import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 trait AuthenticationBehaviours { this: MockitoSugar =>
 
-  val env = Environment.simple()
-  val config = Configuration.load(env)
-  val mockParser = mock[BodyParsers.Default]
+  val env: Environment = Environment.simple()
+  val config: Configuration = Configuration.load(env)
+  val mockParser: BodyParsers.Default = mock[BodyParsers.Default]
   val mockAuthConnector: AuthConnector = mock[AuthConnector]
-  val testAuthAction: AuthAction = new AuthAction(mockAuthConnector, config, env, mockParser)
+  private val serviceConfig = new ServicesConfig(config)
+  val appConfig = new AppConfig(config, serviceConfig, "TestApp")
+  val testAuthAction: AuthAction = new AuthAction(mockAuthConnector, config, appConfig, mockParser)
 
   def withSignedInUser(test: => Unit): Unit =
     withSignedInUser(someUser)(test)

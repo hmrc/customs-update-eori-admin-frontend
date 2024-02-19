@@ -33,4 +33,10 @@ class AppConfig @Inject() (
   val taxEnrolmentsServiceUrl: String = s"${servicesConfig.baseUrl("tax-enrolments")}/tax-enrolments"
   val customsDataStoreUrl: String =
     s"${servicesConfig.baseUrl("customs-data-store")}/customs-data-store/update-eori-history"
+
+  lazy val strideLoginUrl: String = servicesConfig.getString("stride-auth-frontend.sign-in")
+  lazy val defaultOrigin: String = config
+    .getOptional[String]("sosOrigin")
+    .orElse(config.getOptional[String]("appName"))
+    .getOrElse("undefined")
 }

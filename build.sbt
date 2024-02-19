@@ -49,6 +49,10 @@ lazy val microservice = Project("customs-update-eori-admin-frontend", file("."))
   .settings(PlayKeys.playDefaultPort := 11120)
   .settings(resolvers += Resolver.jcenterRepo)
   .settings(CodeCoverageSettings.settings: _*)
+  .settings(inConfig(Test)(testSettings): _*)
+
+lazy val testSettings: Seq[Def.Setting[_]] =
+  Seq(fork := true, javaOptions ++= Seq("-Dconfig.resource=test.application.conf"))
 
 lazy val it = project
   .enablePlugins(PlayScala)
