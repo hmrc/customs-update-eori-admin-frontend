@@ -1,0 +1,72 @@
+-X POST --header "Content-Type: application/json" --data '{
+"groupId": "274b41b2-a29f-492a-8f04-09cd314f2d45",
+"affinityGroup": "Organisation",
+"users": [
+{
+"credId": "4908323031671038",
+"name": "Default User",
+"email": "default@example.com",
+"credentialRole": "Admin",
+"description": "User Description"
+}
+],
+"enrolments": [
+{
+"serviceName": "HMRC-CUS-ORG",
+"identifiers": [
+{
+"key": "EORINumber",
+"value": "GB111111111092"
+}
+],
+"enrolmentFriendlyName": "Customs Enrolment",
+"assignedUserCreds": [],
+"state": "Activated",
+"enrolmentType": "principal",
+"assignedToAll": true
+},
+{
+"serviceName": "HMRC-SS-ORG",
+"identifiers": [
+{
+"key": "EORINumber",
+"value": "GB111111111092"
+}
+],
+"enrolmentFriendlyName": "Customs Enrolment",
+"assignedUserCreds": [],
+"state": "Activated",
+"enrolmentType": "principal",
+"assignedToAll": true
+},
+{
+"serviceName": "HMRC-ATAR-ORG",
+"identifiers": [
+{
+"key": "EORINumber",
+"value": "GB111111111092"
+}
+],
+"enrolmentFriendlyName": "Customs Enrolment",
+"assignedUserCreds": [],
+"state": "Activated",
+"enrolmentType": "principal",
+"assignedToAll": true
+},
+{
+"serviceName": "HMRC-GVMS-ORG",
+"identifiers": [
+{
+"key": "EORINumber",
+"value": "GB111111111092"
+}
+],
+"enrolmentFriendlyName": "Customs Enrolment",
+"assignedUserCreds": [],
+"state": "Activated",
+"enrolmentType": "principal",
+"assignedToAll": true
+}
+]
+}' https://enrolment-store-stub.protected.mdtp/enrolment-store-stub/data
+
