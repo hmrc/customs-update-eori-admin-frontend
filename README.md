@@ -41,19 +41,15 @@ You'll need [Service Manager](https://github.com/hmrc/service-manager) to develo
 
 To check what's running:
 
-    sm -s
+    sm2 -s
 
 Start the required development services (make sure your service-manager-config folder is up to date)
 
-    run provided `./run-services.sh` script
-
-    or
-
-    sm --start CUSTOMS_UPDATE_EORI_ADMIN_FRONTEND_ALL -r
+    sm2 --start CUSTOMS_UPDATE_EORI_ADMIN_FRONTEND_ALL
 
 Stop all running services
 
-    sm --stop CUSTOMS_UPDATE_EORI_ADMIN_FRONTEND_ALL
+    sm2 --stop CUSTOMS_UPDATE_EORI_ADMIN_FRONTEND_ALL
 
 ## Debugging
 
@@ -86,7 +82,7 @@ Adjust the following in `build.sbt` to configure Scoverage
     ...
 
 #### Running `customs-update-eori-admin-frontend` locally
-    1. run `./run-services.sh` script
+    1. run the following command: `sm2 --start CUSTOMS_UPDATE_EORI_ADMIN_FRONTEND_ALL`
     2. launch `customs-update-eori-admin-frontend` via sbt using `sbt run` command
     3. set up known-facts and enrolments stubs as per examples below
     4. navigate to `http://localhost:11120/manage-eori-number`
@@ -177,5 +173,5 @@ sbt scalafmtCheckAll scalafmtSbtCheck
 To apply formatting all and check formatting and tests with coverage report execute:
 
 ```
-sbt clean scalafmt test:scalafmt it:test::scalafmt coverage test it:test scalafmtCheckAll coverageReport
+sbt clean scalafmt test  it/test scalafmt coverage test it/test scalafmtCheckAll coverageReport
 ```
