@@ -20,6 +20,7 @@ import config.AppConfig
 import models.LocalDateBinder.localDateToString
 import models.testOnly._
 import play.api.http.Status.{CREATED, NO_CONTENT}
+import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 
 import java.util.UUID

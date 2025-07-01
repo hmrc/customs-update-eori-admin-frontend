@@ -21,13 +21,14 @@ import models.EoriEventEnum.UPDATE
 import models.{Eori, ErrorMessage}
 import org.mockito.ArgumentMatchers.{eq => meq, _}
 import org.mockito.Mockito._
+import org.scalatest.EitherValues
 import play.api.http.Status._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
-class RemoveKnownFactsConnectorSpec extends ConnectorSpecBase {
+class RemoveKnownFactsConnectorSpec extends ConnectorSpecBase with EitherValues {
 
   private val connector = new RemoveKnownFactsConnector(mockHttpClient, mockAppConfig, mockAuditable)
 
@@ -44,8 +45,7 @@ class RemoveKnownFactsConnectorSpec extends ConnectorSpecBase {
 
       val result = connector.remove(UPDATE, Eori("GB1234567890"), HMRC_CUS_ORG).futureValue
       result.isRight shouldBe true
-      val response = result.getOrElse(None)
-      response shouldBe NO_CONTENT
+      result.value shouldBe NO_CONTENT
       verify(mockHttpClient).DELETE(
         meq("http://localhost:1222/enrolments/HMRC-CUS-ORG~EORINumber~GB1234567890"),
         any[Seq[(String, String)]]
