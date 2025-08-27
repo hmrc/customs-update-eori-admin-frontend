@@ -83,10 +83,11 @@ Adjust the following in `build.sbt` to configure Scoverage
 
 #### Running `customs-update-eori-admin-frontend` locally
     1. run the following command: `sm2 --start CUSTOMS_UPDATE_EORI_ADMIN_FRONTEND_ALL`
-    2. launch `customs-update-eori-admin-frontend` via sbt using `sbt run` command
-    3. set up known-facts and enrolments stubs as per examples below
-    4. navigate to `http://localhost:11120/manage-eori-number`
-    5. enter any String for `PID` field and enter `update-enrolment-eori` in `Roles` text-box
+    2. run the following command `sm2 --stop CUSTOMS_UPDATE_EORI_ADMIN_FRONTEND`
+    3. launch `customs-update-eori-admin-frontend` via sbt using `sbt run` command
+    4. set up known-facts and enrolments stubs as per examples below
+    5. navigate to `http://localhost:11120/manage-eori-number`
+    6. enter any String for `PID` field and enter `update-enrolment-eori` in `Roles` text-box
 
 ### Test Data Creation
 
