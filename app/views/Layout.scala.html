@@ -32,7 +32,7 @@
 )
 
 
-@(pageTitle: Option[String] = None, showBackLink: Boolean = true)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
+@(pageTitle: Option[String] = None, showBackLink: Boolean = true)(contentBlock: Html)(implicit request: RequestHeader, messages: Messages)
 
 @header = {
 @hmrcInternalHeader(
