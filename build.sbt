@@ -43,7 +43,6 @@ lazy val microservice = Project("customs-update-eori-admin-frontend", file("."))
     Assets / pipelineStages := Seq(concat)
   )
   .settings(PlayKeys.playDefaultPort := 11120)
-  .settings(resolvers += Resolver.jcenterRepo)
   .settings(CodeCoverageSettings.settings: _*)
   .settings(inConfig(Test)(testSettings): _*)
 
