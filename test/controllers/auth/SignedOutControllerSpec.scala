@@ -30,9 +30,8 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.{FakeRequest, Helpers}
 import play.api.test.Helpers.{GET, defaultAwaitTimeout, route, status, writeableOf_AnyContentAsEmpty}
 
-
 class SignedOutControllerSpec
-    extends AnyFreeSpec with Matchers with GuiceOneAppPerSuite with MockitoSugar with OptionValues  {
+    extends AnyFreeSpec with Matchers with GuiceOneAppPerSuite with MockitoSugar with OptionValues {
   override def fakeApplication(): Application =
     new GuiceApplicationBuilder()
       .configure(
@@ -42,8 +41,8 @@ class SignedOutControllerSpec
       .build()
 
   def fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("", "")
-  def messagesApi: MessagesApi                         = app.injector.instanceOf[MessagesApi]
-  implicit def messages: Messages                      = messagesApi.preferred(fakeRequest)
+  def messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  implicit def messages: Messages = messagesApi.preferred(fakeRequest)
 
   "SignedOut Controller" - {
 

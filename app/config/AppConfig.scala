@@ -40,6 +40,6 @@ class AppConfig @Inject() (
     .orElse(config.getOptional[String]("appName"))
     .getOrElse("undefined")
 
-  val timeoutSeconds: Int   = config.get[Int]("session.timeoutSeconds")
+  val timeoutSeconds: Int = config.get[Int]("session.timeoutSeconds")
   val countdownSeconds: Int = config.get[Int]("session.countdownSeconds")
 }

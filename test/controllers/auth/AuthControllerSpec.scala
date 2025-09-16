@@ -30,13 +30,12 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.Helpers.{GET, defaultAwaitTimeout, redirectLocation, route, status, writeableOf_AnyContentAsEmpty}
 import play.api.test.{FakeRequest, Helpers}
 
-
 class AuthControllerSpec
-  extends AnyFreeSpec with Matchers with GuiceOneAppPerSuite with MockitoSugar with OptionValues {
+    extends AnyFreeSpec with Matchers with GuiceOneAppPerSuite with MockitoSugar with OptionValues {
   override def fakeApplication(): Application =
     new GuiceApplicationBuilder()
       .configure(
-        "metrics.jvm" -> false,
+        "metrics.jvm"     -> false,
         "metrics.enabled" -> false
       )
       .build()
