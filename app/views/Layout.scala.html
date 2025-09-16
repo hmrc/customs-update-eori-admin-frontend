@@ -19,34 +19,40 @@
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.HmrcInternalHeader
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.internalheader.InternalHeader
 @import uk.gov.hmrc.govukfrontend.views.Aliases.FooterItem
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers._
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.language.En
+@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage._
 @import views.html.helper.CSPNonce
 
 @this(
         appConfig: AppConfig,
-        govukLayout: GovukLayout,
         hmrcInternalHeader: HmrcInternalHeader,
         hmrcScripts: HmrcScripts,
         hmrcHead: HmrcHead,
+        hmrcStandardPage: HmrcStandardPage,
+        hmrcTimeoutDialogHelper: HmrcTimeoutDialogHelper,
         govukBackLink: GovukBackLink
 )
 
 
-@(pageTitle: Option[String] = None, showBackLink: Boolean = true)(contentBlock: Html)(implicit request: RequestHeader, messages: Messages)
-
-@header = {
-@hmrcInternalHeader(
-    InternalHeader(
-        homepageUrl = "/manage-eori-number",
-        serviceName = Some(messages("service.title")),
-        serviceUrl = "/manage-eori-number",
-        language = En
-    )
-)
-}
+@(pageTitle: Option[String] = None, showBackLink: Boolean = true, timeout: Boolean = true, showSignOut: Boolean = true)(contentBlock: Html)(implicit request: RequestHeader, messages: Messages)
 
 @additionalScripts = {
     <script @CSPNonce.attr src='@controllers.routes.Assets.versioned("javascripts/application.js")'></script>
+}
+
+@timeOutDialog = {
+    @hmrcTimeoutDialogHelper(
+        timeout             = Some(appConfig.timeoutSeconds),
+        countdown           = Some(appConfig.countdownSeconds),
+        keepAliveUrl        = None,
+        keepAliveButtonText = Some(messages("timeout.keepAlive")),
+        signOutUrl          = controllers.auth.routes.AuthController.signOut.url,
+        signOutButtonText   = Some(messages("timeout.signOut")),
+        timeoutUrl          = Some(controllers.auth.routes.SignedOutController.onPageLoad.url),
+        title               = Some(messages("timeout.title")),
+        message             = Some(messages("timeout.message"))
+    )
 }
 
 @beforeContent = {
@@ -55,31 +61,21 @@
     }
 }
 
-@head = {
-@hmrcHead()
-    <link rel="stylesheet" media="all" type="text/css" href='@routes.Assets.versioned("stylesheets/application.css")' />
-
-    <!-- Google Tag Manager -->
-    <script @CSPNonce.attr>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-                new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-PLWQQZB');</script>
-    <!-- End Google Tag Manager -->
-}
-
-@govukLayout(
-    pageTitle = pageTitle,
-    headBlock = Some(head),
-    headerBlock = Some(header),
-    beforeContentBlock = Some(beforeContent),
-    scriptsBlock       = Some(hmrcScripts(
-        scriptsBlock = Some(additionalScripts)
-    )),
-    footerItems =  Seq(
-        FooterItem(href = Some("https://www.gov.uk/help/cookies"), text = Some(messages("service.cookies"))),
-        FooterItem(href = Some("https://hmrc.sharepoint.com/:w:/r/teams/GRP088070693/Shared%20Documents/Accessibility%20Statements/EORI%20Toolkit%20-%20Internal%20Service%20Accessibility%20Statement.docx?d=w5ebb0892b79949b3bb18d22b0a321367&csf=1&web=1"), text = Some(messages("service.accessibilityStatement")))
-    ),
+@hmrcStandardPage(
+    HmrcStandardPageParams(
+        serviceURLs = ServiceURLs(
+            serviceUrl = Some("/manage-eori-number"),
+            signOutUrl = if(showSignOut) Some(controllers.auth.routes.AuthController.signOut.url) else None,
+            accessibilityStatementUrl = Some("https://hmrc.sharepoint.com/:w:/r/teams/GRP088070693/Shared%20Documents/Accessibility%20Statements/EORI%20Toolkit%20-%20Internal%20Service%20Accessibility%20Statement.docx?d=w5ebb0892b79949b3bb18d22b0a321367&csf=1&web=1")
+        ),
+        templateOverrides = TemplateOverrides(
+            additionalHeadBlock = if(timeout) Some(timeOutDialog) else None,
+            beforeContentBlock = Some(beforeContent),
+            additionalScriptsBlock = Some(additionalScripts)
+        ),
+        pageTitle = pageTitle,
+        backLink = if(showBackLink) Some(BackLink.mimicsBrowserBackButtonViaJavaScript) else None
+    )
 )(contentBlock)
 
 @{
