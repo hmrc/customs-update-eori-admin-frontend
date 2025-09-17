@@ -22,3 +22,9 @@ POST      /confirm-cancel              controllers.CancelEoriController.confirmC
 
 # Maintenance
 GET       /maintenance                 controllers.MaintenanceController.get
+
+#Signout
+GET         /signed-out                controllers.auth.SignedOutController.onPageLoad
+
+GET         /sign-out-survey           controllers.auth.AuthController.signOut
+GET         /sign-out                  controllers.auth.AuthController.signOutNoSurvey

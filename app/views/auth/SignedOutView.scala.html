@@ -14,14 +14,34 @@
  * limitations under the License.
  *@
 
-@import views.html.Layout
+@import config.AppConfig
 
-@this(layout: Layout)
+@this(
+    layout: Layout,
+    govukButton: GovukButton,
+    appConfig: AppConfig
+)
 
 @()(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = Some(messages("eori.shutter.title")), showBackLink = false){
-    <h1 id="heading" class="govuk-heading-l">@messages("eori.shutter.heading")</h1>
-    <p id="message" class="govuk-body">@messages("eori.shutter.tryAgain")</p>
-    <p id="message" class="govuk-body">@messages("eori.shutter.message")</p>
+@layout(
+    pageTitle    = Some(messages("signedOut.title")),
+    showBackLink = false,
+    timeout      = false,
+    showSignOut  = false
+) {
+
+    <h1 class="govuk-heading-l">@messages("signedOut.heading")</h1>
+
+    <p class="govuk-body">@messages("signedOut.guidance")</p>
+
+    <p class="govuk-body">
+        @govukButton(
+            Button(
+            content = Text(messages("signedOut.link")),
+            href    = Some(appConfig.strideLoginUrl)
+            )
+        )
+    </p>
+
 }

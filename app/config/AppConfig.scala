@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,4 +39,7 @@ class AppConfig @Inject() (
     .getOptional[String]("sosOrigin")
     .orElse(config.getOptional[String]("appName"))
     .getOrElse("undefined")
+
+  val timeoutSeconds: Int = config.get[Int]("session.timeoutSeconds")
+  val countdownSeconds: Int = config.get[Int]("session.countdownSeconds")
 }

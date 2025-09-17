@@ -14,21 +14,25 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.auth
 
-import com.google.inject.{Inject, Singleton}
+import config.AppConfig
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import views.html.ShutterView
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
-import scala.concurrent.Future
+import javax.inject.Inject
 
-@Singleton
-case class MaintenanceController @Inject() (mcc: MessagesControllerComponents, viewShutter: ShutterView)
-    extends FrontendController(mcc) with I18nSupport {
+class AuthController @Inject() (
+  val controllerComponents: MessagesControllerComponents,
+  config: AppConfig
+) extends FrontendBaseController with I18nSupport {
 
-  def get: Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(ServiceUnavailable(viewShutter()))
+  def signOut(): Action[AnyContent] = Action {
+    Redirect(config.strideLoginUrl).withNewSession
+  }
+
+  def signOutNoSurvey(): Action[AnyContent] = Action {
+    Redirect(controllers.auth.routes.SignedOutController.onPageLoad.url).withNewSession
   }
 }
