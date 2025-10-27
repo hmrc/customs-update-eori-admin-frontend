@@ -118,7 +118,7 @@ curl --location --request POST 'http://localhost:9595/enrolment-store-stub/known
             "kfType": "verifier"
         }
     ]
-}
+}'
 ```
 
 #### Example enrolments test data creation
@@ -153,7 +153,7 @@ curl --location --request POST 'http://localhost:9595/enrolment-store-stub/data'
 	        "assignedToAll": true
         }
     ]
-}
+}'
 ```
 
 ## Formatting code
