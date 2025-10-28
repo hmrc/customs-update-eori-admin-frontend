@@ -1,4 +1,5 @@
 $govuk-assets-path: "/manage-eori-number/assets/lib/govuk-frontend/dist/govuk/assets/";
 $hmrc-assets-path: "/manage-eori-number/assets/lib/hmrc-frontend/hmrc/assets/";
+$govuk-new-organisation-colours: true;
 @import "lib/govuk-frontend/dist/govuk/index";
 @import "lib/hmrc-frontend/hmrc/all";
