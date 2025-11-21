@@ -19,10 +19,10 @@ package connector
 import models.EnrolmentKey.HMRC_CUS_ORG
 import models.EoriEventEnum.UPDATE
 import models.{Eori, ErrorMessage, GroupId}
-import org.mockito.ArgumentMatchers.{eq => meq, _}
-import org.mockito.Mockito._
-import play.api.http.Status._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
+import org.mockito.ArgumentMatchers.{eq as meq, *}
+import org.mockito.Mockito.*
+import play.api.http.Status.*
+import uk.gov.hmrc.http.{HttpResponse, StringContextOps}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
@@ -33,37 +33,30 @@ class DeAllocateGroupConnectorSpec extends ConnectorSpecBase {
 
   "The Delete Enrolment Connector" should {
     "call the de-enrolment service with a DELETE command with the correct url" in {
-      when(
-        mockHttpClient.DELETE[HttpResponse](any[String], any[Seq[(String, String)]])(
-          any[HttpReads[HttpResponse]],
-          any[HeaderCarrier],
-          any[ExecutionContext]
-        )
-      )
-        .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
+      when(mockHttpClient.delete(any())(any())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.execute(any(), any())).thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
       whenReady(
         connector
           .deAllocateGroup(UPDATE, Eori("GB1234567890"), HMRC_CUS_ORG, GroupId("90ccf333-65d2-4bf2-a008-01dfca702161"))
       ) { _ =>
-        verify(mockHttpClient).DELETE(
+        verify(mockHttpClient).delete(
           meq(
-            "http://localhost:1222/groups/90ccf333-65d2-4bf2-a008-01dfca702161/enrolments/HMRC-CUS-ORG~EORINumber~GB1234567890"
-          ),
-          any[Seq[(String, String)]]
-        )(any[HttpReads[HttpResponse]], any[HeaderCarrier], any[ExecutionContext])
+            url"http://localhost:1222/groups/90ccf333-65d2-4bf2-a008-01dfca702161/enrolments/HMRC-CUS-ORG~EORINumber~GB1234567890"
+          )
+        )(any())
       }
     }
 
     "return an error message if the delete request fails " in {
       when(
-        mockHttpClient.DELETE(
+        mockHttpClient.delete(
           meq(
-            "http://localhost:1222/groups/90ccf333-65d2-4bf2-a008-01dfca706334/enrolments/HMRC-CUS-ORG~EORINumber~GB1234566634"
-          ),
-          any[Seq[(String, String)]]
-        )(any[HttpReads[HttpResponse]], any[HeaderCarrier], any[ExecutionContext])
-      )
-        .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
+            url"http://localhost:1222/groups/90ccf333-65d2-4bf2-a008-01dfca706334/enrolments/HMRC-CUS-ORG~EORINumber~GB1234566634"
+          )
+        )(any())
+      ).thenReturn(mockRequestBuilder)
+
+      when(mockRequestBuilder.execute(any(), any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
       val result = connector
         .deAllocateGroup(
           UPDATE,

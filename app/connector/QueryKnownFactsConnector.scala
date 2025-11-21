@@ -20,13 +20,15 @@ import audit.Auditable
 import config.AppConfig
 import models.EnrolmentKey.EnrolmentKeyType
 import models.LocalDateBinder.stringToLocalDate
-import models._
+import models.*
 import models.events.EnrolmentStoreProxyEvent
 import play.api.Logging
 import play.api.http.Status.{NO_CONTENT, OK}
 import play.api.libs.json.{Json, OWrites, Reads}
-import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
+import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
+import uk.gov.hmrc.http.HttpReads.Implicits.*
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 
 import java.time.LocalDate
 import javax.inject.Inject
@@ -49,7 +51,7 @@ object QueryKnownFactsRequest {
     Json.writes[QueryKnownFactsRequest]
 }
 
-class QueryKnownFactsConnector @Inject() (httpClient: HttpClient, config: AppConfig, audit: Auditable)(implicit
+class QueryKnownFactsConnector @Inject() (httpClient: HttpClientV2, config: AppConfig, audit: Auditable)(implicit
   ec: ExecutionContext
 ) extends Logging {
 
@@ -71,7 +73,9 @@ class QueryKnownFactsConnector @Inject() (httpClient: HttpClient, config: AppCon
     val req = QueryKnownFactsRequest(serviceName, Seq(KeyValue("EORINumber", strEoriNumber)))
 
     httpClient
-      .POST[QueryKnownFactsRequest, HttpResponse](url, req)
+      .post(url"$url")
+      .withBody(Json.toJson(req))
+      .execute[HttpResponse]
       .map { case response =>
         response.status match {
           case OK =>
@@ -79,7 +83,7 @@ class QueryKnownFactsConnector @Inject() (httpClient: HttpClient, config: AppCon
             auditCall(url, eoriAction, strEoriNumber, serviceName, queryKnownFactsResponse)
             verifyDateOfEstablishment(dateOfEstablishment, key, queryKnownFactsResponse) match {
               case Some(true) => Right(queryKnownFactsResponse.enrolments.head)
-              case _ =>
+              case _          =>
                 logger.error(s"Date not matched for EORI: $eori. Service: $serviceName")
                 Left(ErrorMessage("The date you have entered does not match our records, please try again"))
             }

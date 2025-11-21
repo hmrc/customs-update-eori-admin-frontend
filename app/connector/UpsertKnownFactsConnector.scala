@@ -24,8 +24,10 @@ import models.{Enrolment, Eori, ErrorMessage, KeyValue}
 import play.api.Logging
 import play.api.http.Status.NO_CONTENT
 import play.api.libs.json.{Json, OWrites}
-import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
+import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
+import uk.gov.hmrc.http.HttpReads.Implicits.*
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -40,7 +42,7 @@ object UpsertKnownFactsRequest {
     UpsertKnownFactsRequest(e.verifiers)
 }
 
-class UpsertKnownFactsConnector @Inject() (httpClient: HttpClient, config: AppConfig, audit: Auditable)(implicit
+class UpsertKnownFactsConnector @Inject() (httpClient: HttpClientV2, config: AppConfig, audit: Auditable)(implicit
   ec: ExecutionContext
 ) extends Logging {
 
@@ -57,16 +59,22 @@ class UpsertKnownFactsConnector @Inject() (httpClient: HttpClient, config: AppCo
   ): Future[Either[ErrorMessage, Int]] = {
     val strEnrolmentKey = enrolmentKey.getEnrolmentKey(eori)
     val url = s"${config.taxEnrolmentsServiceUrl}/enrolments/$strEnrolmentKey"
-    httpClient.PUT[UpsertKnownFactsRequest, HttpResponse](url, UpsertKnownFactsRequest(enrolment)) map { resp =>
-      resp.status match {
-        case NO_CONTENT =>
-          auditCall(url, strEnrolmentKey, enrolment.verifiers)
-          Right(NO_CONTENT)
-        case failStatus =>
-          logger.error(s"Upsert failed with HTTP status: $failStatus for existing EORI: $eori. Response: ${resp.body}")
-          Left(ErrorMessage(s"Upsert failed with HTTP status: $failStatus"))
+    httpClient
+      .put(url"$url")
+      .withBody(Json.toJson(UpsertKnownFactsRequest(enrolment)))
+      .execute[HttpResponse]
+      .map { resp =>
+        resp.status match {
+          case NO_CONTENT =>
+            auditCall(url, strEnrolmentKey, enrolment.verifiers)
+            Right(NO_CONTENT)
+          case failStatus =>
+            logger.error(
+              s"Upsert failed with HTTP status: $failStatus for existing EORI: $eori. Response: ${resp.body}"
+            )
+            Left(ErrorMessage(s"Upsert failed with HTTP status: $failStatus"))
+        }
       }
-    }
   }
 
   private def auditCall(url: String, enrolmentKey: String, verifiers: Seq[KeyValue])(implicit hc: HeaderCarrier): Unit =

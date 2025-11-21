@@ -17,11 +17,11 @@
 package connector
 
 import models.{Eori, ErrorMessage}
-import org.mockito.ArgumentMatchers._
-import org.mockito.Mockito._
-import play.api.http.Status._
-import play.api.libs.json.{Json, Writes}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
+import org.mockito.ArgumentMatchers.*
+import org.mockito.Mockito.*
+import play.api.http.Status.*
+import play.api.libs.json.Json
+import uk.gov.hmrc.http.HttpResponse
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
@@ -35,15 +35,10 @@ class CustomsDataStoreConnectorSpec extends ConnectorSpecBase {
 
   "Customs Data Store Connector" should {
     "return a success status 204 on notification" in {
-      when(
-        mockHttpClient.POST(anyString, any[Eori], any[Seq[(String, String)]])(
-          any[Writes[Eori]],
-          any[HttpReads[HttpResponse]],
-          any[HeaderCarrier],
-          any[ExecutionContext]
-        )
-      )
-        .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
+      when(mockHttpClient.post(any())(any())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.withBody(any())(any(), any(), any())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.setHeader(any())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.execute(any(), any())).thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
 
       val statusCode = connector.notify(Eori("GB12349876")).futureValue
       statusCode.isRight shouldBe true
@@ -51,14 +46,10 @@ class CustomsDataStoreConnectorSpec extends ConnectorSpecBase {
     }
 
     "return an error message for failed notification" in {
-      when(
-        mockHttpClient.POST(anyString, any[Eori], any[Seq[(String, String)]])(
-          any[Writes[Eori]],
-          any[HttpReads[HttpResponse]],
-          any[HeaderCarrier],
-          any[ExecutionContext]
-        )
-      )
+      when(mockHttpClient.post(any())(any())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.withBody(any())(any(), any(), any())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.setHeader(any())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.execute(any(), any()))
         .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, "")))
 
       val error = connector.notify(Eori("GB9999999999")).futureValue

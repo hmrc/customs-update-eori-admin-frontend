@@ -52,7 +52,7 @@ trait Formatters {
       override def bind(key: String, data: Map[String, String]) =
         baseFormatter.bind(key, data).map(_.replace(",", StringUtils.EMPTY)).flatMap {
           case s if s.matches(decimalRegexp) => Left(Seq(FormError(key, wholeNumberKey, args)))
-          case s =>
+          case s                             =>
             nonFatalCatch
               .either(s.toInt)
               .left

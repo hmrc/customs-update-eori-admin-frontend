@@ -2,7 +2,7 @@ import play.sbt.routes.RoutesKeys
 import uk.gov.hmrc.DefaultBuildSettings
 
 ThisBuild / majorVersion := 0
-ThisBuild / scalaVersion := "2.13.16"
+ThisBuild / scalaVersion := "3.3.6"
 
 lazy val microservice = Project("customs-update-eori-admin-frontend", file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin, SbtWeb)
@@ -43,10 +43,10 @@ lazy val microservice = Project("customs-update-eori-admin-frontend", file("."))
     Assets / pipelineStages := Seq(concat)
   )
   .settings(PlayKeys.playDefaultPort := 11120)
-  .settings(CodeCoverageSettings.settings: _*)
-  .settings(inConfig(Test)(testSettings): _*)
+  .settings(CodeCoverageSettings.settings*)
+  .settings(inConfig(Test)(testSettings)*)
 
-lazy val testSettings: Seq[Def.Setting[_]] =
+lazy val testSettings: Seq[Def.Setting[?]] =
   Seq(fork := true, javaOptions ++= Seq("-Dconfig.resource=test.application.conf"))
 
 lazy val it = project

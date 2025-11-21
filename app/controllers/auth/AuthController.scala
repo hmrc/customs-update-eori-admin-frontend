@@ -28,11 +28,11 @@ class AuthController @Inject() (
   config: AppConfig
 ) extends FrontendBaseController with I18nSupport {
 
-  def signOut(): Action[AnyContent] = Action {
+  def signOut: Action[AnyContent] = Action {
     Redirect(config.strideLoginUrl).withNewSession
   }
 
-  def signOutNoSurvey(): Action[AnyContent] = Action {
+  def signOutNoSurvey: Action[AnyContent] = Action {
     Redirect(controllers.auth.routes.SignedOutController.onPageLoad.url).withNewSession
   }
 }

@@ -19,11 +19,11 @@ package connector
 import models.EnrolmentKey.HMRC_CUS_ORG
 import models.EoriEventEnum.UPDATE
 import models.{Eori, ErrorMessage}
-import org.mockito.ArgumentMatchers.{eq => meq, _}
-import org.mockito.Mockito._
+import org.mockito.ArgumentMatchers.{eq as meq, *}
+import org.mockito.Mockito.*
 import org.scalatest.EitherValues
-import play.api.http.Status._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
+import play.api.http.Status.*
+import uk.gov.hmrc.http.{HttpResponse, StringContextOps}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
@@ -34,32 +34,24 @@ class RemoveKnownFactsConnectorSpec extends ConnectorSpecBase with EitherValues 
 
   "The Remove Known Facts Connector" should {
     "call the remove known facts service with a DELETE command with the correct url" in {
-      when(
-        mockHttpClient.DELETE(any[String], any[Seq[(String, String)]])(
-          any[HttpReads[HttpResponse]],
-          any[HeaderCarrier],
-          any[ExecutionContext]
-        )
-      )
-        .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
+      when(mockHttpClient.delete(any())(any())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.execute(any(), any())).thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
 
       val result = connector.remove(UPDATE, Eori("GB1234567890"), HMRC_CUS_ORG).futureValue
       result.isRight shouldBe true
       result.value shouldBe NO_CONTENT
-      verify(mockHttpClient).DELETE(
-        meq("http://localhost:1222/enrolments/HMRC-CUS-ORG~EORINumber~GB1234567890"),
-        any[Seq[(String, String)]]
-      )(any[HttpReads[HttpResponse]], any[HeaderCarrier], any[ExecutionContext])
+      verify(mockHttpClient).delete(
+        meq(url"http://localhost:1222/enrolments/HMRC-CUS-ORG~EORINumber~GB1234567890")
+      )(any())
     }
 
     "return an error message if the delete request fails " in {
       when(
-        mockHttpClient.DELETE(
-          meq("http://localhost:1222/enrolments/HMRC-CUS-ORG~EORINumber~GB1122334455"),
-          any[Seq[(String, String)]]
-        )(any[HttpReads[HttpResponse]], any[HeaderCarrier], any[ExecutionContext])
-      )
-        .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
+        mockHttpClient.delete(
+          meq(url"http://localhost:1222/enrolments/HMRC-CUS-ORG~EORINumber~GB1122334455")
+        )(any())
+      ).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.execute(any(), any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
       val result = connector.remove(UPDATE, Eori("GB1122334455"), HMRC_CUS_ORG).futureValue
       result shouldBe Left(ErrorMessage("Remove known facts failed with HTTP status: 400"))
     }

@@ -78,7 +78,7 @@ private[mappings] class LocalDateFormatter(
           _.map(_.copy(key = key, args = args))
         }
         formattedDate match {
-          case errors @ Left(_) => errors
+          case errors @ Left(_)     => errors
           case rightDate @ Right(d) =>
             val dateNow = LocalDate.now()
             if (d.isBefore(dateNow) || d.isEqual(dateNow)) {

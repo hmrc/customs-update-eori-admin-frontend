@@ -25,16 +25,18 @@ import play.api.Logging
 import play.api.http.Status._
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class DeAllocateGroupConnector @Inject() (httpClient: HttpClient, config: AppConfig, audit: Auditable)(implicit
+class DeAllocateGroupConnector @Inject() (httpClient: HttpClientV2, config: AppConfig, audit: Auditable)(implicit
   ec: ExecutionContext
 ) extends Logging {
 
   /** ES9 api call to TES - delete an enrolment or known fact
+    *
     * @param eori
     * @param enrolmentKey
     * @param groupId
@@ -46,18 +48,21 @@ class DeAllocateGroupConnector @Inject() (httpClient: HttpClient, config: AppCon
   ): Future[Either[ErrorMessage, Int]] = {
     val strEnrolmentKey = enrolmentKey.getEnrolmentKey(eori)
     val url = s"${config.taxEnrolmentsServiceUrl}/groups/$groupId/enrolments/$strEnrolmentKey"
-    httpClient.DELETE[HttpResponse](url) map { resp =>
-      resp.status match {
-        case NO_CONTENT =>
-          auditCall(url, eoriAction, groupId.toString, strEnrolmentKey)
-          Right(NO_CONTENT)
-        case failStatus =>
-          logger.error(
-            s"Delete enrolment failed with HTTP status: $failStatus for existing EORI: $eori. Response: ${resp.body}"
-          )
-          Left(ErrorMessage(s"Delete enrolment failed with HTTP status: $failStatus"))
+    httpClient
+      .delete(url"$url")
+      .execute[HttpResponse]
+      .map { resp =>
+        resp.status match {
+          case NO_CONTENT =>
+            auditCall(url, eoriAction, groupId.toString, strEnrolmentKey)
+            Right(NO_CONTENT)
+          case failStatus =>
+            logger.error(
+              s"Delete enrolment failed with HTTP status: $failStatus for existing EORI: $eori. Response: ${resp.body}"
+            )
+            Left(ErrorMessage(s"Delete enrolment failed with HTTP status: $failStatus"))
+        }
       }
-    }
   }
 
   private def auditCall(url: String, eoriAction: String, groupId: String, enrolmentKey: String)(implicit

@@ -16,14 +16,14 @@
 
 package connector
 
+import models.*
 import models.EnrolmentKey.HMRC_CUS_ORG
 import models.EoriEventEnum.UPDATE
-import models._
-import org.mockito.ArgumentMatchers.{eq => meq, _}
-import org.mockito.Mockito._
+import org.mockito.ArgumentMatchers.{eq as meq, *}
+import org.mockito.Mockito.*
 import play.api.http.Status.{NO_CONTENT, OK}
-import play.api.libs.json.Writes
-import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
+import play.api.libs.json.Json
+import uk.gov.hmrc.http.HttpResponse
 
 import java.time.LocalDate
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -64,17 +64,11 @@ class QueryKnownFactsConnectorSpec extends ConnectorSpecBase {
           |     }
           |  ]
           |}""".stripMargin
-      val request = QueryKnownFactsRequest("HMRC-CUS-ORG", Seq(KeyValue("EORINumber", "GB1234567890")))
+      val request = Json.toJson(QueryKnownFactsRequest("HMRC-CUS-ORG", Seq(KeyValue("EORINumber", "GB1234567890"))))
 
-      when(
-        mockHttpClient.POST(anyString, meq(request), any[Seq[(String, String)]])(
-          any[Writes[QueryKnownFactsRequest]],
-          any[HttpReads[HttpResponse]],
-          any[HeaderCarrier],
-          any[ExecutionContext]
-        )
-      )
-        .thenReturn(Future.successful(HttpResponse(OK, response)))
+      when(mockHttpClient.post(any())(any())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.withBody(meq(request))(any(), any(), any())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.execute(any(), any())).thenReturn(Future.successful(HttpResponse(OK, response)))
 
       val maybeEnrolment = connector
         .query(UPDATE, Eori("GB1234567890"), HMRC_CUS_ORG, LocalDate.of(2011, 1, 1))
@@ -120,17 +114,11 @@ class QueryKnownFactsConnectorSpec extends ConnectorSpecBase {
           |     }
           |  ]
           |}""".stripMargin
-      val request = QueryKnownFactsRequest("HMRC-CUS-ORG", Seq(KeyValue("EORINumber", "GB1234567890")))
+      val request = Json.toJson(QueryKnownFactsRequest("HMRC-CUS-ORG", Seq(KeyValue("EORINumber", "GB1234567890"))))
 
-      when(
-        mockHttpClient.POST(anyString, meq(request), any[Seq[(String, String)]])(
-          any[Writes[QueryKnownFactsRequest]],
-          any[HttpReads[HttpResponse]],
-          any[HeaderCarrier],
-          any[ExecutionContext]
-        )
-      )
-        .thenReturn(Future.successful(HttpResponse(OK, response)))
+      when(mockHttpClient.post(any())(any())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.withBody(meq(request))(any(), any(), any())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.execute(any(), any())).thenReturn(Future.successful(HttpResponse(OK, response)))
 
       val result = connector
         .query(UPDATE, Eori("GB1234567890"), HMRC_CUS_ORG, LocalDate.of(2010, 1, 1))
@@ -140,17 +128,11 @@ class QueryKnownFactsConnectorSpec extends ConnectorSpecBase {
     }
 
     "return an error message for an invalid EORI" in {
-      val request = QueryKnownFactsRequest("HMRC-CUS-ORG", Seq(KeyValue("EORINumber", "GB9999999999")))
+      val request = Json.toJson(QueryKnownFactsRequest("HMRC-CUS-ORG", Seq(KeyValue("EORINumber", "GB9999999999"))))
 
-      when(
-        mockHttpClient.POST(anyString, meq(request), any[Seq[(String, String)]])(
-          any[Writes[QueryKnownFactsRequest]],
-          any[HttpReads[HttpResponse]],
-          any[HeaderCarrier],
-          any[ExecutionContext]
-        )
-      )
-        .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
+      when(mockHttpClient.post(any())(any())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.withBody(meq(request))(any(), any(), any())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.execute(any(), any())).thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
 
       val result = connector
         .query(UPDATE, Eori("GB9999999999"), HMRC_CUS_ORG, LocalDate.now())

@@ -18,10 +18,10 @@ package connector
 
 import models.EnrolmentKey.HMRC_CUS_ORG
 import models.{Eori, ErrorMessage, UserId}
-import org.mockito.ArgumentMatchers.{eq => meq, _}
-import org.mockito.Mockito._
+import org.mockito.ArgumentMatchers.{eq as meq, *}
+import org.mockito.Mockito.*
 import play.api.test.Helpers.BAD_REQUEST
-import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{StringContextOps, UpstreamErrorResponse}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
@@ -34,24 +34,22 @@ class QueryUsersConnectorSpec extends ConnectorSpecBase {
     super.beforeEach()
 
     when(
-      mockHttpClient.GET(endsWith("GB1234567890/users"), any[Seq[(String, String)]], any[Seq[(String, String)]])(
-        any[HttpReads[Either[UpstreamErrorResponse, Users]]],
-        any[HeaderCarrier],
-        any[ExecutionContext]
-      )
-    ).thenReturn(Future.successful(Right(Users(Seq("ABCEDEFGI1234567"), Seq.empty))))
+      mockHttpClient.get(
+        meq(url"http://localhost:1234/enrolment-store/enrolments/HMRC-CUS-ORG~EORINumber~GB1234567890/users")
+      )(any())
+    )
+      .thenReturn(mockRequestBuilder)
+    when(mockRequestBuilder.execute(any(), any()))
+      .thenReturn(Future.successful(Right(Users(Seq("ABCEDEFGI1234567"), Seq.empty))))
   }
 
   "The Query Users Connector" should {
-    "call the query users service with a GET command with the correct url" in {
+    "call the query users service with a GET command with the correct url" in
       whenReady(connector.query(Eori("GB1234567890"), HMRC_CUS_ORG)) { _ =>
-        verify(mockHttpClient).GET(
-          meq("http://localhost:1234/enrolment-store/enrolments/HMRC-CUS-ORG~EORINumber~GB1234567890/users"),
-          any[Seq[(String, String)]],
-          any[Seq[(String, String)]]
-        )(any[HttpReads[Either[UpstreamErrorResponse, Users]]], any[HeaderCarrier], any[ExecutionContext])
+        verify(mockHttpClient).get(
+          meq(url"http://localhost:1234/enrolment-store/enrolments/HMRC-CUS-ORG~EORINumber~GB1234567890/users")
+        )(any())
       }
-    }
 
     "return a User ID for a valid EORI" in {
       val userId = connector.query(Eori("GB1234567890"), HMRC_CUS_ORG).futureValue
@@ -60,12 +58,14 @@ class QueryUsersConnectorSpec extends ConnectorSpecBase {
 
     "return an error message for an invalid EORI" in {
       when(
-        mockHttpClient.GET(endsWith("GB8888877777/users"), any[Seq[(String, String)]], any[Seq[(String, String)]])(
-          any[HttpReads[Either[UpstreamErrorResponse, Users]]],
-          any[HeaderCarrier],
-          any[ExecutionContext]
-        )
-      ).thenReturn(Future.successful(Left(UpstreamErrorResponse("failed", BAD_REQUEST))))
+        mockHttpClient.get(
+          meq(url"http://localhost:1234/enrolment-store/enrolments/HMRC-CUS-ORG~EORINumber~GB8888877777/users")
+        )(any())
+      )
+        .thenReturn(mockRequestBuilder)
+
+      when(mockRequestBuilder.execute(any(), any()))
+        .thenReturn(Future.successful(Left(UpstreamErrorResponse("failed", BAD_REQUEST))))
       val result = connector.query(Eori("GB8888877777"), HMRC_CUS_ORG).futureValue
       result shouldBe Left(ErrorMessage("Could not find User for existing EORI: GB8888877777"))
     }

@@ -13,6 +13,7 @@ object CodeCoverageSettings {
     "testOnlyDoNotUseInAppConf.*",
     "audit.*",
     "views.*",
+    "models.*",
     ".*testOnly.*"
   )
 
