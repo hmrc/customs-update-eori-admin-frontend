@@ -23,14 +23,16 @@ import play.api.Logging
 import play.api.http.MimeTypes.JSON
 import play.api.http.Status.{NOT_FOUND, NO_CONTENT}
 import play.api.libs.json.Json
+import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
 import play.mvc.Http.HeaderNames.CONTENT_TYPE
-import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
+import uk.gov.hmrc.http.HttpReads.Implicits.*
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CustomsDataStoreConnector @Inject() (httpClient: HttpClient, config: AppConfig, audit: Auditable)(implicit
+class CustomsDataStoreConnector @Inject() (httpClient: HttpClientV2, config: AppConfig, audit: Auditable)(implicit
   ec: ExecutionContext
 ) extends Logging {
 
@@ -38,7 +40,10 @@ class CustomsDataStoreConnector @Inject() (httpClient: HttpClient, config: AppCo
     val contentType = CONTENT_TYPE -> JSON
 
     httpClient
-      .POST[Eori, HttpResponse](config.customsDataStoreUrl, newEori, Seq(contentType))
+      .post(url"${config.customsDataStoreUrl}")
+      .withBody(Json.toJson(newEori))
+      .setHeader(contentType)
+      .execute[HttpResponse]
       .map { response =>
         auditCall(config.customsDataStoreUrl, newEori.toString, response)
         response.status match {

@@ -16,13 +16,12 @@
 
 package connector
 
+import models.*
 import models.EnrolmentKey.HMRC_CUS_ORG
-import models._
-import org.mockito.ArgumentMatchers.{eq => meq, _}
-import org.mockito.Mockito._
-import play.api.http.Status._
-import play.api.libs.json.Writes
-import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
+import org.mockito.ArgumentMatchers.{eq as meq, *}
+import org.mockito.Mockito.*
+import play.api.http.Status.*
+import uk.gov.hmrc.http.{HttpResponse, StringContextOps}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
@@ -33,34 +32,26 @@ class ReAllocateGroupConnectorSpec extends ConnectorSpecBase {
 
   "The ReEnrolment Connector" should {
     "call the re-enrolment service with a POST command with the correct url" in {
-      when(
-        mockHttpClient.POST(any[String], any[ReEnrolRequest], any[Seq[(String, String)]])(
-          any[Writes[ReEnrolRequest]],
-          any[HttpReads[HttpResponse]],
-          any[HeaderCarrier],
-          any[ExecutionContext]
-        )
-      )
-        .thenReturn(Future.successful(HttpResponse(CREATED, "")))
+      when(mockHttpClient.post(any())(any())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.withBody(any())(any(), any(), any())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.setHeader(any())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.execute(any(), any())).thenReturn(Future.successful(HttpResponse(CREATED, "")))
       whenReady(connector.reAllocate(Eori("GB1234567890"), HMRC_CUS_ORG, UserId("AB123"), GroupId("90ccf333-65d2"))) {
         _ =>
-          verify(mockHttpClient).POST(
-            meq("http://localhost:1222/groups/90ccf333-65d2/enrolments/HMRC-CUS-ORG~EORINumber~GB1234567890"),
-            meq(ReEnrolRequest("AB123")),
-            any[Seq[(String, String)]]
-          )(any[Writes[ReEnrolRequest]], any[HttpReads[HttpResponse]], any[HeaderCarrier], any[ExecutionContext])
+          verify(mockHttpClient).post(
+            meq(url"http://localhost:1222/groups/90ccf333-65d2/enrolments/HMRC-CUS-ORG~EORINumber~GB1234567890")
+          )(any())
       }
     }
 
     "return an error message if the post request fails " in {
       when(
-        mockHttpClient.POST(
-          meq("http://localhost:1222/groups/90ccf333-65d2/enrolments/HMRC-CUS-ORG~EORINumber~GB1234566634"),
-          meq(ReEnrolRequest("AB234")),
-          any[Seq[(String, String)]]
-        )(any[Writes[ReEnrolRequest]], any[HttpReads[HttpResponse]], any[HeaderCarrier], any[ExecutionContext])
-      )
-        .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
+        mockHttpClient.post(
+          meq(url"http://localhost:1222/groups/90ccf333-65d2/enrolments/HMRC-CUS-ORG~EORINumber~GB1234566634")
+        )(any())
+      ).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.withBody(any())(any(), any(), any())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.execute(any(), any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
       val result = connector
         .reAllocate(
           Eori("GB1234566634"),

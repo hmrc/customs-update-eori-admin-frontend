@@ -16,13 +16,12 @@
 
 package connector
 
+import models.*
 import models.EnrolmentKey.HMRC_CUS_ORG
-import models._
-import org.mockito.ArgumentMatchers.{eq => meq, _}
-import org.mockito.Mockito._
-import play.api.http.Status._
-import play.api.libs.json.Writes
-import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
+import org.mockito.ArgumentMatchers.{eq as meq, *}
+import org.mockito.Mockito.*
+import play.api.http.Status.*
+import uk.gov.hmrc.http.{HttpResponse, StringContextOps}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
@@ -36,13 +35,12 @@ class UpsertKnownFactsConnectorSpec extends ConnectorSpecBase {
       val enrolment = Enrolment(Seq.empty, Seq(KeyValue("DateOfEstablishment", "02/06/2003")))
 
       when(
-        mockHttpClient.PUT(
-          meq("http://localhost:1222/enrolments/HMRC-CUS-ORG~EORINumber~GB12349876"),
-          meq(UpsertKnownFactsRequest(enrolment.verifiers)),
-          any[Seq[(String, String)]]
-        )(any[Writes[UpsertKnownFactsRequest]], any[HttpReads[HttpResponse]], any[HeaderCarrier], any[ExecutionContext])
-      )
-        .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
+        mockHttpClient.put(
+          meq(url"http://localhost:1222/enrolments/HMRC-CUS-ORG~EORINumber~GB12349876")
+        )(any())
+      ).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.withBody(any())(any(), any(), any())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.execute(any(), any())).thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
 
       val statusCode = connector.upsert(Eori("GB12349876"), HMRC_CUS_ORG, enrolment).futureValue
       statusCode shouldBe Right(NO_CONTENT)
@@ -50,15 +48,9 @@ class UpsertKnownFactsConnectorSpec extends ConnectorSpecBase {
 
     "return an error message for an invalid upsert" in {
       val emptyEnrolment = Enrolment(Seq.empty, Seq.empty)
-      when(
-        mockHttpClient.PUT(anyString, meq(UpsertKnownFactsRequest(Seq.empty)), any[Seq[(String, String)]])(
-          any[Writes[UpsertKnownFactsRequest]],
-          any[HttpReads[HttpResponse]],
-          any[HeaderCarrier],
-          any[ExecutionContext]
-        )
-      )
-        .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
+      when(mockHttpClient.put(any)(any())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.withBody(any())(any(), any(), any())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.execute(any(), any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, "")))
 
       val result = connector
         .upsert(Eori("GB9999999999"), HMRC_CUS_ORG, emptyEnrolment)

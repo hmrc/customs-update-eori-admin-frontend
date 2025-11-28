@@ -19,13 +19,15 @@ package connector
 import audit.Auditable
 import config.AppConfig
 import models.EnrolmentKey.EnrolmentKeyType
-import models._
+import models.*
 import models.events.ReAllocateGroupEvent
 import play.api.Logging
-import play.api.http.Status._
+import play.api.http.Status.*
 import play.api.libs.json.{Json, OWrites}
-import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
+import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
+import uk.gov.hmrc.http.HttpReads.Implicits.*
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -36,7 +38,7 @@ object ReEnrolRequest {
   implicit val writes: OWrites[ReEnrolRequest] = Json.writes[ReEnrolRequest]
 }
 
-class ReAllocateGroupConnector @Inject() (httpClient: HttpClient, config: AppConfig, audit: Auditable)(implicit
+class ReAllocateGroupConnector @Inject() (httpClient: HttpClientV2, config: AppConfig, audit: Auditable)(implicit
   ec: ExecutionContext
 ) extends Logging {
 
@@ -47,18 +49,23 @@ class ReAllocateGroupConnector @Inject() (httpClient: HttpClient, config: AppCon
     val strEnrolmentKey = enrolmentKey.getEnrolmentKey(eori)
     val url = s"${config.taxEnrolmentsServiceUrl}/groups/$groupId/enrolments/$strEnrolmentKey"
 
-    httpClient.POST[ReEnrolRequest, HttpResponse](url, req, Seq("Content-Type" -> "application/json")) map { resp =>
-      resp.status match {
-        case CREATED =>
-          auditCall(url, groupId.toString, userId.toString, strEnrolmentKey)
-          Right(CREATED)
-        case failStatus =>
-          logger.error(
-            s"Allocate group failed with HTTP status: $failStatus for existing EORI: $eori. Result: ${resp.body}"
-          )
-          Left(ErrorMessage(s"Allocate group failed with HTTP status: $failStatus (${resp.body})"))
+    httpClient
+      .post(url"$url")
+      .withBody(Json.toJson(req))
+      .setHeader("Content-Type" -> "application/json")
+      .execute[HttpResponse]
+      .map { resp =>
+        resp.status match {
+          case CREATED =>
+            auditCall(url, groupId.toString, userId.toString, strEnrolmentKey)
+            Right(CREATED)
+          case failStatus =>
+            logger.error(
+              s"Allocate group failed with HTTP status: $failStatus for existing EORI: $eori. Result: ${resp.body}"
+            )
+            Left(ErrorMessage(s"Allocate group failed with HTTP status: $failStatus (${resp.body})"))
+        }
       }
-    }
   }
 
   private def auditCall(url: String, groupId: String, userId: String, enrolmentKey: String)(implicit

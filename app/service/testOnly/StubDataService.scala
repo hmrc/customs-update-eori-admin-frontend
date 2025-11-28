@@ -18,16 +18,19 @@ package service.testOnly
 
 import config.AppConfig
 import models.LocalDateBinder.localDateToString
-import models.testOnly._
+import models.testOnly.*
 import play.api.http.Status.{CREATED, NO_CONTENT}
-import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
+import play.api.libs.json.Json
+import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
+import uk.gov.hmrc.http.HttpReads.Implicits.*
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 
 import java.util.UUID
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class StubDataService @Inject() (httpClient: HttpClient, config: AppConfig)(implicit ec: ExecutionContext) {
+class StubDataService @Inject() (httpClient: HttpClientV2, config: AppConfig)(implicit ec: ExecutionContext) {
   def createEoriNumber(createEori: CreateEori)(implicit hc: HeaderCarrier): Future[Seq[Int]] = {
     val seq = createKnownFacts(createEori).toSeq :+ createGroupPersona(createEori)
     Future.sequence(seq)
@@ -45,11 +48,10 @@ class StubDataService @Inject() (httpClient: HttpClient, config: AppConfig)(impl
       )
 
       httpClient
-        .POST[KnownFactPersona, HttpResponse](
-          s"${config.enrolmentStoreProxyBaseServiceUrl}/enrolment-store-stub/known-facts",
-          knownFactPersona,
-          Seq(("content-type", "application/json"))
-        )
+        .post(url"${config.enrolmentStoreProxyBaseServiceUrl}/enrolment-store-stub/known-facts")
+        .withBody(Json.toJson(knownFactPersona))
+        .setHeader("Content-Type" -> "application/json")
+        .execute[HttpResponse]
         .flatMap { result =>
           if (result.status == CREATED)
             Future.successful(result.status)
@@ -78,11 +80,10 @@ class StubDataService @Inject() (httpClient: HttpClient, config: AppConfig)(impl
       enrolments = seqOfEnrolments
     )
     httpClient
-      .POST[GroupPersona, HttpResponse](
-        s"${config.enrolmentStoreProxyBaseServiceUrl}/enrolment-store-stub/data",
-        groupPersona,
-        Seq(("content-type", "application/json"))
-      )
+      .post(url"${config.enrolmentStoreProxyBaseServiceUrl}/enrolment-store-stub/data")
+      .withBody(Json.toJson(groupPersona))
+      .setHeader("Content-Type" -> "application/json")
+      .execute[HttpResponse]
       .flatMap { result =>
         if (result.status == NO_CONTENT)
           Future.successful(result.status)

@@ -65,7 +65,7 @@ case class CancelEoriController @Inject() (
         oneDateComponentMissingKey = "eori.validation.establishmentDate.required.one",
         mustBeInPastKey = "eori.validation.establishmentDate.mustBeInPast"
       )
-    )(EoriCancel.apply)(EoriCancel.unapply)
+    )(EoriCancel.apply)(o => Some(Tuple.fromProductTyped(o)))
   )
 
   val formConfirmCancelEori = Form(
@@ -74,10 +74,10 @@ case class CancelEoriController @Inject() (
       "date-of-establishment"          -> Forms.localDate(LocalDateBinder.dateTimePattern),
       "enrolment-list"                 -> text(),
       "not-cancellable-enrolment-list" -> text()
-    )(ConfirmEoriCancel.apply)(ConfirmEoriCancel.unapply)
+    )(ConfirmEoriCancel.apply)(o => Some(Tuple.fromProductTyped(o)))
   )
 
-  def showPage = auth { implicit request =>
+  def showPage: Action[AnyContent] = auth { implicit request =>
     Ok(viewCancelEori(formCancelEori))
   }
 
@@ -126,7 +126,7 @@ case class CancelEoriController @Inject() (
       )
   }
 
-  def confirmCancelEori = auth.async { implicit request =>
+  def confirmCancelEori: Action[AnyContent] = auth.async { implicit request =>
     formConfirmCancelEori
       .bindFromRequest()
       .fold(

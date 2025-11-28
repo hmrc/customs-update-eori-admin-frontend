@@ -64,7 +64,7 @@ trait AuthenticationBehaviours { this: MockitoSugar =>
   }
 
   def withNotSignedInUser(test: => Unit): Unit = {
-    when(mockAuthConnector.authorise(any(), any[Retrieval[_]])(any[HeaderCarrier], any()))
+    when(mockAuthConnector.authorise(any(), any())(any[HeaderCarrier], any()))
       .thenReturn(Future.failed(new NoActiveSession("A user is not logged in") {}))
 
     test

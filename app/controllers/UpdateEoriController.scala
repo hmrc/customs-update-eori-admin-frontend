@@ -69,7 +69,7 @@ case class UpdateEoriController @Inject() (
         "eori.validation.newEori.required",
         "eori.validation.newEori.format"
       )
-    )(EoriUpdate.apply)(EoriUpdate.unapply)
+    )(EoriUpdate.apply)(o => Some(Tuple.fromProductTyped(o)))
   )
 
   val formEoriUpdateConfirmation = Form(
@@ -79,10 +79,10 @@ case class UpdateEoriController @Inject() (
       "new-eori"                     -> text(),
       "enrolment-list"               -> text(),
       "not-updatable-enrolment-list" -> text()
-    )(ConfirmEoriUpdate.apply)(ConfirmEoriUpdate.unapply)
+    )(ConfirmEoriUpdate.apply)(o => Some(Tuple.fromProductTyped(o)))
   )
 
-  def showPage = auth { implicit request =>
+  def showPage: Action[AnyContent] = auth { implicit request =>
     Ok(viewUpdateEori(formEoriUpdate))
   }
 
@@ -132,7 +132,7 @@ case class UpdateEoriController @Inject() (
       )
   }
 
-  def confirmUpdateEori = auth.async { implicit request =>
+  def confirmUpdateEori: Action[AnyContent] = auth.async { implicit request =>
     formEoriUpdateConfirmation
       .bindFromRequest()
       .fold(

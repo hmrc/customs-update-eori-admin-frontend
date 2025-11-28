@@ -52,7 +52,7 @@ case class StubDataController @Inject() (
         mustBeInPastKey = "testOnly.establishmentDate.validation.mustBeInPast"
       ),
       "enrolments" -> nonEmptyText
-    )(CreateEori.apply)(CreateEori.unapply)
+    )(CreateEori.apply)(o => Some(Tuple.fromProductTyped(o)))
   )
 
   def showPage: Action[AnyContent] = Action.async { implicit request =>

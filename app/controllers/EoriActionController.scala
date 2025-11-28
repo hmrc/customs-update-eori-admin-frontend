@@ -18,9 +18,9 @@ package controllers
 
 import models.{EoriAction, EoriActionEnum}
 import play.api.data.Form
-import play.api.data.Forms._
+import play.api.data.Forms.*
 import play.api.i18n.I18nSupport
-import play.api.mvc.MessagesControllerComponents
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.EoriActionView
 import views.html.EoriOperationSuccessfulView
@@ -38,10 +38,10 @@ case class EoriActionController @Inject() (
   val form: Form[EoriAction] = Form(
     mapping(
       "update-or-cancel-eori" -> text()
-    )(EoriAction.apply)(EoriAction.unapply)
+    )(EoriAction.apply)(o => Some(o.cancelOrUpdate))
   )
 
-  def showPage = auth { implicit request =>
+  def showPage: Action[AnyContent] = auth { implicit request =>
     Ok(viewEoriAction(form.fill(EoriAction(EoriActionEnum.UPDATE_EORI.toString))))
   }
 
@@ -53,7 +53,7 @@ case class EoriActionController @Inject() (
     notUpdatableEnrolments: Option[String],
     cancelledEnrolments: Option[String],
     nonCancelableEnrolments: Option[String]
-  ) = auth { implicit request =>
+  ): Action[AnyContent] = auth { implicit request =>
     Ok(
       eoriOperationSuccessfulView(
         form.fill(EoriAction(EoriActionEnum.UPDATE_EORI.toString)),
@@ -68,7 +68,7 @@ case class EoriActionController @Inject() (
     )
   }
 
-  def continueAction = auth { implicit request =>
+  def continueAction: Action[AnyContent] = auth { implicit request =>
     form
       .bindFromRequest()
       .fold(

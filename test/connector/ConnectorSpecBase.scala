@@ -25,13 +25,15 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.time.{Seconds, Span}
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
 
 class ConnectorSpecBase extends AnyWordSpec with Matchers with ScalaFutures with MockitoSugar with BeforeAndAfterEach {
 
   override implicit val patienceConfig: PatienceConfig = PatienceConfig(Span(5, Seconds))
   protected implicit val mockHeaderCarrier: HeaderCarrier = mock[HeaderCarrier]
-  protected val mockHttpClient: HttpClient = mock[HttpClient]
+  protected val mockHttpClient: HttpClientV2 = mock[HttpClientV2]
+  protected val mockRequestBuilder: RequestBuilder = mock[RequestBuilder]
   protected val mockAppConfig: AppConfig = mock[AppConfig]
   protected val mockAuditable: Auditable = mock[Auditable]
 

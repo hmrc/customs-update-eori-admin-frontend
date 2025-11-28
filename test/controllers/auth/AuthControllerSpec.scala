@@ -18,12 +18,12 @@ package controllers.auth
 
 import org.scalatest.OptionValues
 import org.scalatest.freespec.AnyFreeSpec
-import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+import org.scalatest.matchers.must.Matchers.mustEqual
 import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.Application
-import play.api.http.Status.{OK, SEE_OTHER}
+import play.api.http.Status.SEE_OTHER
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.AnyContentAsEmpty
