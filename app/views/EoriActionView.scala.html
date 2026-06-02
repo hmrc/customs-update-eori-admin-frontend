@@ -71,9 +71,15 @@
             )
         }
 
-        <h1 class="govuk-heading-l">@messages("eoriAction.questionForReplaceOrCancel")</h1>
         @govukRadios(Radios(
             name = "update-or-cancel-eori",
+            fieldset = Some(Fieldset(
+                legend = Some(Legend(
+                    content = Text(messages("eoriAction.questionForReplaceOrCancel")),
+                    classes = "govuk-fieldset__legend--l govuk-!-margin-bottom-6",
+                    isPageHeading = true
+                ))
+            )),
             items = Seq(
                 RadioItem(
                     content = Text(messages("eori.replaceExistingEori")),
