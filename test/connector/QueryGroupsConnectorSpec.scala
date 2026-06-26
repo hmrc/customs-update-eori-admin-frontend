@@ -20,6 +20,7 @@ import models.EnrolmentKey.HMRC_CUS_ORG
 import models.{Eori, ErrorMessage, GroupId}
 import org.mockito.ArgumentMatchers.{eq as meq, *}
 import org.mockito.Mockito.*
+import play.api.libs.json.Json
 import play.api.test.Helpers.BAD_REQUEST
 import uk.gov.hmrc.http.{StringContextOps, UpstreamErrorResponse}
 
@@ -39,7 +40,15 @@ class QueryGroupsConnectorSpec extends ConnectorSpecBase {
     ).thenReturn(mockRequestBuilder)
 
     when(mockRequestBuilder.execute(any(), any()))
-      .thenReturn(Future.successful(Right(Groups(Seq("90ccf333-65d2-4bf2-a008-01dfca702161"), Seq.empty))))
+      .thenReturn(
+        Future.successful(
+          Right(
+            Json
+              .parse("""{"principalGroupIds":["90ccf333-65d2-4bf2-a008-01dfca702161"],"delegatedGroupIds":[]}""")
+              .as[Groups]
+          )
+        )
+      )
   }
 
   "The Query Groups Connector" should {
