@@ -20,6 +20,7 @@ import models.EnrolmentKey.HMRC_CUS_ORG
 import models.{Eori, ErrorMessage, UserId}
 import org.mockito.ArgumentMatchers.{eq as meq, *}
 import org.mockito.Mockito.*
+import play.api.libs.json.Json
 import play.api.test.Helpers.BAD_REQUEST
 import uk.gov.hmrc.http.{StringContextOps, UpstreamErrorResponse}
 
@@ -40,7 +41,11 @@ class QueryUsersConnectorSpec extends ConnectorSpecBase {
     )
       .thenReturn(mockRequestBuilder)
     when(mockRequestBuilder.execute(any(), any()))
-      .thenReturn(Future.successful(Right(Users(Seq("ABCEDEFGI1234567"), Seq.empty))))
+      .thenReturn(
+        Future.successful(
+          Right(Json.parse("""{"principalUserIds":["ABCEDEFGI1234567"],"delegatedUserIds":[]}""").as[Users])
+        )
+      )
   }
 
   "The Query Users Connector" should {
