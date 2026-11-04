@@ -1,4 +1,4 @@
-service.name = manage-eori-number
+service.name = EORI number management service
 service.text = This is your new service
 service.title = EORI Number Management Service
 service.titleWithParam = EORI Number Management Service - {0}
